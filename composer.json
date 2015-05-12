@@ -16,7 +16,7 @@
     "stof/doctrine-extensions-bundle": "*"
   },
   "autoload" : {
-    "psr-4" : { "eDemy\\MainBundle" : "" }
+    "psr-4" : { "eDemy\\MainBundle\\" : "" }
   },
   "target-dir" : ""
 }
