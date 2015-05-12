@@ -1,0 +1,9 @@
+{% if namespaces|length > 1 %}
+    <div class="footermodule">
+        <h3>Estos son nuestros servicios</h3>
+        
+        {% for namespace in namespaces %}
+            <a href="{{ path(namespace ~ '.' ~ 'edemy_main_frontpage') }}">{{ namespace.name }}</a><br/>
+        {% endfor %} 
+    </div>
+{% endif %}

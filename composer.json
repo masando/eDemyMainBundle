@@ -1,0 +1,31 @@
+{
+  "name" : "edemy/mainbundle",
+  "description" : "Main Bundle for eDemy Framework",
+  "type" : "symfony-bundle",
+  "authors" : [{
+    "name" : "Manuel Sanchís",
+    "email" : "msanchis@edemy.es"
+  }],
+  "keywords" : [
+    "edemy main bundle"
+  ],
+  "license" : [
+    "GNU v2"
+  ],
+  "require" : {
+    "stof/doctrine-extensions-bundle": "dev-master"
+  },
+  "autoload" : {
+    "psr-0" : {
+      "eDemy\\MainBundle" : ""
+    }
+  },
+  "target-dir" : "eDemy/MainBundle",
+  "repositories" : [{
+  }],
+  "extra" : {
+    "branch-alias" : {
+      "dev-master" : "1.0.x-dev"
+    }
+  }
+}

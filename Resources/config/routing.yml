@@ -1,0 +1,4 @@
+edemy_main_frontpage:
+    path:           /{_locale}
+    defaults:       { _controller: edemy.main:indexAction, _locale: es, _format: html }
+    requirements:   { _locale: es|en, _format: html|xml }

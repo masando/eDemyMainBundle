@@ -1,0 +1,29 @@
+{% block _edemy_productbundle_product_imagenes_entry_webpath_row %}
+    {% if form.parent.vars.value is not null %}
+        <img src="{{ form.parent.vars.value.webpath(200) }}" />
+    {% endif %}
+{% endblock %}
+
+{% block _edemy_carruselbundle_carrusel_imagenes_entry_webpath_row %}
+    {% if form.parent.vars.value is not null %}
+        <img src="{{ form.parent.vars.value.webpath(200) }}" />
+    {% endif %}
+{% endblock %}
+
+{% block _edemy_keilabundle_alianza_imagenes_entry_webpath_row %}
+    {% if form.parent.vars.value is not null %}
+        <img src="{{ form.parent.vars.value.webpath(200) }}" />
+    {% endif %}
+{% endblock %}
+
+{% block _edemy_backgroundbundle_background_imagenes_entry_webpath_row %}
+    {% if form.parent.vars.value is not null %}
+        <img src="{{ form.parent.vars.value.webpath(200) }}" />
+    {% endif %}
+{% endblock %}
+
+{% block _edemy_linkbundle_link_webpath_widget %}
+    {% if form.parent.vars.value is not null %}
+        <img src="{{ form.parent.vars.value.webpath(200) }}" />
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,40 @@
+<script type="text/javascript">
+    var ${{ manys }}Holder;
+    var ${{ many }}_addLink = $('<a href="#" class="{{ many }}_add_link">Añadir {{ many }}</a>');
+    var ${{ many }}_newLink = $('<ul></ul>').append($('<li></li>').append(${{ many }}_addLink));
+
+    jQuery(document).ready(function() {
+        ${{ manys }}Holder = $('#edemy_{{ bundle }}bundle_{{ one }}_{{ manys }}');
+        ${{ manys }}Holder.find("[id^=edemy_{{ bundle }}bundle_{{ one }}_{{ manys }}_]").each(function() {
+            {{ many }}_addFormDeleteLink($(this));
+        });
+        ${{ manys }}Holder.parent().append(${{ many }}_newLink);
+        
+        ${{ manys }}Holder.data('index', ${{ manys }}Holder.find(':input').length);
+        ${{ many }}_addLink.on('click', function(e) {
+            e.preventDefault();
+            {{ many }}_addForm(${{ manys }}Holder, ${{ many }}_newLink);
+        });
+    });
+
+    function {{ many }}_addForm(${{ manys }}Holder, $newLinkLi) {
+        var prototype = ${{ manys }}Holder.data('prototype');
+        var index = ${{ manys }}Holder.data('index');
+        var newForm = prototype.replace(/__name__/g, index);
+        ${{ manys }}Holder.data('index', index + 1);
+        var $newFormLi = $('<li></li>').append(newForm);
+        $newLinkLi.before($newFormLi);
+        {{ many }}_addFormDeleteLink($newFormLi);
+    }
+
+    function {{ many }}_addFormDeleteLink($itemFormLi) {
+        var $removeFormA = $('<a href="#">borrar este elemento</a>');
+        $itemFormLi.append($removeFormA);
+
+        $removeFormA.on('click', function(e) {
+            // prevent the link from creating a "#" on the URL
+            e.preventDefault();
+            $itemFormLi.remove();
+        });
+    }
+</script>

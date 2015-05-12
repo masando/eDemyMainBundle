@@ -1,0 +1,39 @@
+parameters:
+    edemy.main.bundle:  "eDemy\MainBundle"
+
+services:
+    edemy.main:
+        class: %edemy.main.bundle%\Controller\MainController
+        calls:
+            - [setEventDispatcher, ["@event_dispatcher"]]
+        tags:
+            - { name: kernel.event_subscriber }
+
+    edemy.routing_loader:
+        class:  %edemy.main.bundle%\Routing\RoutingLoader
+        calls:
+            - [setKernel, ["@kernel"]]
+            - [setContainer, ["@service_container"]]
+        tags:
+            - { name: routing.loader }
+
+    edemy.servicecontainer:
+        class: %edemy.main.bundle%\Controller\ServiceContainerController
+        calls:
+            - [setContainer, ["@service_container"]]
+        tags:
+            - { name: kernel.event_subscriber }
+
+    edemy.twig.translation_extension:
+        class:  %edemy.main.bundle%\Twig\TranslationExtension
+        calls: 
+            - [setEventDispatcher, ["@event_dispatcher"]]
+        tags:
+            - { name: twig.extension }
+
+    edemy.twig.path_extension:
+        class:  %edemy.main.bundle%\Twig\PathExtension
+        calls: 
+            - [setContainer, ["@service_container"]]
+        tags:
+            - { name: twig.extension }
