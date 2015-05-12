@@ -20,9 +20,5 @@
       "eDemy\\MainBundle" : ""
     }
   },
-  "target-dir" : "",
-  "repositories" : [{
-  }],
-  "extra" : {
-  }
+  "target-dir" : ""
 }
