@@ -13,7 +13,8 @@
     "GNU v2"
   ],
   "require" : {
-    "stof/doctrine-extensions-bundle": "*"
+    "stof/doctrine-extensions-bundle": "dev-master",
+    "stfalcon/tinymce-bundle": "dev-master"
   },
   "autoload" : {
     "psr-4" : { "eDemy\\MainBundle\\" : "" }
