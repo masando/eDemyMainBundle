@@ -14,7 +14,8 @@
   ],
   "require" : {
     "stof/doctrine-extensions-bundle": "*",
-    "stfalcon/tinymce-bundle": "*"
+    "stfalcon/tinymce-bundle": "*",
+    "jms/serializer-bundle": "*"
   },
   "autoload" : {
     "psr-4" : { "eDemy\\MainBundle\\" : "" }
