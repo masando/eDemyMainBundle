@@ -3,21 +3,17 @@
 namespace eDemy\MainBundle\Controller;
 
 use Doctrine\Bundle\DoctrineBundle\Mapping\DisconnectedMetadataFactory;
+use eDemy\MainBundle\Event\ContentEvent;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\eventDispatcher\eventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
-use Symfony\Component\HttpFoundation\Cookie;
+use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Finder\Finder;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
-
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-
 use Symfony\Component\Stopwatch\Stopwatch;
-use eDemy\MainBundle\Event\ContentEvent;
 
 abstract class BaseController extends Controller implements EventSubscriberInterface
 {
@@ -136,7 +132,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         }
         //die(var_dump($content));
         $this->start('layout.html', 'render');
-        try {
+        //try {
             $response = $this->get('templating')->renderResponse(
                 $this->getBundleName() . '::' . $this->getParam("theme", null, "layout") . '.' . $_format . '.twig',
                 array(
@@ -150,11 +146,12 @@ abstract class BaseController extends Controller implements EventSubscriberInter
                     'namespace' => $namespace,
                 )
             );
-        } catch (\Exception $e) {
-            return new RedirectResponse($this->getRequest()->getUri());
+        //} catch (\Exception $e) {
+            //die(var_dump($e));
+            //return new RedirectResponse($this->getRequest()->getUri());
 
             //die(var_dump($e));
-        }
+        //}
         //$resp = new Response($response);
         //$response = $resp;
         //die(var_dump($response));
@@ -333,14 +330,14 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         return new NotFoundHttpException($message, $previous);
     }
 
-    public function render($template, array $options = array(), Response $response = null)
+/*    public function render($template, array $options = array(), Response $response = null)
     {
         if(strpos($template, 'dmin/')) {
             return $this->get('templating')->render('eDemyMainBundle::' . $template, $options);
         } else {
             return $this->get('templating')->render($this->getBundleName().'::' . $template, $options);
         }
-    }
+    }*/
 
     public function getCurrentRequest()
     {

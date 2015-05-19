@@ -2,15 +2,16 @@
 namespace eDemy\MainBundle\Routing;
 
 use Symfony\Component\Config\Loader\Loader;
-use Symfony\Component\Config\FileLocator;
-use Symfony\Component\Routing\RouteCollection;
+use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Routing\Route;
+use Symfony\Component\Routing\RouteCollection;
 
 class RoutingLoader extends Loader
 {
     private $kernel;
+    private $container;
 
-    public function setKernel($kernel)
+    public function setKernel(Kernel $kernel)
     {
         $this->kernel = $kernel;
     }
@@ -22,6 +23,7 @@ class RoutingLoader extends Loader
 
     public function load($resource, $type = null)
     {
+        //TODO Comment
         $collection = new RouteCollection();
         $entitiesCollection = new RouteCollection();
 
@@ -132,7 +134,6 @@ class RoutingLoader extends Loader
                 }
             }
         }
-        //die(var_dump($collection));
 
         return $collection;
     }

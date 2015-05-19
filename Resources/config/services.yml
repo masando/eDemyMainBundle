@@ -1,9 +1,16 @@
 parameters:
-    edemy.main.bundle:  "eDemy\MainBundle"
+    edemy.main.bundle:  "eDemy\\MainBundle"
 
 services:
     edemy.main:
-        class: %edemy.main.bundle%\Controller\MainController
+        class: eDemy\MainBundle\Controller\MainController
+        calls:
+            - [setEventDispatcher, ["@event_dispatcher"]]
+        tags:
+            - { name: kernel.event_subscriber }
+
+    edemy.param:
+        class:  %edemy.main.bundle%\\Controller\\ParamController
         calls:
             - [setEventDispatcher, ["@event_dispatcher"]]
         tags:
@@ -32,8 +39,15 @@ services:
             - { name: twig.extension }
 
     edemy.twig.path_extension:
-        class:  %edemy.main.bundle%\Twig\PathExtension
+        class:  eDemy\MainBundle\Twig\PathExtension
         calls: 
+            - [setContainer, ["@service_container"]]
+        tags:
+            - { name: twig.extension }
+
+    edemy.twig.service_extension:
+        class:  %edemy.main.bundle%\Twig\ServiceExtension
+        calls:
             - [setContainer, ["@service_container"]]
         tags:
             - { name: twig.extension }

@@ -2,7 +2,7 @@
 
 namespace eDemy\MainBundle\Twig;
 
-use Symfony\Component\EventDispatcher\GenericEvent;
+//use Symfony\Component\EventDispatcher\GenericEvent;
 
 class PathExtension extends \Twig_Extension
 {
@@ -22,13 +22,15 @@ class PathExtension extends \Twig_Extension
 
     public function pathFunction($route, $options = array())
     {
-        //if($options) die(var_dump($options));
+        //if($options) die(var_dump($route));
         $router = $this->container->get('router');
         $ruta = $this->container->get('edemy.main')->getNamespace() . '.' . $route;
         if($router->getRouteCollection()->get($ruta) != null) {
             return $router->generate($ruta, $options);
-        } else {
+        } elseif($router->getRouteCollection()->get($route) != null) {
             return $router->generate($route, $options);
+        } else {
+            return false;
         }
     }
 

@@ -2,9 +2,7 @@
 
 namespace eDemy\MainBundle\Controller;
 
-use eDemy\MainBundle\Controller\BaseController;
 use eDemy\MainBundle\Event\ContentEvent;
-use Symfony\Component\HttpFoundation\Response;
 
 class MainController extends BaseController
 {

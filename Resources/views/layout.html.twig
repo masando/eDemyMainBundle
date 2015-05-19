@@ -1,5 +1,8 @@
 <!DOCTYPE html>
+{#
 <html xmlns:hx="http://purl.org/NET/hinclude">
+#}
+<html>
     <head>
         <meta charset="UTF-8" />
         {% if description is defined -%}
@@ -13,36 +16,42 @@
         <title>{{ title|raw }}</title>
         {% endif -%}
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
-        <link rel="stylesheet" href="{{ path('edemy_css_file', { 'file' : 'main'}) }}" />
-        <link href='http://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
-        <link href='http://fonts.googleapis.com/css?family=Roboto+Condensed:400,300' rel='stylesheet' type='text/css' />
-        <link href='http://fonts.googleapis.com/css?family=Roboto+Slab:400,100' rel='stylesheet' type='text/css'>
+        {#
+        {% if path('edemy_css_file') %}
+            <link rel="stylesheet" href="{{ path('edemy_css_file', { 'file' : 'main'}) }}" />
+        {% endif %}
+        #}
+        {#<link href='http://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>#}
+        {#<link href='http://fonts.googleapis.com/css?family=Roboto+Condensed:400,300' rel='stylesheet' type='text/css' />#}
+        {#<link href='http://fonts.googleapis.com/css?family=Roboto+Slab:400,100' rel='stylesheet' type='text/css'>#}
+        {#
         <link rel="stylesheet" href="/SlickNav/slicknav.css" />
-        <link rel="stylesheet" media="screen" href="/superfish/dist/css/superfish.css">        
+        <link rel="stylesheet" media="screen" href="/superfish/dist/css/superfish.css">
+        #}
         {# <script src="/Flux-Slider/js/zepto/zepto.js" type="text/javascript" charset="utf-8"></script> #}
-        <script src="/hinclude/hinclude.js" type="text/javascript"></script>
-        <script src="/components/jquery/jquery.min.js"></script>
-        <script src="/SlickNav/jquery.slicknav.min.js"></script>
-        <script src="/superfish/dist/js/superfish.js"></script>
-        <script src="/jquery-backstretch/jquery.backstretch.min.js"></script>
+        {#<script src="/hinclude/hinclude.js" type="text/javascript"></script>#}
+        {#<script src="/components/jquery/jquery.min.js"></script>#}
+        {#<script src="/SlickNav/jquery.slicknav.min.js"></script>#}
+        {#<script src="/superfish/dist/js/superfish.js"></script>#}
+        {#<script src="/jquery-backstretch/jquery.backstretch.min.js"></script>#}
         {# <script src="/Flux-Slider/js/flux.min.js"></script> #}
         {# <script src="/Flux-Slider/js/flux.jquery.min.js"></script> #}
-        <link rel="stylesheet" href="/FlexSlider/flexslider.css" type="text/css">
-        <script src="/FlexSlider/jquery.flexslider.js"></script>
+        {#<link rel="stylesheet" href="/FlexSlider/flexslider.css" type="text/css">#}
+        {#<script src="/FlexSlider/jquery.flexslider.js"></script>#}
         {% if meta is defined %}
             {{ meta|raw }}
         {% endif %}
-        <script src="http://vast-engineering.github.io/jquery-popup-overlay/jquery.popupoverlay.js"></script>
+        {#<script src="http://vast-engineering.github.io/jquery-popup-overlay/jquery.popupoverlay.js"></script>#}
     </head>
     <body>
-        <div id="fb-root"></div>
+{#        <div id="fb-root"></div>
         <script>(function(d, s, id) {
           var js, fjs = d.getElementsByTagName(s)[0];
           if (d.getElementById(id)) return;
           js = d.createElement(s); js.id = id;
           js.src = "//connect.facebook.net/es_ES/sdk.js#xfbml=1&appId=354883801328100&version=v2.0";
           fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'facebook-jssdk'));</script> 
+        }(document, 'script', 'facebook-jssdk'));</script> #}
 
       <div id="wrapper">
         {# edemy_logo_show() #}
@@ -51,7 +60,10 @@
             {{ header|raw }}
         {% endif %}
         #}
-        {{ render_esi(controller('edemy.header:header', { _route: app.request.attributes.get('_route')} )) }}
+
+        {% if service('edemy.header') %}
+            {{ render_esi(controller('edemy.header:header', { _route: app.request.attributes.get('_route')} )) }}
+        {% endif %}
 
 
         {% if content is defined %}{{ content|raw }}{% endif %}
@@ -63,7 +75,9 @@
             {{ footer|raw }}
         {% endif %}
         #}
-        {{ render_esi(controller('edemy.footer:footer', { _route: app.request.attributes.get('_route')} )) }}
+        {% if service('edemy.header') %}
+          {{ render_esi(controller('edemy.footer:footer', { _route: app.request.attributes.get('_route')} )) }}
+        {% endif %}
       </div>
         {#
         {% javascripts '@jquery_js' combine=true %}
@@ -82,7 +96,7 @@
             {{ render_hinclude(controller('edemy.menu:adminMenu')) }}
         {% endif %}
 
-        {{ tinymce_init() }}
-        <script src="{{ path('edemy_javascript_file') }}" type="text/javascript"></script>
+        {# tinymce_init() #}
+        {#<script src="{{ path('edemy_javascript_file') }}" type="text/javascript"></script>#}
     </body>
 </html>
