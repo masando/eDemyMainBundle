@@ -15,7 +15,8 @@
   "require" : {
     "stof/doctrine-extensions-bundle": "*",
     "stfalcon/tinymce-bundle": "*",
-    "jms/serializer-bundle": "*"
+    "jms/serializer-bundle": "*",
+    "knplabs/knp-paginator-bundle": "*"
   },
   "autoload" : {
     "psr-4" : { "eDemy\\MainBundle\\" : "" }
