@@ -75,7 +75,7 @@
             {{ footer|raw }}
         {% endif %}
         #}
-        {% if service('edemy.header') %}
+        {% if service('edemy.footer') %}
           {{ render_esi(controller('edemy.footer:footer', { _route: app.request.attributes.get('_route')} )) }}
         {% endif %}
       </div>

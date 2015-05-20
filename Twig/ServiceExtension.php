@@ -2,8 +2,11 @@
 
 namespace eDemy\MainBundle\Twig;
 
+use Symfony\Component\DependencyInjection\Container;
+
 class ServiceExtension extends \Twig_Extension
 {
+    /** @var Container $container */
     private $container;
     
     public function setContainer($container)
@@ -20,7 +23,7 @@ class ServiceExtension extends \Twig_Extension
 
     public function serviceFunction($service)
     {
-        if ($this->container->has('foo_service.alias')) {
+        if ($this->container->has($service)) {
             return true;
         } else {
             return false;

@@ -3,8 +3,8 @@
 namespace eDemy\MainBundle\Controller;
 
 use eDemy\MainBundle\Event\ContentEvent;
-use eDemy\ParamBundle\Entity\Param;
-use eDemy\ParamBundle\Form\ParamType;
+//use eDemy\MainBundle\Entity\Param;
+//use eDemy\MainBundle\Form\ParamType;
 use Symfony\Component\EventDispatcher\GenericEvent;
 
 class ParamController extends BaseController
@@ -89,31 +89,43 @@ class ParamController extends BaseController
 
     public function getParamByType($type, $namespace = null, $bundle = null)
     {
+        $em = $this->get('doctrine.orm.entity_manager');
+        $entities_namespace = array();
+        $entities_all = array();
         if($bundle != null) {
-            $entities_namespace = $this->get('doctrine.orm.entity_manager')->getRepository($this->getBundleName().':Param')->findBy(array(
+            $entities_namespace = $em->getRepository($this->getBundleName().':Param')->findBy(array(
                 'type' => $type,
                 'namespace' => $namespace,
                 'published' => true,
                 'bundle' => $bundle,
             ));
-            $entities_all = $this->get('doctrine.orm.entity_manager')->getRepository($this->getBundleName().':Param')->findBy(array(
+            $entities_all = $em->getRepository($this->getBundleName().':Param')->findBy(array(
                 'type' => $type,
                 'namespace' => 'all',
                 'published' => true,
                 'bundle' => $bundle,
             ));
         } else {
-            $entities_namespace = $this->get('doctrine.orm.entity_manager')->getRepository($this->getBundleName().':Param')->findBy(array(
-                'type' => $type,
-                'namespace' => $namespace,
-                'published' => true,
-            ));
-            $entities_all = $this->get('doctrine.orm.entity_manager')->getRepository($this->getBundleName().':Param')->findBy(array(
-                'type' => $type,
-                'namespace' => 'all',
-                'published' => true,
-            ));
+             //die(var_dump($em->getRepository($this->getBundleName().':Param')));
+            try {
+                $entities_namespace = $em->getRepository($this->getBundleName().':Param')->findBy(
+                    array(
+                        'type' => $type,
+                        'namespace' => $namespace,
+                        'published' => true,
+                    )
+                );
+                $entities_all = $em->getRepository($this->getBundleName().':Param')->findBy(array(
+                    'type' => $type,
+                    'namespace' => 'all',
+                    'published' => true,
+                ));
+            } catch(\Exception $e) {
+                //die(var_dump($e));
+                //return array();
+            }
         }
+
         $entities = array_merge($entities_namespace, $entities_all);
         if($type == 'css') {
             //die(var_dump($entities));

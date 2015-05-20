@@ -15,8 +15,12 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Stopwatch\Stopwatch;
 
+use eDemy\MainBundle\Entity\Param;
+use eDemy\MainBundle\Entity\BaseEntity;
+
 abstract class BaseController extends Controller implements EventSubscriberInterface
 {
+    /** @var eventDispatcherInterface $eventDispatcher */
     protected $eventDispatcher;
     protected $class;
     protected $environment;
@@ -61,68 +65,75 @@ abstract class BaseController extends Controller implements EventSubscriberInter
 
     public static function getSubscribedEvents() {}
 
-//    public function setEventDispatcher(eventDispatcherInterface $eventDispatcher)
-//    {
-//    }
-
-    public function __construct(eventDispatcherInterface $eventDispatcher)
+    public function setEventDispatcher(eventDispatcherInterface $eventDispatcher)
     {
-        $this->class = get_class($this);
         $this->eventDispatcher = $eventDispatcher;
         $this->environment = $this->get( 'kernel' )->getEnvironment();
         if($this->isDevelopment()) $this->stopwatch = $this->get('debug.stopwatch');
     }
 
-    public function renderResponse($_route, $_format = 'html') {
+    public function __construct()
+    {
+        $this->class = get_class($this);
+    }
+
+    public function renderResponse($_route, $_format = 'html')
+    {
         //$namespace = $this->getNamespace();
         //if($namespace) $_route = $namespace . '.' . $_route;
         $namespace = null;
         $parts = explode('.', $_route);
-        if(count($parts) == 2) {
+        if (count($parts) == 2) {
             $_route = end($parts);
             $namespace = $parts[0];
         }
 
         //obtenemos lastmodified de la ruta y de los ficheros principales para devolver 304
+        $lastmodified = null;
         $event = new ContentEvent($_route);
+        $this->start($_route.'lastmodified', 'lastmodified');
+        if ($this->dispatch($_route.'_lastmodified', $event)) {
+            $lastmodified = $event->getLastModified();
+            if($lastmodified){
+                $lastmodified_files = $this->getLastModifiedFiles('/vendor/edemy/mainbundle/Resources/views', '*.html.twig');
+                if($lastmodified_files > $lastmodified) {
+                    $lastmodified = $lastmodified_files;
+                }
+                $response = new Response();
+                $response->setLastModified($lastmodified);
+                $response->setPublic();
+                if($response->isNotModified($this->getRequest())) {
 
-        $this->start($_route . 'lastmodified', 'lastmodified');
-        $lastmodified = $this->dispatch($_route . '_lastmodified', $event)->getLastModified();
-        if($lastmodified){
-            $lastmodified_files = $this->getLastModifiedFiles('/../../MainBundle/Resources/views', '*.html.twig');
-            if($lastmodified_files > $lastmodified) {
-                $lastmodified = $lastmodified_files;
+                    return $response;
+                }
             }
         }
+
         $this->stop($_route . 'lastmodified', 'lastmodified');
-        
-        $response = new Response();
-        if($lastmodified) {
-            $response->setLastModified($lastmodified);
-            $response->setPublic();
-            if($response->isNotModified($this->getRequest())) {
-
-                return $response;
-            }
-        }
 
         //si hay que generar la respuesta, primero obtenemos el contenido principal
         $event = new ContentEvent($_route);
-        $content = $this->dispatch('edemy_content', $event)->getContent();
+        $this->dispatch('edemy_content', $event);
+        $content = $event->getContent();
 
         //si se ha detenido la propagación devolvemos la respuesta inmediatamente
         if($event->isPropagationStopped()) {
-            $content->setLastModified($lastmodified);
+            $response = new Response($content);
+            $response->setLastModified($lastmodified);
             //$response->setPublic();
 
             return $content;
         }
         //si no, creamos la respuesta completa
-        $title = $this->dispatch('edemy_meta_title', $event)->getTitle();
-        $description = $this->dispatch('edemy_meta_description', $event)->getDescription();
-        $keywords = $this->dispatch('edemy_meta_keywords', $event)->getKeywords();
-        $meta = $this->dispatch('edemy_meta', $event)->getMeta();
-        //die(var_dump($meta));
+        $this->dispatch('edemy_meta_title', $event);
+        $title = $event->getTitle();
+        $this->dispatch('edemy_meta_description', $event);
+        $description = $event->getDescription();
+        $this->dispatch('edemy_meta_keywords', $event);
+        $keywords = $event->getKeywords();
+        $this->dispatch('edemy_meta', $event);
+        $meta = $event->getMeta();
+
         if($event->getMode() == 'compact') {
             $header = null;
             $footer = null;
@@ -131,8 +142,9 @@ abstract class BaseController extends Controller implements EventSubscriberInter
             //$footer = $this->dispatch('edemy_footer', $event)->getFooter();
         }
         //die(var_dump($content));
-        $this->start('layout.html', 'render');
-        //try {
+//        $this->start('layout.html', 'render');
+//die(var_dump($this->getBundleName() . '::' . $this->getParam("theme", null, "layout") . '.' . $_format . '.twig'));
+        try {
             $response = $this->get('templating')->renderResponse(
                 $this->getBundleName() . '::' . $this->getParam("theme", null, "layout") . '.' . $_format . '.twig',
                 array(
@@ -146,16 +158,17 @@ abstract class BaseController extends Controller implements EventSubscriberInter
                     'namespace' => $namespace,
                 )
             );
-        //} catch (\Exception $e) {
-            //die(var_dump($e));
+        } catch (\Exception $e) {
+            die(var_dump($e));
             //return new RedirectResponse($this->getRequest()->getUri());
 
             //die(var_dump($e));
-        //}
+        }
+
         //$resp = new Response($response);
         //$response = $resp;
         //die(var_dump($response));
-        $this->stop('layout.html');
+//        $this->stop('layout.html');
         if($lastmodified){
             $response->setLastModified($lastmodified);
         }
@@ -167,7 +180,9 @@ abstract class BaseController extends Controller implements EventSubscriberInter
     public function dispatch($event_name, $event)
     {
         if($this->eventDispatcher) {
-            return $this->get('event_dispatcher')->dispatch($event_name, $event);
+            $this->get('event_dispatcher')->dispatch($event_name, $event);
+
+            return true;
         }
         
         return false;
@@ -195,6 +210,8 @@ abstract class BaseController extends Controller implements EventSubscriberInter
             $this->eventDispatcher->dispatch('edemy_param_by', $event);
             return $event['values'];
         }
+
+        return null;
     }
 
     public function getRequest()
@@ -404,7 +421,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         if($entity == 'Background') {
             //die(var_dump($this->getBundleName() . ':' . $entity));
         }
-        if($entity == null) $entity = $this->entity;
+        if($entity == null) $entity = $this->getEntityNameUpper();
         
         return $this->get('doctrine.orm.entity_manager')->getRepository($this->getBundleName() . ':' . $entity)->findBy(array(
             'namespace' => $this->getNamespace(),
@@ -468,14 +485,14 @@ abstract class BaseController extends Controller implements EventSubscriberInter
     
     public function onCssModule(ContentEvent $event)
     {
+        /** @var Param[] $allparams */
         $allparams = $this->getParamByType('css');
+        $params = array();
         //$allparams = $this->get('doctrine.orm.entity_manager')->getRepository($this->getBundleName().':Param')->findAll();
         if($allparams) {
             foreach($allparams as $param) {
                 $params[$param->getName()] = $param->getValue();
             }
-        } else {
-            $params = array();
         }
         $this->addEventModule($event, "css/" . $this->getControllerName() . ".css.twig", array('params' => $params));
 
@@ -483,8 +500,9 @@ abstract class BaseController extends Controller implements EventSubscriberInter
     }
 
     public function onSitemapModule(ContentEvent $event) {
+        /** @var Param[] $prefixes */
         $prefixes = $this->getParamByType('prefix');
-        $bundlename = $this->getBundleName(true);
+        //$bundlename = $this->getBundleName(true);
         $entityNames = $this->getBundleEntities();
         $urls = array();
 
@@ -531,7 +549,9 @@ abstract class BaseController extends Controller implements EventSubscriberInter
                         if($entity == $entityName) {
                             //entity frontpage route without namespace
                             $urls[] = $this->get('router')->generate('edemy_' . strtolower($this->getBundleName(false)) . '_' . strtolower($entityName) . '_frontpage', array(), true);
-                            $entities = $this->get('doctrine.orm.entity_manager')->getRepository($this->getBundleName() . ':' . $entity)->findBy(array(
+                            $em = $this->get('doctrine.orm.entity_manager');
+                            /** @var BaseEntity[] $entities */
+                            $entities = $em->getRepository($this->getBundleName() . ':' . $entity)->findBy(array(
                                 'published' => true,
                                 'namespace' => '',
                             ));
@@ -587,16 +607,15 @@ abstract class BaseController extends Controller implements EventSubscriberInter
 
     public function onJavascriptModule(ContentEvent $event)
     {
+        /** @var Param[] $allparams */
         $allparams = $this->getParamByType('javascript');
+        $params = array();
         //$allparams = $this->get('doctrine.orm.entity_manager')->getRepository($this->getBundleName().':Param')->findAll();
         if($allparams) {
             foreach($allparams as $param) {
                 $params[$param->getName()] = $param->getValue();
             }
-        } else {
-            $params = array();
         }
-
         $this->addEventModule($event, "js/" . $this->getControllerName() . ".js.twig", array('params' => $params));
 
         return true;
@@ -982,7 +1001,8 @@ abstract class BaseController extends Controller implements EventSubscriberInter
 
             return $entitiesNames;
         } catch (\Exception $e) {
-
+            //TODO FileLoaderImportCircularReferenceException
+            //die(var_dump($e));
             return array();
         }
     }
@@ -1029,10 +1049,15 @@ abstract class BaseController extends Controller implements EventSubscriberInter
     {
         $lastmodified = null;
         $reflection = new \ReflectionClass(get_class($this));
+        if(strpos($reflection->getFileName(), 'app/cache/')) {
+            $basedir = dirname($reflection->getFileName()) . '/../../..';
+        } else {
+            $basedir = dirname($reflection->getFileName()) . '/../../../..';
+        }
         $finder = new Finder();
         $finder
             ->files()
-            ->in(dirname($reflection->getFileName()) . $dir)
+            ->in($basedir . $dir)
             ->name($name);
             //->sortByModifiedTime();
         foreach ($finder as $file) {

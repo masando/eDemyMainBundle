@@ -7,9 +7,10 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class PathExtension extends \Twig_Extension
 {
-    private $container;
+    /** @var ContainerInterface $this->container */
+    protected $container;
     
-    public function __construct(ContainerInterface $container)
+    public function setContainer(ContainerInterface $container)
     {
         $this->container = $container;
     }

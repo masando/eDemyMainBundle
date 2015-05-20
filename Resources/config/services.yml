@@ -1,19 +1,24 @@
 services:
     edemy.main:
         class: eDemy\MainBundle\Controller\MainController
-        arguments: ["@event_dispatcher"]
+        calls:
+            - [setEventDispatcher, ["@event_dispatcher"]]
         tags:
             - { name: kernel.event_subscriber }
 
     edemy.param:
         class:  eDemy\MainBundle\Controller\ParamController
-        arguments: ["@event_dispatcher"]
+        calls:
+            - [setEventDispatcher, ["@event_dispatcher"]]
         tags:
             - { name: kernel.event_subscriber }
 
     edemy.routing_loader:
         class:  eDemy\MainBundle\Routing\RoutingLoader
-        arguments: ["@kernel", "@service_container"]
+#        arguments: ["@service_container", "@kernel"]
+        calls:
+            - [setKernel, ["@kernel"]]
+            - [setContainer, ["@service_container"]]
         tags:
             - { name: routing.loader }
 
@@ -31,12 +36,14 @@ services:
 
     edemy.twig.path_extension:
         class:  eDemy\MainBundle\Twig\PathExtension
-        arguments: ["@service_container"]
+        calls:
+            - [setContainer, ["@service_container"]]
         tags:
             - { name: twig.extension }
 
     edemy.twig.service_extension:
         class:  eDemy\MainBundle\Twig\ServiceExtension
-        arguments: ["@service_container"]
+        calls:
+            - [setContainer, ["@service_container"]]
         tags:
             - { name: twig.extension }

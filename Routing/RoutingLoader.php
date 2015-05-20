@@ -2,25 +2,39 @@
 namespace eDemy\MainBundle\Routing;
 
 use Symfony\Component\Config\Loader\Loader;
-use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+use eDemy\MainBundle\Entity\Param;
+
 class RoutingLoader extends Loader
 {
-    private $kernel;
-    private $container;
+    /** @var KernelInterface $this->kernel */
+    protected $kernel;
+    /** @var ContainerInterface $this->container */
+    protected $container;
 
-    public function __construct(ContainerInterface $container, Kernel $kernel)
+    public function setKernel(KernelInterface $kernel)
     {
-        $this->container = $container;
         $this->kernel = $kernel;
     }
 
+    public function setContainer(ContainerInterface $container)
+    {
+        $this->container = $container;
+    }
+
+//    public function __construct(ContainerInterface $container, Kernel $kernel)
+//    {
+//        $this->container = $container;
+//        $this->kernel = $kernel;
+//    }
+
     public function load($resource, $type = null)
     {
-        //TODO Comment
+        // @TODO Comment
         $collection = new RouteCollection();
         $entitiesCollection = new RouteCollection();
 
@@ -42,8 +56,9 @@ class RoutingLoader extends Loader
                         ), array( '_locale' => 'es|en' ), array(), '', array(), array('GET', 'POST'));
                         $entitiesCollection->add('edemy_' . strtolower($bundleNameSimple) . '_frontpage', $route);
                     }
-
-                    $entities = $this->container->get('edemy.main')->getBundleEntities($bundleName);
+                    $entities = array();
+                    // @TODO CircularReference
+                    //$entities = $this->container->get('edemy.main')->getBundleEntities($bundleName);
                     if($bundleNameSimple == "Param") {
                         //die(var_dump($entities));
                     }
@@ -104,9 +119,10 @@ class RoutingLoader extends Loader
                     try {
                         $importedRoutes = $this->import($resource, $type);
                         $collection->addCollection($importedRoutes);
-                        //$prefixes = array();
+
+                        // @TODO CircularReference
+                        /** @var Param[] $prefixes */
                         $prefixes = $this->container->get('edemy.main')->getParamByType('prefix');
-                        //die();
                         if(count($prefixes)) {
                             foreach($prefixes as $prefix) {
                                 //$prefixRoutes = new RouteCollection();
@@ -114,20 +130,20 @@ class RoutingLoader extends Loader
                                 $prefixRoutes->addCollection($this->import($resource, $type));
                                 $prefixRoutes->addPrefix($prefix->getValue());
                                 
-                                foreach($prefixRoutes as $oldname => $route) {
-                                    $newname = $prefix->getValue() . '.' . $oldname;
-                                    $prefixRoutes->add($newname, $route);
-                                    $prefixRoutes->remove($oldname);
+                                foreach($prefixRoutes as $oldName => $route) {
+                                    $newName = $prefix->getValue() . '.' . $oldName;
+                                    $prefixRoutes->add($newName, $route);
+                                    $prefixRoutes->remove($oldName);
                                 }
                                 $collection->addCollection($prefixRoutes);
                             }
                         }
                     }
 //                    catch (\FileLoaderLoadException $e) {
-//                        //TODO LOG ERROR
+//                        // @TODO LOG ERROR
 //                    }
                     catch (\InvalidArgumentException $e) {
-                        //TODO LOG ERROR
+                        // @TODO LOG ERROR
                     }
                 }
             }

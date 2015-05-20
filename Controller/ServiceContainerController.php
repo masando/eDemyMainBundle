@@ -19,6 +19,11 @@ class ServiceContainerController extends BaseController
         );
     }
 
+    public function __construct(ContainerInterface $container = NULL)
+    {
+        $this->container = $container;
+    }
+
     public function onService($event)
     {
         $event['service'] = $this->container->get($event['name']);
@@ -26,8 +31,4 @@ class ServiceContainerController extends BaseController
         return true;
     }
 
-    public function setContainer(ContainerInterface $container = NULL)
-    {
-        $this->container = $container;
-    }
 }

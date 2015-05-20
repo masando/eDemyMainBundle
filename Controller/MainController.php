@@ -21,8 +21,10 @@ class MainController extends BaseController
 
         if($frontpage_route != null) {
             $event->setRoute($frontpage_route . '_lastmodified');
-            $lastmodified = $this->dispatch($frontpage_route . '_lastmodified', $event)->getLastModified();
-            $lastmodified_files = $this->getLastModifiedFiles('/../../MainBundle/Resources/views', 'layout.html.twig');
+            $this->dispatch($frontpage_route . '_lastmodified', $event);
+            $lastmodified = $event->getLastModified();
+
+            $lastmodified_files = $this->getLastModifiedFiles('/vendor/edemy/mainbundle/Resources/views', 'layout.html.twig');
             if($lastmodified_files > $lastmodified) {
                 $lastmodified = $lastmodified_files;
             }
@@ -38,14 +40,17 @@ class MainController extends BaseController
         }
 
         $event->setRoute($frontpage_route);
-        if($this->eventDispatcher->dispatch($frontpage_route, $event)->isPropagationStopped()) {
+        $this->eventDispatcher->dispatch($frontpage_route, $event);
+        if($event->isPropagationStopped()) {
             return false;
         }
         $event->setContent(
-            $this->render("frontpage.html.twig", array(
+            $this->render("eDemyMainBundle::frontpage.html.twig", array(
                 'modules' => $event->getModules(),
             ))
         );
+
+        return true;
     }
 
     public function indexAction($_route, $_format = 'html')
