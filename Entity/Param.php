@@ -7,7 +7,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * @ORM\Table()
- * @ORM\Entity(repositoryClass="eDemy\ParamBundle\Entity\ParamRepository")
+ * @ORM\Entity(repositoryClass="eDemy\MainBundle\Entity\ParamRepository")
  */
 class Param extends BaseEntity
 {

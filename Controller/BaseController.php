@@ -330,14 +330,14 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         return new NotFoundHttpException($message, $previous);
     }
 
-/*    public function render($template, array $options = array(), Response $response = null)
+    public function render($template, array $options = array(), Response $response = null)
     {
         if(strpos($template, 'dmin/')) {
             return $this->get('templating')->render('eDemyMainBundle::' . $template, $options);
         } else {
             return $this->get('templating')->render($this->getBundleName().'::' . $template, $options);
         }
-    }*/
+    }
 
     public function getCurrentRequest()
     {

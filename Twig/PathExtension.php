@@ -3,12 +3,13 @@
 namespace eDemy\MainBundle\Twig;
 
 //use Symfony\Component\EventDispatcher\GenericEvent;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class PathExtension extends \Twig_Extension
 {
     private $container;
     
-    public function setContainer($container)
+    public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
     }
