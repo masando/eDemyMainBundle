@@ -61,16 +61,16 @@ abstract class BaseController extends Controller implements EventSubscriberInter
 
     public static function getSubscribedEvents() {}
 
-    public function setEventDispatcher(eventDispatcherInterface $eventDispatcher)
+//    public function setEventDispatcher(eventDispatcherInterface $eventDispatcher)
+//    {
+//    }
+
+    public function __construct(eventDispatcherInterface $eventDispatcher)
     {
+        $this->class = get_class($this);
         $this->eventDispatcher = $eventDispatcher;
         $this->environment = $this->get( 'kernel' )->getEnvironment();
         if($this->isDevelopment()) $this->stopwatch = $this->get('debug.stopwatch');
-    }
-
-    public function __construct()
-    {
-        $this->class = get_class($this);
     }
 
     public function renderResponse($_route, $_format = 'html') {
@@ -181,10 +181,10 @@ abstract class BaseController extends Controller implements EventSubscriberInter
             'namespace' => $namespace,
             'bundle' => $bundle,
         ));
-        
         $this->eventDispatcher->dispatch('edemy_param_by_type', $event);
         if($type == 'prefix') {
         }
+
         return $event['values'];
     }
 

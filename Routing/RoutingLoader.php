@@ -5,20 +5,17 @@ use Symfony\Component\Config\Loader\Loader;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class RoutingLoader extends Loader
 {
     private $kernel;
     private $container;
 
-    public function setKernel(Kernel $kernel)
-    {
-        $this->kernel = $kernel;
-    }
-
-    public function setContainer($container)
+    public function __construct(ContainerInterface $container, Kernel $kernel)
     {
         $this->container = $container;
+        $this->kernel = $kernel;
     }
 
     public function load($resource, $type = null)
@@ -107,11 +104,12 @@ class RoutingLoader extends Loader
                     try {
                         $importedRoutes = $this->import($resource, $type);
                         $collection->addCollection($importedRoutes);
-                        $prefixes = array();
+                        //$prefixes = array();
                         $prefixes = $this->container->get('edemy.main')->getParamByType('prefix');
+                        //die();
                         if(count($prefixes)) {
                             foreach($prefixes as $prefix) {
-                                $prefixRoutes = new RouteCollection();
+                                //$prefixRoutes = new RouteCollection();
                                 $prefixRoutes = clone $entitiesCollection;
                                 $prefixRoutes->addCollection($this->import($resource, $type));
                                 $prefixRoutes->addPrefix($prefix->getValue());
@@ -125,9 +123,9 @@ class RoutingLoader extends Loader
                             }
                         }
                     }
-                    catch (\FileLoaderLoadException $e) {
-                        //TODO LOG ERROR
-                    }
+//                    catch (\FileLoaderLoadException $e) {
+//                        //TODO LOG ERROR
+//                    }
                     catch (\InvalidArgumentException $e) {
                         //TODO LOG ERROR
                     }

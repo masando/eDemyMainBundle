@@ -1,6 +1,3 @@
-parameters:
-    edemy.main.bundle:  "eDemy\MainBundle"
-
 services:
     edemy.main:
         class: eDemy\MainBundle\Controller\MainController
