@@ -19,7 +19,6 @@
     "knplabs/knp-paginator-bundle": "*"
   },
   "autoload" : {
-    "psr-0" : { "eDemy\\MainBundle" : "" }
-  },
-  "target-dir" : "eDemy/MainBundle"
+    "psr-0" : { "eDemy\\MainBundle" : "eDemy/MainBundle/" }
+  }
 }
