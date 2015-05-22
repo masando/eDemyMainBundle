@@ -26,8 +26,11 @@ class eDemyMainExtension extends Extension
             $this->addClassesToCompile(array(
                 'eDemy\\MainBundle\\Controller\\BaseController',
                 'eDemy\\MainBundle\\Controller\\MainController',
+                'eDemy\\MainBundle\\Controller\\ContentController',
+                'eDemy\\MainBundle\\Controller\\ParamController',
                 'eDemy\\MainBundle\\Controller\\ServiceContainerController',
                 'eDemy\\MainBundle\\Event\\ContentEvent',
+                'eDemy\\MainBundle\\Controller\\CssController',
             ));
             $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
             $loader->load('services.yml');

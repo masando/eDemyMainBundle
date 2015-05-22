@@ -11,7 +11,7 @@ class ParamController extends BaseController
 {
     public static function getSubscribedEvents()
     {
-        return self::getSubscriptions('param', ['param'], array(
+        return self::getSubscriptions('main', ['param'], array(
             'edemy_param'               => array('onParam', 0),
             'edemy_param_by_type'       => array('onParamByType', 0),
         ));

@@ -13,6 +13,20 @@ services:
         tags:
             - { name: kernel.event_subscriber }
 
+    edemy.content:
+         class: eDemy\MainBundle\Controller\ContentController
+         calls:
+             - [setEventDispatcher, ["@event_dispatcher"]]
+         tags:
+             - { name: kernel.event_subscriber }
+
+    edemy.css:
+        class:  eDemy\MainBundle\Controller\CssController
+        calls:
+            - [setEventDispatcher, ["@event_dispatcher"]]
+        tags:
+            - { name: kernel.event_subscriber }
+
     edemy.routing_loader:
         class:  eDemy\MainBundle\Routing\RoutingLoader
 #        arguments: ["@service_container", "@kernel"]
@@ -30,7 +44,8 @@ services:
 
     edemy.twig.translation_extension:
         class:  eDemy\MainBundle\Twig\TranslationExtension
-        arguments: ["@event_dispatcher"]
+        calls:
+             - [setEventDispatcher, ["@event_dispatcher"]]
         tags:
             - { name: twig.extension }
 

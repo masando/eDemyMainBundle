@@ -79,6 +79,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
 
     public function renderResponse($_route, $_format = 'html')
     {
+        //die(var_dump($_route));
         //$namespace = $this->getNamespace();
         //if($namespace) $_route = $namespace . '.' . $_route;
         $namespace = null;
@@ -95,7 +96,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         if ($this->dispatch($_route.'_lastmodified', $event)) {
             $lastmodified = $event->getLastModified();
             if($lastmodified){
-                $lastmodified_files = $this->getLastModifiedFiles('/vendor/edemy/mainbundle/Resources/views', '*.html.twig');
+                $lastmodified_files = $this->getLastModifiedFiles('/vendor/edemy/mainbundle/eDemy/MainBundle/Resources/views', '*.html.twig');
                 if($lastmodified_files > $lastmodified) {
                     $lastmodified = $lastmodified_files;
                 }
@@ -115,7 +116,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         $event = new ContentEvent($_route);
         $this->dispatch('edemy_content', $event);
         $content = $event->getContent();
-
+        //die(var_dump($content));
         //si se ha detenido la propagación devolvemos la respuesta inmediatamente
         if($event->isPropagationStopped()) {
             $response = new Response($content);
@@ -144,9 +145,12 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         //die(var_dump($content));
 //        $this->start('layout.html', 'render');
 //die(var_dump($this->getBundleName() . '::' . $this->getParam("theme", null, "layout") . '.' . $_format . '.twig'));
-        try {
+        //try {
+        // @TODO use param to set the bundle that has the theme
             $response = $this->get('templating')->renderResponse(
-                $this->getBundleName() . '::' . $this->getParam("theme", null, "layout") . '.' . $_format . '.twig',
+                $this->getParam("themeBundle", null, $this->getBundleName()) .
+                '::' .
+                $this->getParam("themeLayout", null, "layout") . '.' . $_format . '.twig',
                 array(
                     'title'       => $title,
                     'description' => $description,
@@ -158,12 +162,12 @@ abstract class BaseController extends Controller implements EventSubscriberInter
                     'namespace' => $namespace,
                 )
             );
-        } catch (\Exception $e) {
-            die(var_dump($e));
+        //} catch (\Exception $e) {
+            //die(var_dump($e));
             //return new RedirectResponse($this->getRequest()->getUri());
 
             //die(var_dump($e));
-        }
+//        }
 
         //$resp = new Response($response);
         //$response = $resp;
@@ -1052,7 +1056,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         if(strpos($reflection->getFileName(), 'app/cache/')) {
             $basedir = dirname($reflection->getFileName()) . '/../../..';
         } else {
-            $basedir = dirname($reflection->getFileName()) . '/../../../..';
+            $basedir = dirname($reflection->getFileName()) . '/../../../../../..';
         }
         $finder = new Finder();
         $finder

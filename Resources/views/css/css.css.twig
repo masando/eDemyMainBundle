@@ -1,0 +1,157 @@
+body {
+    {% if params['body background-color'] is defined -%}
+    background-color: {{ params['body background-color'] }};
+    {% else -%}
+    background-color: #FFF;
+    {% endif -%}
+    font-family: 'Roboto Condensed', sans-serif;
+    font-weight: 300;
+    margin: 0px;
+    padding: 0px;
+}
+h1 {
+    {% if params['h1 font-size'] is defined -%}
+        font-size: {{ params['h1 font-size'] }};
+    {% else -%}
+        font-size: 50px;
+    {%- endif %}
+
+}
+h3 {
+    font-size: 30px;
+}
+a {
+    text-decoration: none;
+    {# color:black; #}
+    {# remove outline border on click -#}
+    outline: 0;
+}
+a:hover {
+    text-decoration:none;
+    color:black;
+}
+ul, ol {
+    list-style: none;
+}
+textarea {
+    width: 250px;
+    height: 200px;
+}
+hr {
+    border: 1px solid #EEE;
+}
+{#
+div label {
+    width: 150px;
+    float: left;
+}
+#}
+div input {
+    width: 250px;
+}
+img {
+    border: none;
+}
+
+.center {
+    text-align: center;
+}
+.row {
+    clear: both;
+}
+.quarterwidth{
+    width: 25%;
+}
+.row:after {
+    clear: both;
+}
+.row:before, .row:after {
+    content: " ";
+    display: table;
+}
+.clear {
+    clear: both;
+}
+@media screen and (min-width: 700px) and (max-width: 1500px) {
+    .thirdwidth {
+        width: 33%;
+    }
+    .halfwidth {
+        width: 48%;
+    }
+    .columns {
+        float:left;
+        position:relative;
+    }
+}
+@media screen and (min-width: 0px) and (max-width: 700px) {
+    .thirdwidth {
+        width: 100%;
+    }
+    .halfwidth {
+        width: 100%;
+    }    
+    .columns {
+        float:left;
+        position:relative;
+    }
+}
+.display_table {
+    display: table;
+}
+.display_header_group {
+    display: table-header-group;
+}
+.display_header_group .display_row {
+    font-weight: bold;
+}
+.display_row_group {
+    display: table-row-group;
+}
+.display_row {
+    display: table-row;
+}
+.display_row_group .display_row:hover {
+    background:#CCE;
+}
+.display_cell {
+    padding-right: 5px;
+    display: table-cell;
+}
+.div_table_col {
+    {# display: table-cell; -#}
+    padding: 5px;
+    vertical-align: middle;
+    float: left;
+    min-height: 150px;
+}
+.float_left {
+    float: left;
+}
+.float_right {
+    float: right;
+}
+.align_right {
+    text-align: right;
+}
+.align_center {
+    text-align: center;
+}
+.fixed {
+    width: 100%;
+    left: 0px;
+    position: fixed;
+    top: -50px;
+    z-index: 90;
+}
+.center {
+    margin-left: auto;
+    margin-right: auto;
+}
+form input {
+  padding: .2em;
+}
+form label {
+  {# display: block; #}
+  margin: .5em 0 0 0;
+}

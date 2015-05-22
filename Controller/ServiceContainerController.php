@@ -3,7 +3,7 @@
 namespace eDemy\MainBundle\Controller;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use eDemy\MainBundle\Controller\BaseController;
+//use eDemy\MainBundle\Controller\BaseController;
 
 class ServiceContainerController extends BaseController
 {

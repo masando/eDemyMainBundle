@@ -15,6 +15,12 @@ class MainController extends BaseController
         ));
     }
 
+    public function indexAction($_route, $_format = 'html')
+    {
+        //error_log($this->get('kernel')->getLog());
+        return $this->renderResponse($_route, $_format);
+    }
+
     public function onFrontpageLastModified(ContentEvent $event)
     {
         $frontpage_route = $this->getParam('frontpage');
@@ -24,7 +30,7 @@ class MainController extends BaseController
             $this->dispatch($frontpage_route . '_lastmodified', $event);
             $lastmodified = $event->getLastModified();
 
-            $lastmodified_files = $this->getLastModifiedFiles('/vendor/edemy/mainbundle/Resources/views', 'layout.html.twig');
+            $lastmodified_files = $this->getLastModifiedFiles('/vendor/edemy/mainbundle/eDemy/MainBundle/Resources/views', 'layout.html.twig');
             if($lastmodified_files > $lastmodified) {
                 $lastmodified = $lastmodified_files;
             }
@@ -51,12 +57,6 @@ class MainController extends BaseController
         );
 
         return true;
-    }
-
-    public function indexAction($_route, $_format = 'html')
-    {
-        //error_log($this->get('kernel')->getLog());
-        return $this->renderResponse($_route, $_format);
     }
 
     public function onFooterModule(ContentEvent $event)

@@ -58,7 +58,7 @@ class RoutingLoader extends Loader
                     }
                     $entities = array();
                     // @TODO CircularReference
-                    //$entities = $this->container->get('edemy.main')->getBundleEntities($bundleName);
+                    $entities = $this->container->get('edemy.main')->getBundleEntities($bundleName);
                     if($bundleNameSimple == "Param") {
                         //die(var_dump($entities));
                     }
