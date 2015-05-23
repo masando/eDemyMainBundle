@@ -34,6 +34,8 @@ class RoutingLoader extends Loader
 
     public function load($resource, $type = null)
     {
+        $edemyMain = $this->container->get('edemy.main');
+        $edemyMain->start('routing_loader', 'init');
         // @TODO Comment
         $collection = new RouteCollection();
         $entitiesCollection = new RouteCollection();
@@ -56,7 +58,7 @@ class RoutingLoader extends Loader
                         ), array( '_locale' => 'es|en' ), array(), '', array(), array('GET', 'POST'));
                         $entitiesCollection->add('edemy_' . strtolower($bundleNameSimple) . '_frontpage', $route);
                     }
-                    $entities = array();
+                    //$entities = array();
                     // @TODO CircularReference
                     $entities = $this->container->get('edemy.main')->getBundleEntities($bundleName);
                     if($bundleNameSimple == "Param") {
@@ -148,7 +150,7 @@ class RoutingLoader extends Loader
                 }
             }
         }
-
+        $edemyMain->stop('routing_loader', 'init');
         return $collection;
     }
 

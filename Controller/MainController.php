@@ -24,7 +24,7 @@ class MainController extends BaseController
     public function onFrontpageLastModified(ContentEvent $event)
     {
         $frontpage_route = $this->getParam('frontpage');
-
+        die(var_dump($frontpage_route));
         if($frontpage_route != null) {
             $event->setRoute($frontpage_route . '_lastmodified');
             $this->dispatch($frontpage_route . '_lastmodified', $event);

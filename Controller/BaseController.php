@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
-use Symfony\Component\Stopwatch\Stopwatch;
+//use Symfony\Component\Stopwatch\Stopwatch;
 
 use eDemy\MainBundle\Entity\Param;
 use eDemy\MainBundle\Entity\BaseEntity;
@@ -100,6 +100,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         $this->start($_route.'lastmodified', 'lastmodified');
         if ($this->dispatch($_route.'_lastmodified', $event)) {
             $lastmodified = $event->getLastModified();
+            //die(var_dump($_route));
             if ($lastmodified) {
                 $lastmodified_files = $this->getLastModifiedFiles(
                     '/vendor/edemy/mainbundle/eDemy/MainBundle/Resources/views',
@@ -176,8 +177,8 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         //die(var_dump($e));
 //        }
 
-        //$resp = new Response($response);
-        //$response = $resp;
+//        $resp = new Response($response);
+//        $response = $resp;
         //die(var_dump($response));
 //        $this->stop('layout.html');
         if ($lastmodified) {

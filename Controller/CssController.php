@@ -18,6 +18,71 @@ class CssController extends BaseController
         ));
     }
 
+    public function indexAction($_route, $file)
+    {
+        //die(var_dump($this->get('templating.globals')));
+        $parts = explode('.', $_route);
+        if(count($parts) == 2) {
+            $_route = end($parts);
+        }
+
+        $event = new ContentEvent($_route);
+        //aquí Last-Modified Header
+        $this->dispatch('edemy_css_lastmodified', $event);
+        //die(var_dump($event));
+        $lastmodified = $event->getLastModified();
+        //die(var_dump($lastmodified));
+        if($lastmodified != null) {
+            //die();
+            $response = $this->newResponse();
+            $response->setLastModified($lastmodified);
+            $response->setPublic();
+            //die(var_dump($this->getRequest()));
+            //die(var_dump($lastmodified));
+            //die(var_dump($response->isNotModified($this->getRequest())));
+
+            if ($response->isNotModified($this->getRequest())) {
+                //die(var_dump($response));
+                //die();
+
+                return $response;
+            }
+        }
+        $this->dispatch('edemy_css', $event);
+        $css = $event->getCss();
+        $response = $this->newResponse();
+        $response->setContent($css);
+        $response->headers->set('Content-Type', 'text/css');
+
+        if($lastmodified != null) {
+            $response->setLastModified($lastmodified);
+        }
+
+        if($event->getLastModified() != null) {
+            $response->setLastModified($event->getLastModified());
+        }
+        $response->setPublic();
+        //die(var_dump($response));
+
+        return $response;
+
+        /*
+        $allparams = $this->get('doctrine.orm.entity_manager')->getRepository($this->getBundleName().':Param')->findAll();
+        foreach($allparams as $param) {
+            $params[$param->getName()] = $param->getValue();
+        }
+        $response = $this->newResponse();
+        $response->setContent($this->get('templating')->render(
+            $this->getBundleName().':Css:'.$file.'.css.twig',
+            array(
+                'params' => $params
+            )
+        ));
+        $response->headers->set('Content-Type', 'text/css');
+        return $response;
+        * */
+    }
+
     public function onCss(ContentEvent $event, $eventName, EventDispatcherInterface $dispatcher)
     {
         $css = null;
@@ -74,69 +139,5 @@ class CssController extends BaseController
         //die();
         //print date($file->getMTime())."<br/>";
         //die(var_dump($event->getLastModified()));
-    }
-
-    public function indexAction($_route, $file)
-    {
-        //die(var_dump($this->get('templating.globals')));
-        $parts = explode('.', $_route);
-        if(count($parts) == 2) {
-            $_route = end($parts);
-        }
-
-        $event = new ContentEvent($_route);
-        //aquí Last-Modified Header
-        $this->dispatch('edemy_css_lastmodified', $event);
-        //die(var_dump($event));
-        $lastmodified = $event->getLastModified();
-        //die(var_dump($lastmodified));
-        if($lastmodified != null) {
-            //die();
-            $response = $this->newResponse();
-            $response->setLastModified($lastmodified);
-            $response->setPublic();
-            //die(var_dump($this->getRequest()));
-            //die(var_dump($lastmodified));
-            //die(var_dump($response->isNotModified($this->getRequest())));
-
-            if ($response->isNotModified($this->getRequest())) {
-                //die(var_dump($response));
-                //die();
-                
-                return $response;
-            }
-        }
-        $this->dispatch('edemy_css', $event);
-        $css = $event->getCss();
-        $response = $this->newResponse();
-        $response->setContent($css);
-        $response->headers->set('Content-Type', 'text/css');
-        
-        if($lastmodified != null) {
-            $response->setLastModified($lastmodified);
-        }
-
-        if($event->getLastModified() != null) {
-            $response->setLastModified($event->getLastModified());
-        }
-        $response->setPublic();
-
-        return $response;
-
-        /*
-        $allparams = $this->get('doctrine.orm.entity_manager')->getRepository($this->getBundleName().':Param')->findAll();
-        foreach($allparams as $param) {
-            $params[$param->getName()] = $param->getValue();
-        }
-        $response = $this->newResponse();
-        $response->setContent($this->get('templating')->render(
-            $this->getBundleName().':Css:'.$file.'.css.twig',
-            array(
-                'params' => $params
-            )
-        ));
-        $response->headers->set('Content-Type', 'text/css');
-        return $response;
-        * */
     }
 }
