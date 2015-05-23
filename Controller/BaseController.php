@@ -26,16 +26,17 @@ abstract class BaseController extends Controller implements EventSubscriberInter
     protected $environment;
     protected $stopwatch;
 
-    public static function getEntitySubscriptions($bundle, $entity_name) {
+    public static function getEntitySubscriptions($bundle, $entity_name)
+    {
         $main_subscriptions = array(
-            'edemy_' . $bundle . '_' . $entity_name . '_frontpage'  => array('on' . ucfirst($entity_name) . 'Frontpage', 0),
-            'edemy_' . $bundle . '_' . $entity_name . '_index'      => array('onIndex', 0),
-            'edemy_' . $bundle . '_' . $entity_name . '_edit'       => array('onEdit', 0),
-            'edemy_' . $bundle . '_' . $entity_name . '_new'        => array('onNew', 0),
-            'edemy_' . $bundle . '_' . $entity_name . '_show'       => array('onShow', 0),
-            'edemy_' . $bundle . '_' . $entity_name . '_create'     => array('onCreate', 0),
-            'edemy_' . $bundle . '_' . $entity_name . '_update'     => array('onUpdate', 0),
-            'edemy_' . $bundle . '_' . $entity_name . '_delete'     => array('onDelete', 0),
+            'edemy_'.$bundle.'_'.$entity_name.'_frontpage' => array('on'.ucfirst($entity_name).'Frontpage', 0),
+            'edemy_'.$bundle.'_'.$entity_name.'_index' => array('onIndex', 0),
+            'edemy_'.$bundle.'_'.$entity_name.'_edit' => array('onEdit', 0),
+            'edemy_'.$bundle.'_'.$entity_name.'_new' => array('onNew', 0),
+            'edemy_'.$bundle.'_'.$entity_name.'_show' => array('onShow', 0),
+            'edemy_'.$bundle.'_'.$entity_name.'_create' => array('onCreate', 0),
+            'edemy_'.$bundle.'_'.$entity_name.'_update' => array('onUpdate', 0),
+            'edemy_'.$bundle.'_'.$entity_name.'_delete' => array('onDelete', 0),
         );
 
         return $main_subscriptions;
@@ -45,17 +46,17 @@ abstract class BaseController extends Controller implements EventSubscriberInter
     {
         $subscriptions = array();
         $subscriptions = $subscriptions + array(
-            'edemy_main_mainmenu'       => array('onMainMenu', 0),
-            'edemy_main_adminmenu'      => array('onAdminMenu', 0),
-            'edemy_main_footermenu'      => array('onFooterMenu', 0),
-            //'edemy_css_lastmodified'    => array('onCssLastModified', 0),
-            'edemy_css_module'          => array('onCssModule', 0),
-            'edemy_javascript_module'   => array('onJavascriptModule', 0),
-            'edemy_sitemap_module'      => array('onSitemapModule', 0),
-            'edemy_' . $bundle . '_frontpage'  => array('onFrontpage', 0),
-            'edemy_search_subquery'     => array('onSearchSubQuery', 0),
-        );
-        foreach($entities as $entity) {
+                'edemy_main_mainmenu' => array('onMainMenu', 0),
+                'edemy_main_adminmenu' => array('onAdminMenu', 0),
+                'edemy_main_footermenu' => array('onFooterMenu', 0),
+                //'edemy_css_lastmodified'    => array('onCssLastModified', 0),
+                'edemy_css_module' => array('onCssModule', 0),
+                'edemy_javascript_module' => array('onJavascriptModule', 0),
+                'edemy_sitemap_module' => array('onSitemapModule', 0),
+                'edemy_'.$bundle.'_frontpage' => array('onFrontpage', 0),
+                'edemy_search_subquery' => array('onSearchSubQuery', 0),
+            );
+        foreach ($entities as $entity) {
             $subscriptions = $subscriptions + self::getEntitySubscriptions($bundle, $entity);
         }
         $subscriptions = $subscriptions + $route_subscriptions;
@@ -63,13 +64,17 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         return $subscriptions;
     }
 
-    public static function getSubscribedEvents() {}
+    public static function getSubscribedEvents()
+    {
+    }
 
     public function setEventDispatcher(eventDispatcherInterface $eventDispatcher)
     {
         $this->eventDispatcher = $eventDispatcher;
-        $this->environment = $this->get( 'kernel' )->getEnvironment();
-        if($this->isDevelopment()) $this->stopwatch = $this->get('debug.stopwatch');
+        $this->environment = $this->get('kernel')->getEnvironment();
+        if ($this->isDevelopment()) {
+            $this->stopwatch = $this->get('debug.stopwatch');
+        }
     }
 
     public function __construct()
@@ -95,22 +100,25 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         $this->start($_route.'lastmodified', 'lastmodified');
         if ($this->dispatch($_route.'_lastmodified', $event)) {
             $lastmodified = $event->getLastModified();
-            if($lastmodified){
-                $lastmodified_files = $this->getLastModifiedFiles('/vendor/edemy/mainbundle/eDemy/MainBundle/Resources/views', '*.html.twig');
-                if($lastmodified_files > $lastmodified) {
+            if ($lastmodified) {
+                $lastmodified_files = $this->getLastModifiedFiles(
+                    '/vendor/edemy/mainbundle/eDemy/MainBundle/Resources/views',
+                    '*.html.twig'
+                );
+                if ($lastmodified_files > $lastmodified) {
                     $lastmodified = $lastmodified_files;
                 }
                 $response = new Response();
                 $response->setLastModified($lastmodified);
                 $response->setPublic();
-                if($response->isNotModified($this->getRequest())) {
+                if ($response->isNotModified($this->getRequest())) {
 
                     return $response;
                 }
             }
         }
 
-        $this->stop($_route . 'lastmodified', 'lastmodified');
+        $this->stop($_route.'lastmodified', 'lastmodified');
 
         //si hay que generar la respuesta, primero obtenemos el contenido principal
         $event = new ContentEvent($_route);
@@ -118,9 +126,10 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         $content = $event->getContent();
         //die(var_dump($content));
         //si se ha detenido la propagación devolvemos la respuesta inmediatamente
-        if($event->isPropagationStopped()) {
+        if ($event->isPropagationStopped()) {
             $response = new Response($content);
             $response->setLastModified($lastmodified);
+
             //$response->setPublic();
 
             return $content;
@@ -135,7 +144,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         $this->dispatch('edemy_meta', $event);
         $meta = $event->getMeta();
 
-        if($event->getMode() == 'compact') {
+        if ($event->getMode() == 'compact') {
             $header = null;
             $footer = null;
         } else {
@@ -147,33 +156,31 @@ abstract class BaseController extends Controller implements EventSubscriberInter
 //die(var_dump($this->getBundleName() . '::' . $this->getParam("theme", null, "layout") . '.' . $_format . '.twig'));
         //try {
         // @TODO use param to set the bundle that has the theme
-            $response = $this->get('templating')->renderResponse(
-                $this->getParam("themeBundle", null, $this->getBundleName()) .
-                '::' .
-                $this->getParam("themeLayout", null, "layout/theme") . '.' . $_format . '.twig',
-                array(
-                    'title'       => $title,
-                    'description' => $description,
-                    'keywords'    => $keywords,
-                    'meta'        => $meta,
-                    //'header'      => $header,
-                    'content'     => $content,
-                    //'footer'      => $footer,
-                    'namespace' => $namespace,
-                )
-            );
+        $response = $this->get('templating')->renderResponse(
+            $this->getTemplate('layout/theme', $_format),
+            array(
+                'title' => $title,
+                'description' => $description,
+                'keywords' => $keywords,
+                'meta' => $meta,
+                //'header'      => $header,
+                'content' => $content,
+                //'footer'      => $footer,
+                'namespace' => $namespace,
+            )
+        );
         //} catch (\Exception $e) {
-            //die(var_dump($e));
-            //return new RedirectResponse($this->getRequest()->getUri());
+        //die(var_dump($e));
+        //return new RedirectResponse($this->getRequest()->getUri());
 
-            //die(var_dump($e));
+        //die(var_dump($e));
 //        }
 
         //$resp = new Response($response);
         //$response = $resp;
         //die(var_dump($response));
 //        $this->stop('layout.html');
-        if($lastmodified){
+        if ($lastmodified) {
             $response->setLastModified($lastmodified);
         }
         $response->setPublic();
@@ -181,37 +188,61 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         return $response;
     }
 
+
+    public function render($template, array $options = array(), Response $response = null)
+    {
+        if (strpos($template, 'dmin/')) {
+            return $this->get('templating')->render('eDemyMainBundle::'.$template, $options);
+        } else {
+            // @TODO add themeBundle param
+            //die();
+//            return parent::render($this->getBundleName().'::' . $template, $options);
+            return $this->get('templating')->render($this->getTemplate($template), $options);
+        }
+    }
+
+    public function getTemplate($template, $_format = 'html') {
+        $template = $this->getParam("themeBundle", null, $this->getBundleName()) .
+            '::' .
+            $this->getParam($template, null, "layout/theme").'.'.$_format.'.twig';
+        //die(var_dump($template));
+        return $template;
+    }
+
     public function dispatch($event_name, $event)
     {
-        if($this->eventDispatcher) {
+        if ($this->eventDispatcher) {
             $this->get('event_dispatcher')->dispatch($event_name, $event);
 
             return true;
         }
-        
+
         return false;
     }
 
-    public function getParamByType($type, $namespace = null, $bundle = null) 
+    public function getParamByType($type, $namespace = null, $bundle = null)
     {
-        $event = new GenericEvent("param_type", array(
+        $event = new GenericEvent(
+            "param_type", array(
             'type' => $type,
             'value' => '',
             'namespace' => $namespace,
             'bundle' => $bundle,
-        ));
+        )
+        );
         $this->eventDispatcher->dispatch('edemy_param_by_type', $event);
-        if($type == 'prefix') {
+        if ($type == 'prefix') {
         }
 
         return $event['values'];
     }
 
-    public function getParamBy($options = null) 
+    public function getParamBy($options = null)
     {
-        if($options) {
+        if ($options) {
             $event = new GenericEvent("param_by", $options);
             $this->eventDispatcher->dispatch('edemy_param_by', $event);
+
             return $event['values'];
         }
 
@@ -221,12 +252,14 @@ abstract class BaseController extends Controller implements EventSubscriberInter
     public function getRequest()
     {
         $request = $this->get('request_stack')->getCurrentRequest();
+
         return $request;
     }
 
     public function getMasterRequest()
     {
         $request = $this->get('request_stack')->getMasterRequest();
+
         return $request;
     }
 
@@ -247,12 +280,12 @@ abstract class BaseController extends Controller implements EventSubscriberInter
 
     public function getNamespace($_route = null)
     {
-        if($_route == null) {
+        if ($_route == null) {
             $request = $this->get('request_stack')->getCurrentRequest();
             $_route = $request->attributes->get('_route');
         }
         $parts = explode('.', $_route);
-        if(count($parts) == 2) {
+        if (count($parts) == 2) {
             return $parts[0];
         } else {
             return null;
@@ -264,11 +297,11 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         $request = $this->get('request_stack')->getCurrentRequest();
         $_route = $request->attributes->get('_route');
 
-        if($namespace == null) {
+        if ($namespace == null) {
             $namespace = $this->getNamespace($_route);
         }
         //$name_parts = explode('.', $param);
-        if($bundle == null) {
+        if ($bundle == null) {
             $bundle = $this->getBundleName();
         }
         $event = new GenericEvent(
@@ -285,7 +318,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         );
         $this->eventDispatcher->dispatch('edemy_param', $event);
         //return $event['value'];
-        if($event['value'] == '') {
+        if ($event['value'] == '') {
             return $default;
         } else {
             return $event['value'];
@@ -299,29 +332,34 @@ abstract class BaseController extends Controller implements EventSubscriberInter
             array('name' => $service)
         );
         $this->eventDispatcher->dispatch('edemy_service', $event);
+
         return $event['service'];
     }
-    
+
     public function addEventModule(ContentEvent $event, $template, $params = array())
     {
-        if($template) {
+        if ($template) {
             $content = $this->render($template, $params);
-            if(strlen($content) > 5) {
+            if (strlen($content) > 5) {
                 $event->addModule($content);
             }
         } else {
             $event->addModule($params);
         }
+
         return $event;
     }
 
     public function addEventContent(ContentEvent $event, $template, $params = array())
     {
-        $event->setContent($this->newResponse(
-            $this->render($template, $params)
-        ));
+        $event->setContent(
+            $this->newResponse(
+                $this->render($template, $params)
+            )
+        );
         $event->stopPropagation();
-        return $event;        
+
+        return $event;
     }
 
     //shortcuts
@@ -332,8 +370,8 @@ abstract class BaseController extends Controller implements EventSubscriberInter
 
     public function newRedirectResponse($route, $options = array())
     {
-        if($this->getNamespace()) {
-            $redirect = $this->get('router')->generate($this->getNamespace() . '.' . $route, $options);
+        if ($this->getNamespace()) {
+            $redirect = $this->get('router')->generate($this->getNamespace().'.'.$route, $options);
         } else {
             $redirect = $this->get('router')->generate($route, $options);
         }
@@ -345,24 +383,20 @@ abstract class BaseController extends Controller implements EventSubscriberInter
     {
         return new AccessDeniedException();
     }
-    
+
     public function createNotFoundException($message = 'Not Found', \Exception $previous = null)
     {
         return new NotFoundHttpException($message, $previous);
     }
 
-    public function render($template, array $options = array(), Response $response = null)
-    {
-        if(strpos($template, 'dmin/')) {
-            return $this->get('templating')->render('eDemyMainBundle::' . $template, $options);
-        } else {
-            return $this->get('templating')->render($this->getBundleName().'::' . $template, $options);
-        }
-    }
-
     public function getCurrentRequest()
     {
         return $this->get('request_stack')->getCurrentRequest();
+    }
+
+    public function onFrontpage(ContentEvent $event)
+    {
+        return true;
     }
 
     public function onMainMenu($menuEvent)

@@ -51,7 +51,7 @@ class MainController extends BaseController
             return false;
         }
         $event->setContent(
-            $this->render("eDemyMainBundle::frontpage.html.twig", array(
+            $this->render($this->getTemplate("frontpage"), array(
                 'modules' => $event->getModules(),
             ))
         );
