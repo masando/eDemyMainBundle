@@ -64,9 +64,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         return $subscriptions;
     }
 
-    public static function getSubscribedEvents()
-    {
-    }
+    public static function getSubscribedEvents() {}
 
     public function setEventDispatcher(eventDispatcherInterface $eventDispatcher)
     {
@@ -82,114 +80,60 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         $this->class = get_class($this);
     }
 
-    public function renderResponse($_route, $_format = 'html')
+    public function dispatch($event_name, $event)
     {
-        //die(var_dump($_route));
-        //$namespace = $this->getNamespace();
-        //if($namespace) $_route = $namespace . '.' . $_route;
-        $namespace = null;
-        $parts = explode('.', $_route);
-        if (count($parts) == 2) {
-            $_route = end($parts);
-            $namespace = $parts[0];
+        if ($this->eventDispatcher) {
+            $this->get('event_dispatcher')->dispatch($event_name, $event);
+
+            return true;
         }
 
-        //obtenemos lastmodified de la ruta y de los ficheros principales para devolver 304
-        $lastmodified = null;
-        $event = new ContentEvent($_route);
-        $this->start($_route.'lastmodified', 'lastmodified');
-        if ($this->dispatch($_route.'_lastmodified', $event)) {
-            $lastmodified = $event->getLastModified();
-            //die(var_dump($_route));
-            if ($lastmodified) {
-                $lastmodified_files = $this->getLastModifiedFiles(
-                    '/vendor/edemy/mainbundle/eDemy/MainBundle/Resources/views',
-                    '*.html.twig'
-                );
-                if ($lastmodified_files > $lastmodified) {
-                    $lastmodified = $lastmodified_files;
-                }
-                $response = new Response();
-                $response->setLastModified($lastmodified);
-                $response->setPublic();
-                if ($response->isNotModified($this->getRequest())) {
-
-                    return $response;
-                }
-            }
-        }
-
-        $this->stop($_route.'lastmodified', 'lastmodified');
-
-        //si hay que generar la respuesta, primero obtenemos el contenido principal
-        $event = new ContentEvent($_route);
-        $this->dispatch('edemy_content', $event);
-        $content = $event->getContent();
-        //die(var_dump($content));
-        //si se ha detenido la propagación devolvemos la respuesta inmediatamente
-        if ($event->isPropagationStopped()) {
-            $response = new Response($content);
-            $response->setLastModified($lastmodified);
-
-            //$response->setPublic();
-
-            return $content;
-        }
-        //si no, creamos la respuesta completa
-        $this->dispatch('edemy_meta_title', $event);
-        $title = $event->getTitle();
-        $this->dispatch('edemy_meta_description', $event);
-        $description = $event->getDescription();
-        $this->dispatch('edemy_meta_keywords', $event);
-        $keywords = $event->getKeywords();
-        $this->dispatch('edemy_meta', $event);
-        $meta = $event->getMeta();
-
-        if ($event->getMode() == 'compact') {
-            $header = null;
-            $footer = null;
-        } else {
-            //$header = $this->dispatch('edemy_header', $event)->getHeader();
-            //$footer = $this->dispatch('edemy_footer', $event)->getFooter();
-        }
-        //die(var_dump($content));
-//        $this->start('layout.html', 'render');
-//die(var_dump($this->getBundleName() . '::' . $this->getParam("theme", null, "layout") . '.' . $_format . '.twig'));
-        //try {
-        // @TODO use param to set the bundle that has the theme
-        $response = $this->get('templating')->renderResponse(
-            $this->getTemplate('layout/theme', $_format),
-            array(
-                'title' => $title,
-                'description' => $description,
-                'keywords' => $keywords,
-                'meta' => $meta,
-                //'header'      => $header,
-                'content' => $content,
-                //'footer'      => $footer,
-                'namespace' => $namespace,
-            )
-        );
-        //} catch (\Exception $e) {
-        //die(var_dump($e));
-        //return new RedirectResponse($this->getRequest()->getUri());
-
-        //die(var_dump($e));
-//        }
-
-//        $resp = new Response($response);
-//        $response = $resp;
-        //die(var_dump($response));
-//        $this->stop('layout.html');
-        if ($lastmodified) {
-            $response->setLastModified($lastmodified);
-        }
-        $response->setPublic();
-
-        return $response;
+        return false;
     }
 
+    // ROUTING TOOLS
+    public function getNamespaceFromRoute() {
+        $parts = explode('.', $_route);
+        if (count($parts) == 2) {
+            return $parts[0];
+        }
 
+        return null;
+    }
+
+    public function getRouteWithoutNamespace() {
+        $_route = $this->getRoute();
+        $parts = explode('.', $_route);
+        if (count($parts) == 2) {
+            return end($parts);
+        }
+
+        return $_route;
+    }
+
+    public function getRoute()
+    {
+        $request = $this->get('request_stack')->getCurrentRequest();
+        $_route = $request->attributes->get('_route');
+
+        return $_route;
+    }
+
+    public function getNamespace($_route = null)
+    {
+        if ($_route == null) {
+            $request = $this->get('request_stack')->getCurrentRequest();
+            $_route = $request->attributes->get('_route');
+        }
+        $parts = explode('.', $_route);
+        if (count($parts) == 2) {
+            return $parts[0];
+        }
+
+        return null;
+    }
+
+    //// TEMPLATING TOOLS
     public function render($template, array $options = array(), Response $response = null)
     {
         if (strpos($template, 'dmin/')) {
@@ -210,17 +154,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         return $template;
     }
 
-    public function dispatch($event_name, $event)
-    {
-        if ($this->eventDispatcher) {
-            $this->get('event_dispatcher')->dispatch($event_name, $event);
-
-            return true;
-        }
-
-        return false;
-    }
-
+    // PARAM TOOLS
     public function getParamByType($type, $namespace = null, $bundle = null)
     {
         $event = new GenericEvent(
@@ -248,49 +182,6 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         }
 
         return null;
-    }
-
-    public function getRequest()
-    {
-        $request = $this->get('request_stack')->getCurrentRequest();
-
-        return $request;
-    }
-
-    public function getMasterRequest()
-    {
-        $request = $this->get('request_stack')->getMasterRequest();
-
-        return $request;
-    }
-
-    public function getRequestParam($param)
-    {
-        $request = $this->getRequest();
-
-        return $request->attributes->get($param);
-    }
-
-    public function getRoute()
-    {
-        $request = $this->get('request_stack')->getCurrentRequest();
-        $_route = $request->attributes->get('_route');
-
-        return $_route;
-    }
-
-    public function getNamespace($_route = null)
-    {
-        if ($_route == null) {
-            $request = $this->get('request_stack')->getCurrentRequest();
-            $_route = $request->attributes->get('_route');
-        }
-        $parts = explode('.', $_route);
-        if (count($parts) == 2) {
-            return $parts[0];
-        } else {
-            return null;
-        }
     }
 
     public function getParam($param, $bundle = null, $default = null, $namespace = null, $object = false)
@@ -326,6 +217,51 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         }
     }
 
+    // REQUEST TOOLS
+    public function getRequest()
+    {
+        $request = $this->get('request_stack')->getCurrentRequest();
+
+        return $request;
+    }
+
+    public function getMasterRequest()
+    {
+        $request = $this->get('request_stack')->getMasterRequest();
+
+        return $request;
+    }
+
+    public function getRequestParam($param)
+    {
+        $request = $this->getRequest();
+
+        return $request->attributes->get($param);
+    }
+
+    public function getCurrentRequest()
+    {
+        return $this->get('request_stack')->getCurrentRequest();
+    }
+
+    // RESPONSE
+    public function newResponse($content = null)
+    {
+        return new Response($content);
+    }
+
+    public function newRedirectResponse($route, $options = array())
+    {
+        if ($this->getNamespace()) {
+            $redirect = $this->get('router')->generate($this->getNamespace().'.'.$route, $options);
+        } else {
+            $redirect = $this->get('router')->generate($route, $options);
+        }
+
+        return new RedirectResponse($redirect);
+    }
+
+    // CONTAINER TOOLS
     public function get($service)
     {
         $event = new GenericEvent(
@@ -337,6 +273,9 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         return $event['service'];
     }
 
+    ////
+
+    // EVENTS
     public function addEventModule(ContentEvent $event, $template, $params = array())
     {
         if ($template) {
@@ -363,23 +302,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         return $event;
     }
 
-    //shortcuts
-    public function newResponse($content = null)
-    {
-        return new Response($content);
-    }
-
-    public function newRedirectResponse($route, $options = array())
-    {
-        if ($this->getNamespace()) {
-            $redirect = $this->get('router')->generate($this->getNamespace().'.'.$route, $options);
-        } else {
-            $redirect = $this->get('router')->generate($route, $options);
-        }
-
-        return new RedirectResponse($redirect);
-    }
-
+    // EXCEPTIONS
     public function newAccessDeniedException()
     {
         return new AccessDeniedException();
@@ -390,71 +313,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         return new NotFoundHttpException($message, $previous);
     }
 
-    public function getCurrentRequest()
-    {
-        return $this->get('request_stack')->getCurrentRequest();
-    }
-
-    public function onFrontpage(ContentEvent $event)
-    {
-        return true;
-    }
-
-    public function onMainMenu($menuEvent)
-    {
-        $menu = 'mainmenu';
-        $request = $this->get('request_stack')->getCurrentRequest();
-        $_route = $request->attributes->get('_route');
-        $namespace = $this->getNamespace($_route);
-        $items = $this->getParamByType($menu, $namespace, $this->getBundleName());
-
-        if($items) {
-            $menuEvent['items'] = array_merge($menuEvent['items'], $items);
-            //$menuEvent['items'] = $menuEvent['items'] + $items;
-        }
-
-        return true;
-    }
-
-    public function onAdminMenu($menuEvent)
-    {
-        //$request = $this->get('request_stack')->getCurrentRequest();
-        //$_route = $request->attributes->get('_route');
-        //$namespace = $this->getNamespace($_route);
-        $menu = 'adminmenu';
-        $namespace = $menuEvent['namespace'];
-        $items = $this->getParamByType($menu, $namespace, $this->getBundleName());
-        
-        if($items) {
-            $menuEvent['items'] = array_merge($menuEvent['items'], $items);
-            /*
-            foreach($items as $item) {
-                if($item->getBundle() == $this->getBundleName()) {
-                    //$menuEvent['items'][] = $item;
-                }
-            }
-            * */
-        }
-
-        return true;
-    }
-
-    public function onFooterMenu($menuEvent)
-    {
-        $menu = 'footermenu';
-        $request = $this->get('request_stack')->getCurrentRequest();
-        $_route = $request->attributes->get('_route');
-        $namespace = $this->getNamespace($_route);
-        $items = $this->getParamByType($menu, $namespace, $this->getBundleName());
-
-        if($items) {
-            $menuEvent['items'] = array_merge($menuEvent['items'], $items);
-            //$menuEvent['items'] = $menuEvent['items'] + $items;
-        }
-
-        return true;
-    }
-
+    //
     public function findAll($entity = null)
     {
         if($entity == 'Background') {
@@ -467,6 +326,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         ));
     }
 
+    // DOCTRINE
     public function getEm()
     {
         return $this->get('doctrine.orm.entity_manager');
@@ -521,7 +381,68 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         //die(var_dump($event->getLastModified()));
     }
     */
-    
+
+    // EVENT LISTENERS
+    public function onFrontpage(ContentEvent $event)
+    {
+        return true;
+    }
+
+    public function onMainMenu($menuEvent)
+    {
+        $menu = 'mainmenu';
+        $request = $this->get('request_stack')->getCurrentRequest();
+        $_route = $request->attributes->get('_route');
+        $namespace = $this->getNamespace($_route);
+        $items = $this->getParamByType($menu, $namespace, $this->getBundleName());
+
+        if($items) {
+            $menuEvent['items'] = array_merge($menuEvent['items'], $items);
+            //$menuEvent['items'] = $menuEvent['items'] + $items;
+        }
+
+        return true;
+    }
+
+    public function onAdminMenu($menuEvent)
+    {
+        //$request = $this->get('request_stack')->getCurrentRequest();
+        //$_route = $request->attributes->get('_route');
+        //$namespace = $this->getNamespace($_route);
+        $menu = 'adminmenu';
+        $namespace = $menuEvent['namespace'];
+        $items = $this->getParamByType($menu, $namespace, $this->getBundleName());
+
+        if($items) {
+            $menuEvent['items'] = array_merge($menuEvent['items'], $items);
+            /*
+            foreach($items as $item) {
+                if($item->getBundle() == $this->getBundleName()) {
+                    //$menuEvent['items'][] = $item;
+                }
+            }
+            * */
+        }
+
+        return true;
+    }
+
+    public function onFooterMenu($menuEvent)
+    {
+        $menu = 'footermenu';
+        $request = $this->get('request_stack')->getCurrentRequest();
+        $_route = $request->attributes->get('_route');
+        $namespace = $this->getNamespace($_route);
+        $items = $this->getParamByType($menu, $namespace, $this->getBundleName());
+
+        if($items) {
+            $menuEvent['items'] = array_merge($menuEvent['items'], $items);
+            //$menuEvent['items'] = $menuEvent['items'] + $items;
+        }
+
+        return true;
+    }
+
     public function onCssModule(ContentEvent $event)
     {
         /** @var Param[] $allparams */

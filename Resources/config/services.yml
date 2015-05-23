@@ -1,4 +1,12 @@
 services:
+    edemy.routing_loader:
+        class:  eDemy\MainBundle\Routing\RoutingLoader
+        calls:
+            - [setKernel, ["@kernel"]]
+            - [setContainer, ["@service_container"]]
+        tags:
+            - { name: routing.loader }
+
     edemy.main:
         class: eDemy\MainBundle\Controller\MainController
         calls:
@@ -26,15 +34,6 @@ services:
             - [setEventDispatcher, ["@event_dispatcher"]]
         tags:
             - { name: kernel.event_subscriber }
-
-    edemy.routing_loader:
-        class:  eDemy\MainBundle\Routing\RoutingLoader
-#        arguments: ["@service_container", "@kernel"]
-        calls:
-            - [setKernel, ["@kernel"]]
-            - [setContainer, ["@service_container"]]
-        tags:
-            - { name: routing.loader }
 
     edemy.servicecontainer:
         class: eDemy\MainBundle\Controller\ServiceContainerController

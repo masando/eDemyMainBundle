@@ -26,136 +26,139 @@ class RoutingLoader extends Loader
         $this->container = $container;
     }
 
-//    public function __construct(ContainerInterface $container, Kernel $kernel)
-//    {
-//        $this->container = $container;
-//        $this->kernel = $kernel;
-//    }
-
     public function load($resource, $type = null)
     {
+        // medimos el tiempo de carga de rutas
         $edemyMain = $this->container->get('edemy.main');
         $edemyMain->start('routing_loader', 'init');
-        // @TODO Comment
-        $collection = new RouteCollection();
-        $entitiesCollection = new RouteCollection();
-
-        $bundles = $this->kernel->getBundles();
-        foreach($bundles as $bundle) {
-            $bundle = get_class($bundle);    
-            if (preg_match('/eDemy/',$bundle)) {
-                if(method_exists($bundle, "getBundleName")) {
-                    $bundleName = call_user_func($bundle . "::getBundleName");
-                    $bundleNameSimple = $bundleName;
-                    $bundleNameSimple = str_replace("eDemy", "", $bundleNameSimple);
-                    $bundleNameSimple = str_replace("Bundle", "", $bundleNameSimple);
-
-                    //BUNDLE FRONTPAGE
-                    if($bundleNameSimple != 'Main') {
-                        $route = new Route('/{_locale}/' . strtolower($bundleNameSimple), array(
-                            '_controller' => 'edemy.main:indexAction',
-                            '_locale' => 'es',
-                        ), array( '_locale' => 'es|en' ), array(), '', array(), array('GET', 'POST'));
-                        $entitiesCollection->add('edemy_' . strtolower($bundleNameSimple) . '_frontpage', $route);
-                    }
-                    //$entities = array();
-                    // @TODO CircularReference
-                    $entities = $this->container->get('edemy.main')->getBundleEntities($bundleName);
-                    if($bundleNameSimple == "Param") {
-                        //die(var_dump($entities));
-                    }
-                    foreach($entities as $entityName) {
-
-                        //PRODUCT FRONTPAGE
-                        $route = new Route('/{_locale}/' . strtolower($bundleNameSimple) . '/' . strtolower($entityName), array(
-                            '_controller' => 'edemy.main:indexAction',
-                        ), array( '_locale' => 'es|en' ), array(), '', array(), array('GET'));
-                        $entitiesCollection->add('edemy_' . strtolower($bundleNameSimple) . '_' . strtolower($entityName) . '_frontpage', $route);
-
-                        //INDEX
-                        $route = new Route('/admin/{_locale}/' . strtolower($bundleNameSimple) . '/' . strtolower($entityName), array(
-                            '_controller' => 'edemy.main:indexAction',
-                        ), array( '_locale' => 'es|en' ), array(), '', array(), array('GET'));
-                        $entitiesCollection->add('edemy_' . strtolower($bundleNameSimple) . '_' . strtolower($entityName) . '_index', $route);
-
-                        //SHOW
-                        $route = new Route('/admin/{_locale}/' . strtolower($bundleNameSimple) . '/' . strtolower($entityName) . '/{id}', array(
-                            '_controller' => 'edemy.main:indexAction',
-                        ), array( '_locale' => 'es|en', 'id' => '\d+' ), array(), '', array(), array('GET'));
-                        $entitiesCollection->add('edemy_' . strtolower($bundleNameSimple) . '_' . strtolower($entityName) . '_show', $route);
-
-                        //NEW
-                        $route = new Route('/admin/{_locale}/' . strtolower($bundleNameSimple) . '/' . strtolower($entityName) . '/new', array(
-                            '_controller' => 'edemy.main:indexAction',
-                        ), array( '_locale' => 'es|en' ), array(), '', array(), array('GET'));
-                        $entitiesCollection->add('edemy_' . strtolower($bundleNameSimple) . '_' . strtolower($entityName) . '_new', $route);
-
-                        //EDIT
-                        $route = new Route('/admin/{_locale}/' . strtolower($bundleNameSimple) . '/' . strtolower($entityName) . '/{id}/edit', array(
-                            '_controller' => 'edemy.main:indexAction',
-                        ), array( '_locale' => 'es|en', 'id' => '\d+' ), array(), '', array(), array('GET'));
-                        $entitiesCollection->add('edemy_' . strtolower($bundleNameSimple) . '_' . strtolower($entityName) . '_edit', $route);
-
-                        //CREATE
-                        $route = new Route('/admin/{_locale}/' . strtolower($bundleNameSimple) . '/' . strtolower($entityName), array(
-                            '_controller' => 'edemy.main:indexAction',
-                        ), array( '_locale' => 'es|en' ), array(), '', array(), array('POST'));
-                        $entitiesCollection->add('edemy_' . strtolower($bundleNameSimple) . '_' . strtolower($entityName) . '_create', $route);
-
-                        //UPDATE
-                        $route = new Route('/admin/{_locale}/' . strtolower($bundleNameSimple) . '/' . strtolower($entityName) . '/{id}', array(
-                            '_controller' => 'edemy.main:indexAction',
-                        ), array( '_locale' => 'es|en', 'id' => '\d+' ), array(), '', array(), array('PUT'));
-                        $entitiesCollection->add('edemy_' . strtolower($bundleNameSimple) . '_' . strtolower($entityName) . '_update', $route);
-
-                        //DELETE
-                        $route = new Route('/admin/{_locale}/' . strtolower($bundleNameSimple) . '/' . strtolower($entityName) . '/{id}', array(
-                            '_controller' => 'edemy.main:indexAction',
-                        ), array( '_locale' => 'es|en', 'id' => '\d+' ), array(), '', array(), array('DELETE'));
-                        $entitiesCollection->add('edemy_' . strtolower($bundleNameSimple) . '_' . strtolower($entityName) . '_delete', $route);
-                    }
-                    $collection->addCollection($entitiesCollection);
-
-                    $resource = "@" . $bundleName . "/Resources/config/routing.yml";
-                    $type = 'yaml';
-                    try {
-                        $importedRoutes = $this->import($resource, $type);
-                        $collection->addCollection($importedRoutes);
-
-                        // @TODO CircularReference
-                        /** @var Param[] $prefixes */
-                        $prefixes = $this->container->get('edemy.main')->getParamByType('prefix');
-                        if(count($prefixes)) {
-                            foreach($prefixes as $prefix) {
-                                //$prefixRoutes = new RouteCollection();
-                                $prefixRoutes = clone $entitiesCollection;
-                                $prefixRoutes->addCollection($this->import($resource, $type));
-                                $prefixRoutes->addPrefix($prefix->getValue());
-                                
-                                foreach($prefixRoutes as $oldName => $route) {
-                                    $newName = $prefix->getValue() . '.' . $oldName;
-                                    $prefixRoutes->add($newName, $route);
-                                    $prefixRoutes->remove($oldName);
-                                }
-                                $collection->addCollection($prefixRoutes);
-                            }
-                        }
-                    }
-//                    catch (\FileLoaderLoadException $e) {
-//                        // @TODO LOG ERROR
-//                    }
-                    catch (\InvalidArgumentException $e) {
-                        // @TODO LOG ERROR
-                    }
-                }
+        // Inicializamos las colecciones de rutas
+        $allRoutes = new RouteCollection();
+        $routes = new RouteCollection();
+        foreach($this->kernel->getBundles() as $bundle) {
+            $bundle = get_class($bundle);
+            // sólo analizamos los bundles eDemy
+            if (method_exists($bundle, "eDemyBundle")) {
+                // Añadimos la ruta frontpage asociada al Bundle excepto para MainBundle
+                $this->addBundleFrontpageRoute($bundle, $routes);
+                // Añadimos las rutas de las entities del Bundle
+                $this->addEntityRoutes($bundle, $routes);
+                // Añadimos las rutas del archivo routing.yml del Bundle
+                $this->addFileRoutes($bundle, $routes);
+                // Añadimos todas las rutas anteriores a la colección principal
+                $allRoutes->addCollection($routes);
+                // Si hay prefijos añadimos todas las rutas anteriores con cada prefijo a la colección principal
+                $this->prefixRoutes($routes, $allRoutes);
             }
         }
         $edemyMain->stop('routing_loader', 'init');
-        return $collection;
+        return $allRoutes;
     }
 
     public function supports($resource, $type = null)
     {
         return $type === 'extra';
     }
-} 
+
+    public function addEntityRoutes($bundle, RouteCollection $routesCollection){
+        $bundleNameSimpleLower = $bundle::getBundleName('simple');
+        // Obtenemos las entities del Bundle
+        $entities = $this->container->get('edemy.main')->getBundleEntities($bundle::getBundleName());
+
+        // Para cada una de las entities generamos las rutas aociadas (frontpage y admin CRUD)
+        foreach($entities as $entityName) {
+            $entityNameLower = strtolower($entityName);
+
+            // ENTITY FRONTPAGE (i.e. GET /es/agenda/actividad)
+            $route = new Route('/{_locale}/' . $bundleNameSimpleLower . '/' . $entityNameLower, array(
+                '_controller' => 'edemy.main:indexAction',
+            ), array( '_locale' => 'es|en' ), array(), '', array(), array('GET'));
+            $routesCollection->add('edemy_' . $bundleNameSimpleLower . '_' . $entityNameLower . '_frontpage', $route);
+
+            // ENTITY INDEX (i.e. GET /admin/es/agenda/actividad)
+            $route = new Route('/admin/{_locale}/' . $bundleNameSimpleLower . '/' . $entityNameLower, array(
+                '_controller' => 'edemy.main:indexAction',
+            ), array( '_locale' => 'es|en' ), array(), '', array(), array('GET'));
+            $routesCollection->add('edemy_' . $bundleNameSimpleLower . '_' . $entityNameLower . '_index', $route);
+
+            // ENTITY SHOW (i.e. GET /admin/es/agenda/actividad/1)
+            $route = new Route('/admin/{_locale}/' . $bundleNameSimpleLower . '/' . $entityNameLower . '/{id}', array(
+                '_controller' => 'edemy.main:indexAction',
+            ), array( '_locale' => 'es|en', 'id' => '\d+' ), array(), '', array(), array('GET'));
+            $routesCollection->add('edemy_' . $bundleNameSimpleLower . '_' . $entityNameLower . '_show', $route);
+
+            // ENTITY NEW (i.e. GET /admin/es/agenda/actividad/new)
+            $route = new Route('/admin/{_locale}/' . $bundleNameSimpleLower . '/' . $entityNameLower . '/new', array(
+                '_controller' => 'edemy.main:indexAction',
+            ), array( '_locale' => 'es|en' ), array(), '', array(), array('GET'));
+            $routesCollection->add('edemy_' . $bundleNameSimpleLower . '_' . $entityNameLower . '_new', $route);
+
+            // ENTITY EDIT (i.e. GET /admin/es/agenda/actividad/1/edit)
+            $route = new Route('/admin/{_locale}/' . $bundleNameSimpleLower . '/' . $entityNameLower . '/{id}/edit', array(
+                '_controller' => 'edemy.main:indexAction',
+            ), array( '_locale' => 'es|en', 'id' => '\d+' ), array(), '', array(), array('GET'));
+            $routesCollection->add('edemy_' . $bundleNameSimpleLower . '_' . $entityNameLower . '_edit', $route);
+
+            // ENTITY CREATE (i.e. POST /admin/es/agenda/actividad/1)
+            $route = new Route('/admin/{_locale}/' . $bundleNameSimpleLower . '/' . $entityNameLower, array(
+                '_controller' => 'edemy.main:indexAction',
+            ), array( '_locale' => 'es|en' ), array(), '', array(), array('POST'));
+            $routesCollection->add('edemy_' . $bundleNameSimpleLower . '_' . $entityNameLower . '_create', $route);
+
+            // ENTITY CREATE (i.e. PUT /admin/es/agenda/actividad/1)
+            $route = new Route('/admin/{_locale}/' . $bundleNameSimpleLower . '/' . $entityNameLower . '/{id}', array(
+                '_controller' => 'edemy.main:indexAction',
+            ), array( '_locale' => 'es|en', 'id' => '\d+' ), array(), '', array(), array('PUT'));
+            $routesCollection->add('edemy_' . $bundleNameSimpleLower . '_' . $entityNameLower . '_update', $route);
+
+            // ENTITY CREATE (i.e. DELETE /admin/es/agenda/actividad/1)
+            $route = new Route('/admin/{_locale}/' . $bundleNameSimpleLower . '/' . $entityNameLower . '/{id}', array(
+                '_controller' => 'edemy.main:indexAction',
+            ), array( '_locale' => 'es|en', 'id' => '\d+' ), array(), '', array(), array('DELETE'));
+            $routesCollection->add('edemy_' . $bundleNameSimpleLower . '_' . $entityNameLower . '_delete', $route);
+        }
+    }
+
+
+    public function addBundleFrontpageRoute($bundle, RouteCollection $routes) {
+//        if (method_exists($bundle, "getBundleName")) {
+//            $bundleNameSimpleLower = call_user_func($bundle . "::getBundleName");
+//        }
+        $bundleNameSimpleLower = $bundle::getBundleName('simple');
+
+        if($bundleNameSimpleLower != 'main') {
+            $route = new Route('/{_locale}/' . $bundleNameSimpleLower, array(
+                '_controller' => 'edemy.main:indexAction',
+                '_locale' => 'es',
+            ), array( '_locale' => 'es|en' ), array(), '', array(), array('GET', 'POST'));
+            $routes->add('edemy_' . $bundleNameSimpleLower . '_frontpage', $route);
+        }
+    }
+
+    public function addFileRoutes($bundle, RouteCollection $routes) {
+        $bundleName = $bundle::getBundleName();
+
+        $resource = "@" . $bundleName . "/Resources/config/routing.yml";
+        $type = 'yaml';
+        $routes->addCollection($this->import($resource, $type));
+    }
+
+    public function prefixRoutes(RouteCollection $routes, RouteCollection $allRoutes) {
+        /** @var Param[] $prefixes */
+        $prefixes = $this->container->get('edemy.main')->getParamByType('prefix');
+        if(count($prefixes)) {
+            foreach($prefixes as $prefix) {
+                //$prefixRoutes = new RouteCollection();
+                $prefixRoutes = clone $routes;
+                //$prefixRoutes->addCollection($this->import($resource, $type));
+                $prefixRoutes->addPrefix($prefix->getValue());
+
+                foreach($prefixRoutes as $oldName => $route) {
+                    $newName = $prefix->getValue() . '.' . $oldName;
+                    $prefixRoutes->add($newName, $route);
+                    $prefixRoutes->remove($oldName);
+                }
+                $allRoutes->addCollection($prefixRoutes);
+            }
+        }
+    }
+}
