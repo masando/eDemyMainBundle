@@ -150,7 +150,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
             $response = $this->get('templating')->renderResponse(
                 $this->getParam("themeBundle", null, $this->getBundleName()) .
                 '::' .
-                $this->getParam("themeLayout", null, "layout") . '.' . $_format . '.twig',
+                $this->getParam("themeLayout", null, "layout/theme") . '.' . $_format . '.twig',
                 array(
                     'title'       => $title,
                     'description' => $description,
