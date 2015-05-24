@@ -29,8 +29,8 @@ class RoutingLoader extends Loader
     public function load($resource, $type = null)
     {
         // medimos el tiempo de carga de rutas
-        $edemyMain = $this->container->get('edemy.main');
-        $edemyMain->start('routing_loader', 'init');
+        $stopWatch = $this->container->get('debug.stopwatch');
+        $stopWatch->start('routing_loader', 'init');
         // Inicializamos las colecciones de rutas
         $allRoutes = new RouteCollection();
         $routes = new RouteCollection();
@@ -50,7 +50,7 @@ class RoutingLoader extends Loader
                 $this->prefixRoutes($routes, $allRoutes);
             }
         }
-        $edemyMain->stop('routing_loader', 'init');
+        $stopWatch->stop('routing_loader', 'init');
         return $allRoutes;
     }
 

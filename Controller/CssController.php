@@ -18,7 +18,7 @@ class CssController extends BaseController
         ));
     }
 
-    public function indexAction($_route, $file)
+    public function indexAction($_route, $file, $_format)
     {
         //die(var_dump($this->get('templating.globals')));
         $parts = explode('.', $_route);
@@ -91,7 +91,7 @@ class CssController extends BaseController
             return false;
         }
         $event->setCss(
-            $this->render('css.css.twig', array( 'modules' => $event->getModules() ))
+            $this->render('css', array( 'modules' => $event->getModules() ))
         );
 
         return true;

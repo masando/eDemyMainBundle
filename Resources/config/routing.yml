@@ -4,6 +4,7 @@ edemy_main_frontpage:
     requirements:   { _locale: es|en, _format: html|xml }
 
 edemy_css_file:
-    path:           /mycss/{file}.css
-    defaults:       { _controller: edemy.css:indexAction }
+    path:           /mycss/{file}.{_format}
+    defaults:       { _controller: edemy.css:indexAction, _format: css }
     methods:        [ GET ]
+    requirements:   { _format: css }

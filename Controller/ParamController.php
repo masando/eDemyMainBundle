@@ -43,6 +43,7 @@ class ParamController extends BaseController
             } else {
                 $value = $param;
             }
+//            dump($param . ' ' . $default . ' ' . $value);
         } else {
             if(count($entities) == 1) {
                 $value = $entities[0]->getValue();

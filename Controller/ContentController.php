@@ -46,7 +46,7 @@ class ContentController extends BaseController
         }
         $this->eventDispatcher->dispatch('edemy_postcontent_module', $event);
         $event->setContent(
-            $this->render("content.html.twig", array(
+            $this->render("content", array(
                 'modules' => $event->getModules()
             ))
         );

@@ -26,6 +26,30 @@ abstract class BaseController extends Controller implements EventSubscriberInter
     protected $environment;
     protected $stopwatch;
 
+    public static function getSubscriptions($bundle, $entities = array(), $route_subscriptions = array())
+    {
+        // eventos suscritos por defecto
+        $subscriptions = array(
+            'edemy_main_mainmenu' => array('onMainMenu', 0),
+            'edemy_main_adminmenu' => array('onAdminMenu', 0),
+            'edemy_main_footermenu' => array('onFooterMenu', 0),
+            //'edemy_css_lastmodified'    => array('onCssLastModified', 0),
+            'edemy_css_module' => array('onCssModule', 0),
+            'edemy_javascript_module' => array('onJavascriptModule', 0),
+            'edemy_sitemap_module' => array('onSitemapModule', 0),
+            'edemy_'.$bundle.'_frontpage' => array('onFrontpage', 0),
+            'edemy_search_subquery' => array('onSearchSubQuery', 0),
+        );
+        // eventos de las entidades
+        foreach ($entities as $entity) {
+            $subscriptions = $subscriptions + self::getEntitySubscriptions($bundle, $entity);
+        }
+        // eventos de los controladores
+        $subscriptions = $subscriptions + $route_subscriptions;
+
+        return $subscriptions;
+    }
+
     public static function getEntitySubscriptions($bundle, $entity_name)
     {
         $main_subscriptions = array(
@@ -42,37 +66,12 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         return $main_subscriptions;
     }
 
-    public static function getSubscriptions($bundle, $entities = array(), $route_subscriptions = array())
-    {
-        $subscriptions = array();
-        $subscriptions = $subscriptions + array(
-                'edemy_main_mainmenu' => array('onMainMenu', 0),
-                'edemy_main_adminmenu' => array('onAdminMenu', 0),
-                'edemy_main_footermenu' => array('onFooterMenu', 0),
-                //'edemy_css_lastmodified'    => array('onCssLastModified', 0),
-                'edemy_css_module' => array('onCssModule', 0),
-                'edemy_javascript_module' => array('onJavascriptModule', 0),
-                'edemy_sitemap_module' => array('onSitemapModule', 0),
-                'edemy_'.$bundle.'_frontpage' => array('onFrontpage', 0),
-                'edemy_search_subquery' => array('onSearchSubQuery', 0),
-            );
-        foreach ($entities as $entity) {
-            $subscriptions = $subscriptions + self::getEntitySubscriptions($bundle, $entity);
-        }
-        $subscriptions = $subscriptions + $route_subscriptions;
-
-        return $subscriptions;
-    }
-
     public static function getSubscribedEvents() {}
 
     public function setEventDispatcher(eventDispatcherInterface $eventDispatcher)
     {
         $this->eventDispatcher = $eventDispatcher;
         $this->environment = $this->get('kernel')->getEnvironment();
-        if ($this->isDevelopment()) {
-            $this->stopwatch = $this->get('debug.stopwatch');
-        }
     }
 
     public function __construct()
@@ -89,6 +88,24 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         }
 
         return false;
+    }
+
+    // CONTAINER TOOLS
+    public function get($service)
+    {
+//        if($service == 'debug.stopwatch') {
+//            if (!$this->isDevelopment()) {
+//                return null;
+//            }
+//        }
+
+        $event = new GenericEvent(
+            "service",
+            array('name' => $service)
+        );
+        $this->eventDispatcher->dispatch('edemy_service', $event);
+
+        return $event['service'];
     }
 
     // ROUTING TOOLS
@@ -119,6 +136,14 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         return $_route;
     }
 
+    public function getFormat()
+    {
+        $request = $this->get('request_stack')->getCurrentRequest();
+        $_format = $request->attributes->get('_format');
+
+        return $_format;
+    }
+
     public function getNamespace($_route = null)
     {
         if ($_route == null) {
@@ -136,21 +161,23 @@ abstract class BaseController extends Controller implements EventSubscriberInter
     //// TEMPLATING TOOLS
     public function render($template, array $options = array(), Response $response = null)
     {
+        if(($_format = $this->getFormat()) === null) $_format = 'html';
         if (strpos($template, 'dmin/')) {
-            return $this->get('templating')->render('eDemyMainBundle::'.$template, $options);
+            return $this->get('templating')->render('eDemyMainBundle::'.$template . '.' . $_format . '.twig', $options);
         } else {
             // @TODO add themeBundle param
             //die();
 //            return parent::render($this->getBundleName().'::' . $template, $options);
-            return $this->get('templating')->render($this->getTemplate($template), $options);
+//            die(var_dump($this->getTemplate($template)));
+            return $this->get('templating')->render($this->getTemplate($template, $_format), $options);
         }
     }
 
     public function getTemplate($template, $_format = 'html') {
         $template = $this->getParam("themeBundle", null, $this->getBundleName()) .
-            '::' .
-            $this->getParam($template, null, "layout/theme").'.'.$_format.'.twig';
-        //die(var_dump($template));
+            '::' . $template . '.' . $_format . '.twig';
+//            $this->getParam($template, null, "layout/theme").'.'.$_format.'.twig';
+//        if($template == 'content.html.twig') die(var_dump($template_b));
         return $template;
     }
 
@@ -186,16 +213,17 @@ abstract class BaseController extends Controller implements EventSubscriberInter
 
     public function getParam($param, $bundle = null, $default = null, $namespace = null, $object = false)
     {
-        $request = $this->get('request_stack')->getCurrentRequest();
-        $_route = $request->attributes->get('_route');
+//        $request = $this->get('request_stack')->getCurrentRequest();
+//        $_route = $request->attributes->get('_route');
 
         if ($namespace == null) {
-            $namespace = $this->getNamespace($_route);
+            $namespace = $this->getNamespace();
         }
         //$name_parts = explode('.', $param);
         if ($bundle == null) {
             $bundle = $this->getBundleName();
         }
+
         $event = new GenericEvent(
             "param",
             array(
@@ -259,18 +287,6 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         }
 
         return new RedirectResponse($redirect);
-    }
-
-    // CONTAINER TOOLS
-    public function get($service)
-    {
-        $event = new GenericEvent(
-            "service",
-            array('name' => $service)
-        );
-        $this->eventDispatcher->dispatch('edemy_service', $event);
-
-        return $event['service'];
     }
 
     ////
@@ -454,7 +470,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
                 $params[$param->getName()] = $param->getValue();
             }
         }
-        $this->addEventModule($event, "css/" . $this->getControllerName() . ".css.twig", array('params' => $params));
+        $this->addEventModule($event, "css/" . $this->getControllerName(), array('params' => $params));
 
         return true;
     }
@@ -587,6 +603,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         $repository = $this->get('doctrine.orm.entity_manager')->getRepository($this->getBundleName().':'.$this->getEntityNameUpper());
         //die(var_dump($this->getNamespace()));
         $entities = array_merge($this->findAll($this->getEntityNameUpper()) , $repository->findByNamespace('all'));
+//        die(var_dump($entities));
         $paginator  = $this->get('knp_paginator');
         $pagination = $paginator->paginate(
             $entities,
@@ -599,7 +616,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
             $entity->setMappings();
         }
 
-        $this->addEventModule($event, "admin/index.html.twig", array(
+        $this->addEventModule($event, "admin/index", array(
             'entities' => $pagination->getItems(),
             'pagination' => $pagination,
             'entity_name' => $this->getEntityName(),
@@ -625,7 +642,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         $entity->setEntityManager($this->get('doctrine.orm.entity_manager'));
         $entity->setMappings();
         $deleteForm = $this->createDeleteForm($id);
-        $this->addEventModule($event, 'admin/show.html.twig', array(
+        $this->addEventModule($event, 'admin/show', array(
             'entity'      => $entity,
             'delete_form' => $deleteForm->createView(),
             'entity_name' => $this->getEntityName(),
@@ -643,7 +660,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         $entity = $this->getNewEntity($this->get('doctrine.orm.entity_manager'));
         //$entity->setEntityManager($this->get('doctrine.orm.entity_manager'));
         //$entity->setMappings();
-        $this->addEventModule($event, 'admin/new.html.twig', array(
+        $this->addEventModule($event, 'admin/new', array(
             'entity' => $entity,
             'form'   => $this->createNewForm($entity)->createView(),
             'entity_name' => $this->getEntityName(),
@@ -693,7 +710,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
 
             return true;
         }
-        $this->addEventModule($event, 'admin/new.html.twig', array(
+        $this->addEventModule($event, 'admin/new', array(
             'entity' => $entity,
             'form'   => $form->createView(),
         ));
@@ -717,7 +734,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         $entity->setMappings();
         $editForm = $this->createEditForm($entity);
         $deleteForm = $this->createDeleteForm($id);
-        $this->addEventModule($event, 'admin/edit.html.twig', array(
+        $this->addEventModule($event, 'admin/edit', array(
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
@@ -780,7 +797,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
 
             return true;
         }
-        $this->addEventModule($event, 'admin/edit.html.twig', array(
+        $this->addEventModule($event, 'admin/edit', array(
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             //'delete_form' => $deleteForm->createView(),
@@ -935,7 +952,17 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         $entityClass = $this->getEntityClass();
         return new $entityClass($em);
     }
-        
+
+    public function getBundlePath($bundleName = null) {
+        $manager = new DisconnectedMetadataFactory($this->get('doctrine'));
+        if($bundleName == null) {
+            $bundle = $this->get('kernel')->getBundle($this->getBundleName());
+        } else {
+            $bundle = $this->get('kernel')->getBundle($bundleName);
+        }
+        $metadata = $manager->getBundleMetadata($bundle);
+        //die(var_dump($metadata));
+    }
     public function getBundleEntities($bundleName = null)
     {
         $manager = new DisconnectedMetadataFactory($this->get('doctrine'));
@@ -982,7 +1009,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
                             //search entities with query
                             $entities = $this->get('doctrine.orm.entity_manager')->getRepository($this->getBundleName() . ':' . $entityName)->findBySearchQuery($query, $this->getNamespace());
                             foreach($entities as $entity) {
-                                $result = $this->render(strtolower($entityName) . '_search_result.html.twig', array(
+                                $result = $this->render(strtolower($entityName) . '_search_result', array(
                                     'entity' => $entity,
                                 ));
                                 $searchEvent['results'] = array_merge($searchEvent['results'], array($result));
@@ -1031,11 +1058,12 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         return $lastmodified;
     }
 
+    // STOPWATCH TOOLS
     public function start($name, $section = null)
     {
         if($this->isDevelopment()) {
             //if($section) $this->stopwatch->openSection();
-            $this->stopwatch->start($name, $section);
+//            $this->get('debug.stopwatch')->start($name, $section);
             //if($section) $this->stopwatch->stopSection($section);
         }
     }
@@ -1043,7 +1071,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
     public function stop($name, $section = null)
     {
         if($this->isDevelopment()) {
-            $this->stopwatch->stop($name);
+//            $this->get('debug.stopwatch')->stop($name);
         }
     }
 

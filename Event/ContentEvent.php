@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 class ContentEvent extends Event
 {
     protected $route;
+    protected $format;
     protected $css;
     protected $title;
     protected $description;
@@ -28,6 +29,7 @@ class ContentEvent extends Event
     public function __construct($route = null, $routeMatch = null)
     {
         $this->route = $route;
+        $this->format = 'html';
         $this->css = null;
         $this->title = null;
         $this->description = null;
@@ -145,10 +147,28 @@ class ContentEvent extends Event
     {
         return $this->route;
     }
-    
+
+    public function getRouteLastModified()
+    {
+        return $this->route . '_lastmodified';
+    }
+
+
     public function setRoute($route)
     {
         $this->route = $route;
+        return $this;
+    }
+
+    // Format
+    public function getFormat()
+    {
+        return $this->format;
+    }
+
+    public function setFormat($format)
+    {
+        $this->format = $format;
         return $this;
     }
 
