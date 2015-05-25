@@ -30,13 +30,17 @@ class ParamController extends BaseController
                 'published' => true,
             ));
         } else {
-            $entities = $this->get('doctrine.orm.entity_manager')->getRepository($this->getBundleName().':Param')->findBy(array(
-                'bundle' => $bundle,
-                'name' => $param,
-                'namespace' => $namespace,
-                'published' => true,
-            ));
+            $entities = $this->get('doctrine.orm.entity_manager')
+//                ->getRepository($this->getBundleName().':Param')
+                ->getRepository('eDemyMainBundle:Param')
+                ->findBy(array(
+                    'bundle' => $bundle,
+                    'name' => $param,
+                    'namespace' => $namespace,
+                    'published' => true,
+                ));
         }
+//        dump($this->getBundleName());
         if (!$entities) {
             if ($default != null) {
                 $value = $default;
@@ -52,6 +56,8 @@ class ParamController extends BaseController
                 $value = $entities;
             }
         }
+
+//        if($bundle == null) dump($this->class);|
         return $value;
     }
 
