@@ -117,7 +117,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
     }
 
     // ROUTING TOOLS
-    public function getNamespaceFromRoute() {
+    public function getNamespaceFromRoute($_route) {
         $parts = explode('.', $_route);
         if (count($parts) == 2) {
             return $parts[0];
@@ -1146,8 +1146,10 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         $lastmodified = null;
         if ($this->dispatch($route, $event)) {
             $lastmodified = $event->getLastModified();
-            $this->getBundlePath($this->getParam("themeBundle", null, $this->getBundleName()));
+            //$this->getBundlePath($this->getParam("themeBundle", null, $this->getBundleName()));
         }
+
+        // @TODO lastmodified sólo de los archivos que intervienen en la ruta
 
         // lastmodified de las plantillas de la ruta
         $lastmodified_files = $this->getLastModifiedFiles('*.html.twig');
@@ -1192,6 +1194,13 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         $this->dispatch('edemy_css', $contentEvent);
 
         return $contentEvent->getCss();
+    }
+
+    public function getJs($route) {
+        $contentEvent = new ContentEvent($route);
+        $this->dispatch('edemy_js', $contentEvent);
+
+        return $contentEvent->getJs();
     }
 
     public function isPropagationStopped(ContentEvent $event) {
@@ -1260,5 +1269,15 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         $stopwatch->stop('fullResponse');
 
         return $response;
+    }
+
+    public function dump($var) {
+        if($this->environment == "dev") {
+            dump($var);
+
+            return true;
+        }
+
+        return false;
     }
 }

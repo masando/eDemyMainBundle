@@ -50,13 +50,12 @@ class MainController extends BaseController
     {
         $event = new ContentEvent($this->getRouteWithoutNamespace());
         $event->setFormat($_format);
+        $this->dump($event->getRoute());
 
         if($lastmodified = $this->getLastModified($event->getRoute())) {
-//            dump($lastmodified);
             $event->setLastModified($lastmodified);
 
             if ($response = $this->ifNotModified304($lastmodified)) {
-//                dump('cached');
 
                 return $response;
             }
@@ -65,12 +64,10 @@ class MainController extends BaseController
             $event->setContent($content);
         }
         if($response = $this->isPropagationStopped($event)) {
-//            dump('propagationStopped');
 
             return $response;
         }
         if($response = $this->getFullResponse($event)) {
-//            dump('fullResponse');
 
             return $response;
         }

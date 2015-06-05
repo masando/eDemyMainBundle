@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of the eDemy Framework package.
+ *
+ * (c) Manuel Sanchís <msanchis@edemy.es>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 namespace eDemy\MainBundle\Controller;
 
 use eDemy\MainBundle\Event\ContentEvent;
@@ -7,8 +15,18 @@ use eDemy\MainBundle\Event\ContentEvent;
 //use eDemy\MainBundle\Form\ParamType;
 use Symfony\Component\EventDispatcher\GenericEvent;
 
+/**
+ * ParamController
+ *
+ * El servicio edemy.param es el encargado de gestionar los parámetros de configuración.
+
+ * @author Manuel Sanchís <msanchis@edemy.es>
+ */
 class ParamController extends BaseController
 {
+    /**
+     * @return array Subscribed Events List
+     */
     public static function getSubscribedEvents()
     {
         return self::getSubscriptions('main', ['param'], array(
