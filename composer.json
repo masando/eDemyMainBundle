@@ -13,11 +13,11 @@
     "GNU v2"
   ],
   "require" : {
-    "stof/doctrine-extensions-bundle": "dev-master",
-    "stfalcon/tinymce-bundle": "dev-master",
-    "jms/serializer-bundle": "dev-master",
-    "knplabs/knp-paginator-bundle": "dev-master",
-    "friendsofsymfony/user-bundle": "dev-master"
+    "stof/doctrine-extensions-bundle": "*",
+    "stfalcon/tinymce-bundle": "*",
+    "jms/serializer-bundle": "*",
+    "knplabs/knp-paginator-bundle": "*",
+    "friendsofsymfony/user-bundle": "master"
   },
   "autoload" : {
     "psr-0" : { "eDemy\\MainBundle" : "" }
