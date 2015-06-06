@@ -17,7 +17,7 @@
     "stfalcon/tinymce-bundle": "*",
     "jms/serializer-bundle": "*",
     "knplabs/knp-paginator-bundle": "*",
-    "friendsofsymfony/user-bundle": "2.*"
+    "friendsofsymfony/user-bundle": "v2.*"
   },
   "autoload" : {
     "psr-0" : { "eDemy\\MainBundle" : "" }
