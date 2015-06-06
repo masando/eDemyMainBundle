@@ -1123,7 +1123,6 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         if ($this->dispatch($_route . '_lastmodified', $event)) {
             $lastmodified = $event->getLastModified();
         }
-
         // lastmodified de los ficheros
         $lastmodified_files = $this->getLastModifiedFiles('*.' . $_format . '.twig');
 

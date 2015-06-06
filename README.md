@@ -28,6 +28,6 @@ This bundle is under the GNUv2 license. See the complete license in the bundle:
 Documentation
 -------------
 
-The bulk of the documentation is stored in the `Resources/doc/index.md`
+The bulk of the documentation is stored in the `Resources/meta/doc.md`
 file in this bundle.
 
