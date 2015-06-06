@@ -17,6 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\eventDispatcher\eventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -480,18 +481,24 @@ abstract class BaseController extends Controller implements EventSubscriberInter
 
     public function onCssModule(ContentEvent $event)
     {
-        /** @var Param[] $allparams */
-        $allparams = $this->getParamByType('css');
-        $params = array();
-        //$allparams = $this->get('doctrine.orm.entity_manager')->getRepository($this->getBundleName().':Param')->findAll();
-        if($allparams) {
-            foreach($allparams as $param) {
-                $params[$param->getName()] = $param->getValue();
+        $dir = 'assets/';
+        if($this->fileExists($this->getControllerName().".css.twig", $dir)) {
+            /** @var Param[] $allparams */
+            $allparams = $this->getParamByType('css');
+            $params = array();
+            //$allparams = $this->get('doctrine.orm.entity_manager')->getRepository($this->getBundleName().':Param')->findAll();
+            if ($allparams) {
+                foreach ($allparams as $param) {
+                    $params[$param->getName()] = $param->getValue();
+                }
             }
-        }
-        $this->addEventModule($event, "assets/" . $this->getControllerName(), array('params' => $params));
+            $this->addEventModule($event, $dir . $this->getControllerName(), array('params' => $params));
 
-        return true;
+            return true;
+        } else {
+
+            return false;
+        }
     }
 
     public function onSitemapModule(ContentEvent $event) {
@@ -602,18 +609,23 @@ abstract class BaseController extends Controller implements EventSubscriberInter
 
     public function onJavascriptModule(ContentEvent $event)
     {
-        /** @var Param[] $allparams */
-        $allparams = $this->getParamByType('javascript');
-        $params = array();
-        //$allparams = $this->get('doctrine.orm.entity_manager')->getRepository($this->getBundleName().':Param')->findAll();
-        if($allparams) {
-            foreach($allparams as $param) {
-                $params[$param->getName()] = $param->getValue();
+        $dir = 'assets/';
+        if($this->fileExists($this->getControllerName().".js.twig", $dir)) {
+            /** @var Param[] $allparams */
+            $allparams = $this->getParamByType('javascript');
+            $params = array();
+            //$allparams = $this->get('doctrine.orm.entity_manager')->getRepository($this->getBundleName().':Param')->findAll();
+            if ($allparams) {
+                foreach ($allparams as $param) {
+                    $params[$param->getName()] = $param->getValue();
+                }
             }
-        }
-        $this->addEventModule($event, "js/" . $this->getControllerName() . ".js.twig", array('params' => $params));
+            $this->addEventModule($event, $dir . $this->getControllerName(), array('params' => $params));
 
-        return true;
+            return true;
+        } else {
+            return false;
+        }
     }
 
     //// onIndex
@@ -1123,6 +1135,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         if ($this->dispatch($_route . '_lastmodified', $event)) {
             $lastmodified = $event->getLastModified();
         }
+
         // lastmodified de los ficheros
         $lastmodified_files = $this->getLastModifiedFiles('*.' . $_format . '.twig');
 
@@ -1285,4 +1298,37 @@ abstract class BaseController extends Controller implements EventSubscriberInter
 
         return false;
     }
+
+    /**
+     * Devuelve la fecha de última modificación de los ficheros de la plantilla activa.
+     *
+     * @param $name
+     * @param null $dir
+     * @return \DateTime|null
+     */
+    public function fileExists($name, $dir = null)
+    {
+        $reflection = new \ReflectionClass(get_class($this));
+        if(($themeBundle = $this->getParam("themeBundle")) !== 'themeBundle') {
+            $dir = $this->getBundlePath($themeBundle, true) . '/Resources/views/' . $dir;
+        }
+        // Si se está ejecutando desde la caché
+        if(strpos($reflection->getFileName(), 'app/cache/')) {
+            // subimos hasta el directorio raíz de la aplicación (3 niveles)
+            $basedir = dirname($reflection->getFileName()) . '/../../..';
+        } else {
+            // si no subimos 6 niveles hasta el directorio raíz de la aplicación
+            $basedir = dirname($reflection->getFileName()) . '/../../../../../..';
+        }
+
+        $fs = new Filesystem();
+        //die(var_dump($basedir . $dir . $name));
+        if($fs->exists($basedir . $dir . $name)) {
+
+            return true;
+        }
+
+        return false;
+    }
+
 }

@@ -52,7 +52,7 @@ class ContentController extends BaseController
         }
         $this->eventDispatcher->dispatch('edemy_postcontent_module', $event);
         $event->setContent(
-            $this->render("snippets/content_join", array(
+            $this->render("snippets/join", array(
                 'modules' => $event->getModules()
             ))
         );

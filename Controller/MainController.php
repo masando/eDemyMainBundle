@@ -80,7 +80,6 @@ class MainController extends BaseController
      * Este listener calcula lastmodified de la ruta edemy_main_frontpage
      * Para ello calcula el lastmodified de la ruta que se muestra en frontpage (si existe)
      * o toma el de $event si no existe (que por ahora es null)
-     * Por último lo compara con la última modificación de layout/theme.html.twig
      *
      * @param ContentEvent $event
      * @return bool
@@ -96,10 +95,6 @@ class MainController extends BaseController
         } else {
             $lastmodified = $event->getLastModified();
         }
-/*        $lastmodified_files = $this->getLastModifiedFiles('theme.html.twig', 'layout');
-        if($lastmodified_files > $lastmodified) {
-            $lastmodified = $lastmodified_files;
-        }*/
 
         $event->setLastModified($lastmodified);
 

@@ -56,7 +56,7 @@ class MetaController extends BaseController
             return false;
         }
         $event->setMeta(
-            $this->render('templates/meta', array( 'modules' => $event->getModules() ))
+            $this->render('snippets/join', array( 'modules' => $event->getModules() ))
         );
 
         return true;
