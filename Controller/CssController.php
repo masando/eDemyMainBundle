@@ -51,7 +51,7 @@ class CssController extends BaseController
         $event = new ContentEvent($this->getRouteWithoutNamespace());
         $event->setFormat($_format);
 
-        if($lastmodified = $this->getLastModified($event->getRoute())) {
+        if($lastmodified = $this->getLastModified($event->getRoute(), $event->getFormat())) {
             $event->setLastModified($lastmodified);
             if ($response = $this->ifNotModified304($lastmodified)) {
 

@@ -35,6 +35,49 @@ services:
         tags:
             - { name: kernel.event_subscriber }
 
+    edemy.footer:
+        class:  eDemy\MainBundle\Controller\FooterController
+        calls:
+            - [setEventDispatcher, ["@event_dispatcher"]]
+        tags:
+            - { name: kernel.event_subscriber }
+
+    edemy.js:
+        class:  eDemy\MainBundle\Controller\JsController
+        calls:
+            - [setEventDispatcher, ["@event_dispatcher"]]
+        tags:
+            - { name: kernel.event_subscriber }
+
+    edemy.header:
+        class:  eDemy\MainBundle\Controller\HeaderController
+        calls:
+            - [setEventDispatcher, ["@event_dispatcher"]]
+        tags:
+            - { name: kernel.event_subscriber }
+
+    edemy.meta:
+        class:  eDemy\MainBundle\Controller\MetaController
+        calls:
+            - [setEventDispatcher, ["@event_dispatcher"]]
+        tags:
+            - { name: kernel.event_subscriber }
+
+    edemy.menu:
+        class: eDemy\MainBundle\Controller\MenuController
+        calls:
+            - [setEventDispatcher, ["@event_dispatcher"]]
+        tags:
+            - { name: kernel.event_subscriber }
+
+    edemy.redirect:
+        class: eDemy\MainBundle\Controller\RedirectController
+        calls:
+            - [setEventDispatcher, ["@event_dispatcher"]]
+        tags:
+            - { name: kernel.event_subscriber }
+            - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
+
     edemy.servicecontainer:
         class: eDemy\MainBundle\Controller\ServiceContainerController
         arguments: ["@service_container"]

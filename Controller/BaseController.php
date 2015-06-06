@@ -117,7 +117,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
     }
 
     // ROUTING TOOLS
-    public function getNamespaceFromRoute() {
+    public function getNamespaceFromRoute($_route) {
         $parts = explode('.', $_route);
         if (count($parts) == 2) {
             return $parts[0];
@@ -1076,37 +1076,6 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         return true;
     }
 
-    public function getLastModifiedFiles($name, $dir = null)
-    {
-        $lastmodified = null;
-        $reflection = new \ReflectionClass(get_class($this));
-        if(($themeBundle = $this->getParam("themeBundle")) !== 'themeBundle') {
-            $dir = $this->getBundlePath($themeBundle, true) . '/Resources/views/' . $dir;
-        }
-        // Estamos en el dir Controller
-        if(strpos($reflection->getFileName(), 'app/cache/')) {
-            $basedir = dirname($reflection->getFileName()) . '/../../..';
-        } else {
-            $basedir = dirname($reflection->getFileName()) . '/../../../../../..';
-        }
-        $finder = new Finder();
-
-        $finder
-            ->files()
-            ->in($basedir . $dir)
-            ->name($name);
-            //->sortByModifiedTime();
-        foreach ($finder as $file) {
-            //$lastmodified_files = new \DateTime();
-            $lastmodified_files = \DateTime::createFromFormat( 'U', $file->getMTime() );
-            if($lastmodified_files > $lastmodified) {
-                $lastmodified = $lastmodified_files;
-            }
-        }
-        
-        return $lastmodified;
-    }
-
     // STOPWATCH TOOLS
     public function start($name, $section = null)
     {
@@ -1134,36 +1103,75 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         return "dev" == $this->environment;
     }
 
-    public function getLastModified($route) {
-        // @TODO falta el edemy_content_lastmodified
+    /**
+     * Esta función devuelve la fecha de la última modificación de los elementos
+     * que intervienen en la ruta. Tiene en cuenta la variable format para diferenciar
+     * entre ficheros html, css o js.
+     *
+     * @param $_route
+     * @param $_format
+     * @return \DateTime|null
+     */
+    public function getLastModified($_route, $_format) {
         $stopwatch = $this->get('debug.stopwatch');
         $stopwatch->start('contentNotModified');
 
         $event = new ContentEvent();
-        $route = $route . '_lastmodified';
 
         // lastmodified de la ruta
         $lastmodified = null;
-        if ($this->dispatch($route, $event)) {
+        if ($this->dispatch($_route . '_lastmodified', $event)) {
             $lastmodified = $event->getLastModified();
-            $this->getBundlePath($this->getParam("themeBundle", null, $this->getBundleName()));
         }
 
-        // lastmodified de las plantillas de la ruta
-        $lastmodified_files = $this->getLastModifiedFiles('*.html.twig');
+        // lastmodified de los ficheros
+        $lastmodified_files = $this->getLastModifiedFiles('*.' . $_format . '.twig');
 
         if ($lastmodified_files > $lastmodified) {
             $lastmodified = $lastmodified_files;
         }
 
-        // lastmodified de las plantillas de la ruta
-        $lastmodified_css = $this->getLastModifiedFiles('*.css.twig');
-
-        if ($lastmodified_css > $lastmodified) {
-            $lastmodified = $lastmodified_css;
-        }
-
         $stopwatch->stop('contentNotModified');
+
+        return $lastmodified;
+    }
+
+    /**
+     * Devuelve la fecha de última modificación de los ficheros de la plantilla activa.
+     *
+     * @param $name
+     * @param null $dir
+     * @return \DateTime|null
+     */
+    public function getLastModifiedFiles($name, $dir = null)
+    {
+        $lastmodified = null;
+        $reflection = new \ReflectionClass(get_class($this));
+        if(($themeBundle = $this->getParam("themeBundle")) !== 'themeBundle') {
+            $dir = $this->getBundlePath($themeBundle, true) . '/Resources/views/' . $dir;
+        }
+        //die(var_dump($dir));
+        // Si se está ejecutando desde la caché
+        if(strpos($reflection->getFileName(), 'app/cache/')) {
+            // subimos hasta el directorio raíz de la aplicación (3 niveles)
+            $basedir = dirname($reflection->getFileName()) . '/../../..';
+        } else {
+            // si no subimos 6 niveles hasta el directorio raíz de la aplicación
+            $basedir = dirname($reflection->getFileName()) . '/../../../../../..';
+        }
+        $finder = new Finder();
+        $finder
+            ->files()
+            ->in($basedir . $dir)
+            ->name($name);
+            //->sortByModifiedTime();
+        foreach ($finder as $file) {
+            //$lastmodified_files = new \DateTime();
+            $lastmodified_files = \DateTime::createFromFormat( 'U', $file->getMTime() );
+            if($lastmodified_files > $lastmodified) {
+                $lastmodified = $lastmodified_files;
+            }
+        }
 
         return $lastmodified;
     }
@@ -1192,6 +1200,13 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         $this->dispatch('edemy_css', $contentEvent);
 
         return $contentEvent->getCss();
+    }
+
+    public function getJs($route) {
+        $contentEvent = new ContentEvent($route);
+        $this->dispatch('edemy_js', $contentEvent);
+
+        return $contentEvent->getJs();
     }
 
     public function isPropagationStopped(ContentEvent $event) {
@@ -1260,5 +1275,15 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         $stopwatch->stop('fullResponse');
 
         return $response;
+    }
+
+    public function dump($var) {
+        if($this->environment == "dev") {
+            dump($var);
+
+            return true;
+        }
+
+        return false;
     }
 }

@@ -12,6 +12,7 @@ class ContentEvent extends Event
     protected $route;
     protected $format;
     protected $css;
+    protected $js;
     protected $title;
     protected $description;
     protected $keywords;
@@ -55,6 +56,18 @@ class ContentEvent extends Event
     public function setCss($css)
     {
         $this->css = $css;
+        return $this;
+    }
+
+    ////JS
+    public function getJs()
+    {
+        return $this->js;
+    }
+
+    public function setJs($js)
+    {
+        $this->js = $js;
         return $this;
     }
 

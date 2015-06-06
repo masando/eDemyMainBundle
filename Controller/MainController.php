@@ -50,13 +50,13 @@ class MainController extends BaseController
     {
         $event = new ContentEvent($this->getRouteWithoutNamespace());
         $event->setFormat($_format);
+        $this->dump($event->getRoute());
 
-        if($lastmodified = $this->getLastModified($event->getRoute())) {
-//            dump($lastmodified);
+        if($lastmodified = $this->getLastModified($event->getRoute(), $event->getFormat())) {
             $event->setLastModified($lastmodified);
+            $this->dump($lastmodified);
 
             if ($response = $this->ifNotModified304($lastmodified)) {
-//                dump('cached');
 
                 return $response;
             }
@@ -65,12 +65,10 @@ class MainController extends BaseController
             $event->setContent($content);
         }
         if($response = $this->isPropagationStopped($event)) {
-//            dump('propagationStopped');
 
             return $response;
         }
         if($response = $this->getFullResponse($event)) {
-//            dump('fullResponse');
 
             return $response;
         }
@@ -98,10 +96,10 @@ class MainController extends BaseController
         } else {
             $lastmodified = $event->getLastModified();
         }
-        $lastmodified_files = $this->getLastModifiedFiles('theme.html.twig', 'layout');
+/*        $lastmodified_files = $this->getLastModifiedFiles('theme.html.twig', 'layout');
         if($lastmodified_files > $lastmodified) {
             $lastmodified = $lastmodified_files;
-        }
+        }*/
 
         $event->setLastModified($lastmodified);
 
