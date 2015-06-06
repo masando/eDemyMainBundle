@@ -4,11 +4,8 @@ namespace eDemy\MainBundle\Controller;
 
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
-use eDemy\MainBundle\Controller\BaseController;
-use eDemy\MainBundle\Event\ContentEvent;
-use eDemy\RedirectBundle\Entity\Notfound;
+use eDemy\MainBundle\Entity\Notfound;
 
 class RedirectController extends BaseController
 {
@@ -47,7 +44,7 @@ class RedirectController extends BaseController
         //SAVE 404 URL
         $em = $this->get('doctrine.orm.entity_manager');
         $currentUrl = $this->getRequest()->getUri();
-        $entity = $em->getRepository('eDemyRedirectBundle:Notfound')->findOneByUrl($currentUrl);
+        $entity = $em->getRepository('eDemyMainBundle:Notfound')->findOneByUrl($currentUrl);
         if(!$entity) {
             $notfound = new Notfound($em);
             $notfound->setUrl($currentUrl);

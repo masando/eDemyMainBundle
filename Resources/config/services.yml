@@ -104,3 +104,10 @@ services:
             - [setContainer, ["@service_container"]]
         tags:
             - { name: twig.extension }
+
+    edemy.user:
+        class: eDemy\MainBundle\Controller\UserController
+        calls:
+            - [setEventDispatcher, ["@event_dispatcher"]]
+        tags:
+            - { name: kernel.event_subscriber }

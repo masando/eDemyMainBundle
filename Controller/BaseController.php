@@ -631,6 +631,10 @@ abstract class BaseController extends Controller implements EventSubscriberInter
     //// onIndex
     public function onIndex(ContentEvent $event)
     {
+        //$this->container = $this->get('service_container');
+        $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'No tienes permisos para acceder a este recurso!');
+        //die();
+
         $repository = $this->get('doctrine.orm.entity_manager')->getRepository($this->getBundleName().':'.$this->getEntityNameUpper());
         //die(var_dump($this->getNamespace()));
         $entities = array_merge($this->findAll($this->getEntityNameUpper()) , $repository->findByNamespace('all'));
@@ -660,6 +664,8 @@ abstract class BaseController extends Controller implements EventSubscriberInter
     //// onShow
     public function onShow(ContentEvent $event)
     {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'No tienes permisos para acceder a este recurso!');
+
         $request = $this->get('request_stack')->getCurrentRequest();
         $id = $request->attributes->get('id');
         $em = $this->get('doctrine.orm.entity_manager');
@@ -688,6 +694,8 @@ abstract class BaseController extends Controller implements EventSubscriberInter
     //// onNew
     public function onNew(ContentEvent $event)
     {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'No tienes permisos para acceder a este recurso!');
+
         $entity = $this->getNewEntity($this->get('doctrine.orm.entity_manager'));
         //$entity->setEntityManager($this->get('doctrine.orm.entity_manager'));
         //$entity->setMappings();
@@ -723,6 +731,8 @@ abstract class BaseController extends Controller implements EventSubscriberInter
 
     public function onCreate(ContentEvent $event)
     {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'No tienes permisos para acceder a este recurso!');
+
         $entityClass = substr($this->getBundleName(), 0, 5) . '\\' . substr($this->getBundleName(), 5) .'\\Entity\\' . $this->getEntityNameUpper();
         $entity = new $entityClass($this->get('doctrine.orm.entity_manager'));
         //$entity->setMappings($this->getFieldMappings(), $this->getAssociationMappings());
@@ -752,6 +762,8 @@ abstract class BaseController extends Controller implements EventSubscriberInter
     //// onEdit
     public function onEdit(ContentEvent $event)
     {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'No tienes permisos para acceder a este recurso!');
+
         $request = $this->get('request_stack')->getCurrentRequest();
         $id = $request->attributes->get('id');
         $entity = $this->get('doctrine.orm.entity_manager')->getRepository($this->getBundleName().':'.$this->getEntityNameUpper())->findOneBy(array(
@@ -780,6 +792,8 @@ abstract class BaseController extends Controller implements EventSubscriberInter
     
     private function createEditForm($entity)
     {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'No tienes permisos para acceder a este recurso!');
+
         $entityClass = substr($this->getBundleName(), 0, 5) . '\\' . substr($this->getBundleName(), 5) .'\\Entity\\' . $this->getEntityNameUpper();
         $formClass = substr($this->getBundleName(), 0, 5) . '\\' . 'MainBundle' .'\\Form\\' . 'Base' . 'Type';
         $formType = new $formClass($entity);
@@ -801,6 +815,8 @@ abstract class BaseController extends Controller implements EventSubscriberInter
 
     public function onUpdate(ContentEvent $event)
     {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'No tienes permisos para acceder a este recurso!');
+
         $this->em = $this->get('doctrine.orm.entity_manager');
         $request = $this->get('request_stack')->getCurrentRequest();
         $id = $request->attributes->get('id');        
@@ -840,6 +856,8 @@ abstract class BaseController extends Controller implements EventSubscriberInter
     //// onDelete
     public function onDelete(ContentEvent $event)
     {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'No tienes permisos para acceder a este recurso!');
+
         $this->em = $this->get('doctrine.orm.entity_manager');
         $request = $this->get('request_stack')->getCurrentRequest();
         $id = $request->attributes->get('id');

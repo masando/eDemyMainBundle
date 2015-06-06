@@ -44,6 +44,8 @@ class RoutingLoader extends Loader
                 $this->addEntityRoutes($bundle, $routes);
                 // Añadimos las rutas del archivo routing.yml del Bundle
                 $this->addFileRoutes($bundle, $routes);
+                // Añadimos las rutas FOS
+                $this->addFOSRoutes($routes);
                 // Añadimos todas las rutas anteriores a la colección principal
                 $allRoutes->addCollection($routes);
                 // Si hay prefijos añadimos todas las rutas anteriores con cada prefijo a la colección principal
@@ -139,6 +141,12 @@ class RoutingLoader extends Loader
 
         $resource = "@" . $bundleName . "/Resources/config/routing.yml";
         $type = 'yaml';
+        $routes->addCollection($this->import($resource, $type));
+    }
+
+    public function addFOSRoutes(RouteCollection $routes) {
+        $resource = "@FOSUserBundle/Resources/config/routing/all.xml";
+        $type = 'xml';
         $routes->addCollection($this->import($resource, $type));
     }
 

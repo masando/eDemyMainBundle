@@ -16,7 +16,8 @@
     "stof/doctrine-extensions-bundle": "*",
     "stfalcon/tinymce-bundle": "*",
     "jms/serializer-bundle": "*",
-    "knplabs/knp-paginator-bundle": "*"
+    "knplabs/knp-paginator-bundle": "*",
+    "friendsofsymfony/user-bundle": "*"
   },
   "autoload" : {
     "psr-0" : { "eDemy\\MainBundle" : "" }

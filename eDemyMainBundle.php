@@ -24,4 +24,9 @@ class eDemyMainBundle extends Bundle
     public static function eDemyBundle() {
         return true;
     }
+
+    public function getParent()
+    {
+        return 'FOSUserBundle';
+    }
 }
