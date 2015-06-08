@@ -28,7 +28,7 @@ class PathExtension extends \Twig_Extension
             'file' => $file
         ));
         if($scriptLink) {
-            $script = '<script src="' . $scriptLink . '" type="text/javascript" />';
+            $script = '<script src="' . $scriptLink . '" type="text/javascript"></script>';
 
             return $script;
         }

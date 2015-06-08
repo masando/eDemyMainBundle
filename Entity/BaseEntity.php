@@ -20,7 +20,7 @@ abstract class BaseEntity implements Translatable
 
     public function __construct($em = null)
     {
-        $this->type = get_class($this);
+//        $this->type = get_class($this);
         //die($this->type);
         if($em) {
             $this->setEntityManager($em);

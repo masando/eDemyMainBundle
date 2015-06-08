@@ -8,7 +8,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace eDemy\MainBundle\Controller;
 
 use eDemy\MainBundle\Event\ContentEvent;
@@ -64,6 +63,13 @@ class MainController extends BaseController
         if($content = $this->getContent($event->getRoute())) {
             $event->setContent($content);
         }
+//        die(var_dump(gettype($content)));
+        if(gettype($content) == 'object') {
+            if (get_class($content) == 'Symfony\Component\HttpFoundation\RedirectResponse') {
+                return $content;
+            }
+        }
+        // @TODO comprobar stopPropagation
         if($response = $this->isPropagationStopped($event)) {
 
             return $response;

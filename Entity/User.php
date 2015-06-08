@@ -4,12 +4,12 @@ namespace eDemy\MainBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
-use Gedmo\Translatable\Translatable;
-use Doctrine\Common\Collections\ArrayCollection;
+//use Gedmo\Translatable\Translatable;
+//use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-use eDemy\MainBundle\Entity\BaseEntity;
-use FOS\UserBundle\Model\User as BaseUser;
+//use Symfony\Component\HttpFoundation\File\UploadedFile;
+//use eDemy\MainBundle\Entity\BaseEntity;
+use FOS\UserBundle\Entity\User as BaseUser;
 
 /**
  * @ORM\Table(name="fos_user")

@@ -11,8 +11,7 @@
 namespace eDemy\MainBundle\Controller;
 
 use eDemy\MainBundle\Event\ContentEvent;
-//use eDemy\MainBundle\Entity\Param;
-//use eDemy\MainBundle\Form\ParamType;
+use eDemy\MainBundle\Entity\Param;
 use Symfony\Component\EventDispatcher\GenericEvent;
 
 /**
@@ -32,7 +31,19 @@ class ParamController extends BaseController
         return self::getSubscriptions('main', ['param'], array(
             'edemy_param'               => array('onParam', 0),
             'edemy_param_by_type'       => array('onParamByType', 0),
+            'edemy_main_param_index_lastmodified' => array('onParamIndexLastmodified', 0),
         ));
+    }
+
+    public function onParamIndexLastmodified(ContentEvent $event) {
+        $this->container = $this->get('service_container');
+        if (!$this->get('security.authorization_checker')->isGranted('ROLE_ADMIN')) {
+            $lastmodified = new \DateTime();
+            $event->setLastModified($lastmodified);
+        }
+        //$this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'No tienes permisos para acceder a este recurso!');
+
+        return true;
     }
 
     public function onFrontpage(ContentEvent $event) { }
@@ -40,7 +51,7 @@ class ParamController extends BaseController
     /**
      * Esta función la podemos llamar desde el servicio directamente o desde el evento onParam
      */
-    public function getParam($param, $bundle = null, $default = null, $namespace = null, $object = false)
+    public function getParamP($param, $bundle = null, $default = null, $namespace = null, $object = false)
     {
         if($bundle == "all") {
             $entities = $this->get('doctrine.orm.entity_manager')->getRepository($this->getBundleName().':Param')->findBy(array(
@@ -82,14 +93,14 @@ class ParamController extends BaseController
     public function onParam(GenericEvent $event)
     {
         if($event->getSubject() == 'translate') {
-            $event['value'] = $this->getParam($event['param'], 'all', $event['default']);
+            $event['value'] = $this->getParamP($event['param'], 'all', $event['default']);
         } else {
-            $event['value'] = $this->getParam($event['param'], $event['bundle'], $event['default'], $event['namespace'], $event['object']);
+            $event['value'] = $this->getParamP($event['param'], $event['bundle'], $event['default'], $event['namespace'], $event['object']);
             if($event['value'] == $event['param']) {
                 //if($event['value'] == 'sitemap_bundle' and $event['namespace']) {
                     //die(var_dump($event));
                 //}
-                $event['value'] = $this->getParam($event['param'], $event['bundle'], $event['default'], 'all', $event['object']);
+                $event['value'] = $this->getParamP($event['param'], $event['bundle'], $event['default'], 'all', $event['object']);
             }
         }
         return true;

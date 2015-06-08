@@ -9,6 +9,18 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 use eDemy\MainBundle\Entity\Param;
 
+/**
+ * Class RoutingLoader
+ * La clase RoutingLoader se encarga de añadir, para cada bundle eDemy:
+ * la ruta frontpage asociada al Bundle excepto para MainBundle
+ * las rutas de las entities del Bundle
+ * las rutas del archivo routing.yml del Bundle
+ * las rutas FOS
+ * Si hay prefijos, añadir todas las rutas anteriores con cada prefijo
+ *
+ * @package eDemy\MainBundle\Routing
+ * @author Manuel Sanchís <msanchis@edemy.es>
+ */
 class RoutingLoader extends Loader
 {
     /** @var KernelInterface $this->kernel */
@@ -145,9 +157,33 @@ class RoutingLoader extends Loader
     }
 
     public function addFOSRoutes(RouteCollection $routes) {
-        $resource = "@FOSUserBundle/Resources/config/routing/all.xml";
+        $resource = "@FOSUserBundle/Resources/config/routing/security.xml";
         $type = 'xml';
         $routes->addCollection($this->import($resource, $type));
+
+        $resource = "@FOSUserBundle/Resources/config/routing/profile.xml";
+        $type = 'xml';
+        $prefixRoutes = $this->import($resource, $type);
+        $prefixRoutes->addPrefix('profile');
+        $routes->addCollection($prefixRoutes);
+
+        $resource = "@FOSUserBundle/Resources/config/routing/registration.xml";
+        $type = 'xml';
+        $prefixRoutes = $this->import($resource, $type);
+        $prefixRoutes->addPrefix('register');
+        $routes->addCollection($prefixRoutes);
+
+        $resource = "@FOSUserBundle/Resources/config/routing/resetting.xml";
+        $type = 'xml';
+        $prefixRoutes = $this->import($resource, $type);
+        $prefixRoutes->addPrefix('resetting');
+        $routes->addCollection($prefixRoutes);
+
+        $resource = "@FOSUserBundle/Resources/config/routing/change_password.xml";
+        $type = 'xml';
+        $prefixRoutes = $this->import($resource, $type);
+        $prefixRoutes->addPrefix('profile');
+        $routes->addCollection($prefixRoutes);
     }
 
     public function prefixRoutes(RouteCollection $routes, RouteCollection $allRoutes) {

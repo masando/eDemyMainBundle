@@ -6,17 +6,56 @@ The eDemyMainBundle is the main bundle for the eDemy Framework. It adds base fun
 Installation
 ------------
 
-$ composer require edemy/mainbundle:dev-master
+    $ composer require edemy/mainbundle:dev-master
 
-In AppKernel.php
-new eDemy\MainBundle\eDemyMainBundle(),
-Optional
-new Stfalcon\Bundle\TinymceBundle\StfalconTinymceBundle(),
+app/AppKernel.php
 
-In app/routing.yml
-edemy_main:
-    resource: .
-    type: extra
+    new JMS\SerializerBundle\JMSSerializerBundle(),
+    new Knp\Bundle\PaginatorBundle\KnpPaginatorBundle(),
+    new FOS\UserBundle\FOSUserBundle(),
+    new eDemy\MainBundle\eDemyMainBundle(),
+    Optional
+    new Stfalcon\Bundle\TinymceBundle\StfalconTinymceBundle(),
+
+app/routing.yml
+
+    edemy_main:
+        resource: .
+        type: extra
+
+app/config.yml
+
+    fos_user:
+        db_driver: orm # other valid values are 'mongodb', 'couchdb' and 'propel'
+        firewall_name: main
+        user_class: eDemy\MainBundle\Entity\User
+
+app/security.yml
+
+    security:
+        encoders:
+            FOS\UserBundle\Model\UserInterface: sha512
+    
+        role_hierarchy:
+            ROLE_ADMIN:       ROLE_USER
+            ROLE_SUPER_ADMIN: [ROLE_USER, ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
+    
+        providers:
+            fos_userbundle:
+                id: fos_user.user_provider.username
+    
+        firewalls:
+            dev:
+                pattern:  ^/(_(profiler|wdt)|css|images|js)/
+                security: false
+    
+            main:
+                pattern:    ^/
+                form_login:
+                    provider: fos_userbundle
+                    csrf_provider: form.csrf_provider
+                logout:       true
+                anonymous:    true
 
 License
 -------

@@ -482,7 +482,9 @@ abstract class BaseController extends Controller implements EventSubscriberInter
     public function onCssModule(ContentEvent $event)
     {
         $dir = 'assets/';
+//        $this->dump($this->fileExists($this->getControllerName().".css.twig", $dir));
         if($this->fileExists($this->getControllerName().".css.twig", $dir)) {
+
             /** @var Param[] $allparams */
             $allparams = $this->getParamByType('css');
             $params = array();
@@ -631,7 +633,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
     //// onIndex
     public function onIndex(ContentEvent $event)
     {
-        //$this->container = $this->get('service_container');
+        $this->container = $this->get('service_container');
         $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'No tienes permisos para acceder a este recurso!');
         //die();
 
@@ -664,6 +666,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
     //// onShow
     public function onShow(ContentEvent $event)
     {
+        $this->container = $this->get('service_container');
         $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'No tienes permisos para acceder a este recurso!');
 
         $request = $this->get('request_stack')->getCurrentRequest();
@@ -694,9 +697,11 @@ abstract class BaseController extends Controller implements EventSubscriberInter
     //// onNew
     public function onNew(ContentEvent $event)
     {
+        $this->container = $this->get('service_container');
         $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'No tienes permisos para acceder a este recurso!');
 
         $entity = $this->getNewEntity($this->get('doctrine.orm.entity_manager'));
+//        $this->dump($entity);
         //$entity->setEntityManager($this->get('doctrine.orm.entity_manager'));
         //$entity->setMappings();
         $this->addEventModule($event, 'admin/new', array(
@@ -731,6 +736,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
 
     public function onCreate(ContentEvent $event)
     {
+        $this->container = $this->get('service_container');
         $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'No tienes permisos para acceder a este recurso!');
 
         $entityClass = substr($this->getBundleName(), 0, 5) . '\\' . substr($this->getBundleName(), 5) .'\\Entity\\' . $this->getEntityNameUpper();
@@ -762,6 +768,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
     //// onEdit
     public function onEdit(ContentEvent $event)
     {
+        $this->container = $this->get('service_container');
         $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'No tienes permisos para acceder a este recurso!');
 
         $request = $this->get('request_stack')->getCurrentRequest();
@@ -792,6 +799,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
     
     private function createEditForm($entity)
     {
+        $this->container = $this->get('service_container');
         $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'No tienes permisos para acceder a este recurso!');
 
         $entityClass = substr($this->getBundleName(), 0, 5) . '\\' . substr($this->getBundleName(), 5) .'\\Entity\\' . $this->getEntityNameUpper();
@@ -815,6 +823,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
 
     public function onUpdate(ContentEvent $event)
     {
+        $this->container = $this->get('service_container');
         $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'No tienes permisos para acceder a este recurso!');
 
         $this->em = $this->get('doctrine.orm.entity_manager');
@@ -856,6 +865,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
     //// onDelete
     public function onDelete(ContentEvent $event)
     {
+        $this->container = $this->get('service_container');
         $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'No tienes permisos para acceder a este recurso!');
 
         $this->em = $this->get('doctrine.orm.entity_manager');
@@ -1012,7 +1022,6 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         } else {
             $bundle = $this->get('kernel')->getBundle($bundleName);
         }
-
         $path = $bundle->getPath();
 
         $join = false;
@@ -1030,7 +1039,6 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         }
 
         if($join) {
-
             return $relativePath;
         }
 
@@ -1242,13 +1250,13 @@ abstract class BaseController extends Controller implements EventSubscriberInter
     public function isPropagationStopped(ContentEvent $event) {
         $stopwatch = $this->get('debug.stopwatch');
         $stopwatch->start('isPropagationStopped');
-        $lastmodified = $event->getLastModified();
         //si hay que generar la respuesta, primero obtenemos el contenido principal
 //        die(var_dump($content));
 
 
         //si se ha detenido la propagación devolvemos la respuesta inmediatamente
         if ($event->isPropagationStopped()) {
+            $lastmodified = $event->getLastModified();
             $response = $this->newResponse($event->getContent());
             $response->setLastModified($lastmodified);
 //die('a');
@@ -1338,9 +1346,8 @@ abstract class BaseController extends Controller implements EventSubscriberInter
             // si no subimos 6 niveles hasta el directorio raíz de la aplicación
             $basedir = dirname($reflection->getFileName()) . '/../../../../../..';
         }
-
         $fs = new Filesystem();
-        //die(var_dump($basedir . $dir . $name));
+//        $this->dump($basedir . $dir . $name);
         if($fs->exists($basedir . $dir . $name)) {
 
             return true;

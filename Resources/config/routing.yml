@@ -13,3 +13,17 @@ edemy_js_file:
     path:           /myjs/{file}.js
     defaults:       { _controller: edemy.js:indexAction, file: "main", _format: js }
     methods:        [ GET ]
+
+login:
+    path:   /login
+    defaults:  { _controller: edemy.main:indexAction }
+
+login_check:
+    path:   /login_check
+
+logout:
+    path:   /logout
+
+register:
+    path:   /register
+    defaults:  { _controller: edemy.main:indexAction }

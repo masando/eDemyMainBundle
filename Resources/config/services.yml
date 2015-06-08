@@ -111,3 +111,10 @@ services:
             - [setEventDispatcher, ["@event_dispatcher"]]
         tags:
             - { name: kernel.event_subscriber }
+
+    edemy.login:
+        class:  eDemy\MainBundle\Controller\LoginController
+        calls:
+            - [setEventDispatcher, ["@event_dispatcher"]]
+        tags:
+            - { name: kernel.event_subscriber }
