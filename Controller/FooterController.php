@@ -45,12 +45,12 @@ class FooterController extends BaseController
      */
     public function onFooterLastModified(ContentEvent $event)
     {
-        $lastmodified = $this->dispatch('edemy_footer_module_lastmodified', $event)->getLastModified();
-        $lastmodified_files = $this->getLastModifiedFiles('/../../*/Resources/views', 'footer_module.html.twig');
-        if($lastmodified_files > $lastmodified) {
-            $lastmodified = $lastmodified_files;
-        }
-        $event->setLastModified($lastmodified);
+//        $lastmodified = $this->dispatch('edemy_footer_module_lastmodified', $event)->getLastModified();
+//        $lastmodified_files = $this->getLastModifiedFiles('/../../*/Resources/views', 'footer_module.html.twig');
+//        if($lastmodified_files > $lastmodified) {
+//            $lastmodified = $lastmodified_files;
+//        }
+//        $event->setLastModified($lastmodified);
     }
 
     /**

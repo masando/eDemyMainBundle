@@ -3,9 +3,9 @@
 namespace eDemy\MainBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
-use FOS\UserBundle\Controller\RegistrationController as BaseController;
+use FOS\UserBundle\Controller\RegistrationController as FOSRegistrationController;
 
-class RegistrationController extends BaseController
+class RegistrationController extends FOSRegistrationController
 {
     public function registerTargetAction($_target_path, Request $request)
     {

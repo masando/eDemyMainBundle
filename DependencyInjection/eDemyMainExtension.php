@@ -29,6 +29,7 @@ class eDemyMainExtension extends Extension
                 'eDemy\\MainBundle\\Controller\\CssController',
                 'eDemy\\MainBundle\\Controller\\FooterController',
                 'eDemy\\MainBundle\\Controller\\HeaderController',
+                'eDemy\\MainBundle\\Controller\\LogoController',
                 'eDemy\\MainBundle\\Controller\\JsController',
                 'eDemy\\MainBundle\\Controller\\MainController',
                 'eDemy\\MainBundle\\Controller\\MenuController',

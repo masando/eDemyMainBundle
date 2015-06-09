@@ -43,13 +43,13 @@ class HeaderController extends BaseController
      */
     public function onHeaderLastModified(ContentEvent $event)
     {
-        $this->dispatch('edemy_header_module_lastmodified', $event);
-        $lastmodified = $event->getLastModified();
-        $lastmodified_files = $this->getLastModifiedFiles('/../../*/Resources/views', 'header.html.twig');
-        if($lastmodified_files > $lastmodified) {
-            $lastmodified = $lastmodified_files;
-        }
-        $event->setLastModified($lastmodified);
+//        $this->dispatch('edemy_header_module_lastmodified', $event);
+//        $lastmodified = $event->getLastModified();
+//        $lastmodified_files = $this->getLastModifiedFiles('/../../*/Resources/views', 'templates/header.html.twig');
+//        if($lastmodified_files > $lastmodified) {
+//            $lastmodified = $lastmodified_files;
+//        }
+//        $event->setLastModified($lastmodified);
     }
 
     /**
@@ -68,7 +68,7 @@ class HeaderController extends BaseController
         $event->clearModules();
         $dispatcher->dispatch('edemy_header_module', $event);
         $event->setHeader(
-            $this->render("snippets/header", array(
+            $this->render("snippets/join", array(
                 'modules' => $event->getModules(),
             ))
         );

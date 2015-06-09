@@ -118,3 +118,16 @@ services:
             - [setEventDispatcher, ["@event_dispatcher"]]
         tags:
             - { name: kernel.event_subscriber }
+
+    edemy.logo:
+        class:  eDemy\MainBundle\Controller\LogoController
+        calls:
+            - [setEventDispatcher, ["@event_dispatcher"]]
+        tags:
+            - { name: kernel.event_subscriber }
+
+    edemy.twig.logo_extension:
+        class: eDemy\MainBundle\Twig\LogoExtension
+        arguments: [@service_container]
+        tags:
+            - { name: twig.extension }

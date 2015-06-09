@@ -27,3 +27,15 @@ logout:
 register:
     path:   /register
     defaults:  { _controller: edemy.main:indexAction }
+
+edemy_logo_logo_show:
+    path:           /admin/{_locale}/logo/show
+    defaults:       { _controller: edemy.main:indexAction }
+    methods:        [ GET ]
+    requirements:   { _locale: es|en }
+
+edemy_logo_logo_edit:
+    path:           /admin/{_locale}/logo/edit
+    defaults:       { _controller: edemy.main:indexAction }
+    methods:        [ GET, POST ]
+    requirements:   { _locale: es|en }
