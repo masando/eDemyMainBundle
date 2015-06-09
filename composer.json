@@ -17,6 +17,8 @@
     "stfalcon/tinymce-bundle": "*",
     "jms/serializer-bundle": "*",
     "knplabs/knp-paginator-bundle": "*",
+    "knplabs/knp-menu-bundle": "*",
+    "knplabs/knp-menu": "*",
     "friendsofsymfony/user-bundle": "*"
   },
   "autoload" : {
