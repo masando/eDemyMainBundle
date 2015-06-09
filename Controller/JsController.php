@@ -30,8 +30,8 @@ class JsController extends BaseController
     public static function getSubscribedEvents()
     {
         return self::getSubscriptions('main', [], array(
-            'edemy_javascript_lastmodified' => array('onJavascriptLastModified', 0),
-            'edemy_javascript'              => array('onJavascript', 0),
+            'edemy_js_lastmodified' => array('onJsLastModified', 0),
+            'edemy_js'              => array('onJs', 0),
         ));
     }
 
@@ -134,7 +134,7 @@ class JsController extends BaseController
      * @param ContentEvent $event
      * @return bool
      */
-    public function onJavascriptLastModified(ContentEvent $event)
+    public function onJsLastModified(ContentEvent $event)
     {
         $reflection = new \ReflectionClass(get_class($this));
         $dir = dirname($reflection->getFileName());
@@ -181,14 +181,15 @@ class JsController extends BaseController
      * @param EventDispatcherInterface $dispatcher
      * @return bool
      */
-    public function onJavascript(ContentEvent $event, $eventName, EventDispatcherInterface $dispatcher)
+    public function onJs(ContentEvent $event, $eventName, EventDispatcherInterface $dispatcher)
     {
         $event->clearModules();
-        $dispatcher->dispatch('edemy_javascript_module', $event);
-
+        $dispatcher->dispatch('edemy_js_module', $event);
+//        die(var_dump($event->getModules()));
+        $modules = $event->getModules();
         $event->setJavascript(
-            $this->render("snippets/javascript_join", array(
-                'modules' => $event->getModules()
+            $this->render("snippets/join", array(
+                'modules' => $modules,
             ))
         );
 

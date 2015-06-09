@@ -24,7 +24,8 @@ class LogoExtension extends \Twig_Extension
         //$logo = $this->notify->all();
         $logo = $this->logo->getParam('logo');
         if($logo != "none") {
-            return $this->container->get("templating")->render("eDemyLogoBundle::logo_show.html.twig", array(
+            // @TODO get template with param theme
+            return $this->container->get("templating")->render("AppBundle::templates/logo_show.html.twig", array(
                 'logo' => $logo,
             ));
         }

@@ -44,7 +44,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
             'edemy_main_footermenu' => array('onFooterMenu', 0),
             //'edemy_css_lastmodified'    => array('onCssLastModified', 0),
             'edemy_css_module' => array('onCssModule', 0),
-            'edemy_javascript_module' => array('onJavascriptModule', 0),
+            'edemy_js_module' => array('onJsModule', 0),
             'edemy_sitemap_module' => array('onSitemapModule', 0),
             'edemy_'.$bundle.'_frontpage' => array('onFrontpage', 0),
             'edemy_search_subquery' => array('onSearchSubQuery', 0),
@@ -179,7 +179,8 @@ abstract class BaseController extends Controller implements EventSubscriberInter
 //            return $this->get('templating')->render($template, $options);
 //            die(var_dump($this->getParam("themeBundle", null, $this->getBundleName())));
         }
-        //die(var_dump($this->getTemplate($template, $_format)));
+//        $this->dump($this->getTemplate($template, $_format));
+//        $this->dump($options);
         return $this->get('templating')->render($this->getTemplate($template, $_format), $options);
         /*        if (strpos($template, 'dmin/')) {
                     return $this->get('templating')->render('eDemyMainBundle::'.$template . '.' . $_format . '.twig', $options);
@@ -609,7 +610,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         return true;
     }
 
-    public function onJavascriptModule(ContentEvent $event)
+    public function onJsModule(ContentEvent $event)
     {
         $dir = 'assets/';
         if($this->fileExists($this->getControllerName().".js.twig", $dir)) {
@@ -1057,7 +1058,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         try {
             $metadata = $manager->getBundleMetadata($bundle);
             $entitiesNames = array();
-            if($bundleName == "eDemyParamBundle") {
+            if($bundleName == "eDemyMainBundle") {
                 //die(var_dump($metadata->getMetadata()));
             }
             foreach($metadata->getMetadata() as $entity) {
@@ -1244,7 +1245,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         $contentEvent = new ContentEvent($route);
         $this->dispatch('edemy_js', $contentEvent);
 
-        return $contentEvent->getJs();
+        return $contentEvent->getJavascript();
     }
 
     public function isPropagationStopped(ContentEvent $event) {

@@ -4,7 +4,7 @@ namespace eDemy\MainBundle\Controller;
 
 use eDemy\MainBundle\Controller\BaseController;
 use eDemy\MainBundle\Event\ContentEvent;
-use eDemy\ParamBundle\Entity\Param;
+use eDemy\MainBundle\Entity\Param;
 
 class LogoController extends BaseController
 {
@@ -35,7 +35,7 @@ class LogoController extends BaseController
             //$width = $this->getParam('logo.width');
             //$height = $this->getParam('logo.height');
 $time_start = microtime(true);
-            $this->addEventModule($event, 'logo_show.html.twig',  array(
+            $this->addEventModule($event, 'templates/logo_show',  array(
                 'logo' => $logo,
                 //'width' => $width,
                 //'height' => $height,
@@ -48,6 +48,9 @@ $time_end = microtime(true);
 
     public function onLogoEdit(ContentEvent $event)
     {
+        $this->container = $this->get('service_container');
+        $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'No tienes permisos para acceder a este recurso!');
+
         $namespace = $this->getNamespace();
 
         //die(var_dump($namespace));
@@ -72,10 +75,10 @@ $time_end = microtime(true);
         if ($form->isValid()) {
             $file = $form['logo']->getData();
             $path = 'logo' . $namespace . '.' . $file->guessExtension();
-            $upload_dir = __DIR__.'/../../../../web';
+            $upload_dir = __DIR__.'/../../../../../../web';
             $file->move($upload_dir.'/images/', $path);
             $name = 'logo';
-            $logo_param = $this->em->getRepository('eDemyParamBundle:Param')->findOneBy(
+            $logo_param = $this->em->getRepository('eDemyMainBundle:Param')->findOneBy(
                 array(
                     'type' => 'config',
                     'name' => $name,
@@ -84,7 +87,7 @@ $time_end = microtime(true);
 
             if (!$logo_param) {
                 //create logo param
-                $logo_param = new Param();
+                $logo_param = new Param($this->em);
             }
             $logo_param
                 ->setBundle($this->getBundleName())
@@ -105,7 +108,7 @@ $time_end = microtime(true);
         }
 
         $event->addModule(
-            $this->render("logo_edit.html.twig", array(
+            $this->render("templates/logo_edit", array(
                 'edit_form'   => $form->createView(),
             ))
         );

@@ -54,7 +54,7 @@ class MenuController extends BaseController
         $response = $this->newResponse();
 
         if ($this->get('security.authorization_checker')->isGranted('ROLE_ADMIN')) {
-            $lastmodified = $this->get('doctrine.orm.entity_manager')->getRepository('eDemyParamBundle:Param')->findLastAdminMenuModified($this->getNamespace())->getUpdated();
+            $lastmodified = $this->get('doctrine.orm.entity_manager')->getRepository('eDemyMainBundle:Param')->findLastAdminMenuModified($this->getNamespace())->getUpdated();
             $response->setPrivate();
             if($lastmodified) {
                 $response->setLastModified($lastmodified);

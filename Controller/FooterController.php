@@ -98,7 +98,9 @@ class FooterController extends BaseController
             }
         }
         $response->setPublic();
-        $response->setContent($this->dispatch('edemy_footer', $event)->getFooter());
+        $this->dispatch('edemy_footer', $event);
+        $response->setContent($event->getFooter())
+        ;
 
         return $response;
     }

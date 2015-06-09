@@ -53,6 +53,7 @@ class PathExtension extends \Twig_Extension
     {
         return array(
             new \Twig_SimpleFunction('path', array($this, 'pathFunction')),
+            new \Twig_SimpleFunction('cdnjs', array($this, 'jqueryFunction'), array('is_safe' => array('html'), 'pre_escape' => 'html')),
         );
     }
 
@@ -70,6 +71,57 @@ class PathExtension extends \Twig_Extension
         }
     }
 
+    // @TODO activar y variar con parámetros en la base de datos
+    public function jqueryFunction($lib, $version, $_route = null)
+    {
+        //if($options) die(var_dump($route));
+//        $router = $this->container->get('router');
+//        $ruta = $this->container->get('edemy.main')->getNamespace() . '.' . $_route;
+//        if($router->getRouteCollection()->get($ruta) != null) {
+//            return $router->generate($ruta, $options);
+//        } elseif($router->getRouteCollection()->get($_route) != null) {
+//            return $router->generate($_route, $options);
+//        } else {
+//            return false;
+//        }
+
+        switch($lib) {
+            case 'jquery':
+                $asset = '<script src="////cdnjs.cloudflare.com/ajax/libs/jquery/' . $version . '/jquery.min.js"></script>';
+                break;
+            case 'hinclude':
+                $asset = '<script src="//cdnjs.cloudflare.com/ajax/libs/hinclude/' . $version . '/hinclude.min.js" type="text/javascript"></script>';
+                break;
+            case 'jquery.slicknav':
+                $asset = '<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/SlickNav/' . $version . '/slicknav.css" />';
+                $asset .= '<script src="//cdnjs.cloudflare.com/ajax/libs/SlickNav/' . $version . '/jquery.slicknav.min.js"></script>';
+                break;
+            case 'superfish':
+                $asset = '<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/superfish/' . $version . '/superfish.min.css"/>';
+                $asset .= '<script src="//cdnjs.cloudflare.com/ajax/libs/superfish/' . $version . '/superfish.min.js"></script>';
+                break;
+
+        }
+
+        return $asset;
+    }
+
+    public function hincludeFunction($version = '0.9.5', $_route = null)
+    {
+        //if($options) die(var_dump($route));
+//        $router = $this->container->get('router');
+//        $ruta = $this->container->get('edemy.main')->getNamespace() . '.' . $_route;
+//        if($router->getRouteCollection()->get($ruta) != null) {
+//            return $router->generate($ruta, $options);
+//        } elseif($router->getRouteCollection()->get($_route) != null) {
+//            return $router->generate($_route, $options);
+//        } else {
+//            return false;
+//        }
+
+
+        return $asset;
+    }
     public function getName()
     {
         return 'edemy_path_extension';
