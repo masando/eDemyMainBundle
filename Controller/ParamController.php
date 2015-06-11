@@ -32,18 +32,87 @@ class ParamController extends BaseController
             'edemy_param'               => array('onParam', 0),
             'edemy_param_by_type'       => array('onParamByType', 0),
             'edemy_main_param_index_lastmodified' => array('onParamIndexLastmodified', 0),
+            'edemy_main_param_edit_lastmodified' => array('onParamEditLastmodified', 0),
+            'edemy_main_param_new_lastmodified' => array('onParamNewLastmodified', 0),
+            'edemy_main_param_details_lastmodified' => array('onParamDetailsLastmodified', 0),
+            'edemy_mainmenu'                => array('onParamMainMenu', 0),
         ));
+    }
+
+    public function onParamMainMenu(GenericEvent $menuEvent) {
+        $items = array();
+        if ($this->get('security.authorization_checker')->isGranted('ROLE_ADMIN')) {
+            $item = new Param($this->get('doctrine.orm.entity_manager'));
+            $item->setName('Admin_Param');
+            $item->setValue('edemy_main_param_index');
+            $items[] = $item;
+        }
+
+        $menuEvent['items'] = array_merge($menuEvent['items'], $items);
+
+        return true;
+    }
+
+    public function onProductFrontpageLastModified(ContentEvent $event)
+    {
+        $product = $this->getRepository('edemy_product_category_index')->findLastModified($this->getNamespace());
+
+        if($product->getUpdated()) {
+            //die(var_dump($entity->getUpdated()));
+            $event->setLastModified($product->getUpdated());
+        }
     }
 
     public function onParamIndexLastmodified(ContentEvent $event) {
         $this->container = $this->get('service_container');
-        if (!$this->get('security.authorization_checker')->isGranted('ROLE_ADMIN')) {
-            $lastmodified = new \DateTime();
-            $event->setLastModified($lastmodified);
+        if ($this->get('security.authorization_checker')->isGranted('ROLE_ADMIN')) {
+            $param = $this->getRepository('edemy_main_param_index')->findLastModified($this->getNamespace());
+            if($param->getUpdated()) {
+                $event->setLastModified($param->getUpdated());
+            }
         }
-        //$this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'No tienes permisos para acceder a este recurso!');
 
         return true;
+    }
+
+    public function onParamShowLastmodified(ContentEvent $event)
+    {
+        $this->container = $this->get('service_container');
+
+        if ($this->get('security.authorization_checker')->isGranted('ROLE_ADMIN')) {
+            $request = $this->get('request_stack')->getCurrentRequest();
+            $id = $request->attributes->get('id');
+            $entity = $this->get('doctrine.orm.entity_manager')->getRepository('eDemyMainBundle:Param')->findOneBy(array(
+                'id' => $id,
+                //'namespace' => $this->getNamespace(),
+            ));
+            $lastmodified = $entity->getUpdated();
+            $event->setLastModified($lastmodified);
+        }
+
+        return true;
+    }
+
+    public function onParamEditLastmodified(ContentEvent $event) {
+        $this->container = $this->get('service_container');
+
+        if ($this->get('security.authorization_checker')->isGranted('ROLE_ADMIN')) {
+            $request = $this->get('request_stack')->getCurrentRequest();
+            $id = $request->attributes->get('id');
+            $entity = $this->get('doctrine.orm.entity_manager')->getRepository('eDemyMainBundle:Param')->findOneBy(array(
+                'id' => $id,
+                //'namespace' => $this->getNamespace(),
+            ));
+            $lastmodified = $entity->getUpdated();
+            $event->setLastModified($lastmodified);
+        }
+
+        return true;
+    }
+
+    public function onParamNewLastmodified(ContentEvent $event)
+    {
+        $event->setLastModified(new \DateTime());
     }
 
     public function onFrontpage(ContentEvent $event) { }

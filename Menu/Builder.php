@@ -4,12 +4,12 @@ namespace eDemy\MainBundle\Menu;
 
 use Knp\Menu\FactoryInterface;
 use Symfony\Component\DependencyInjection\ContainerAware;
+use Symfony\Component\EventDispatcher\GenericEvent;
 
 class Builder extends ContainerAware
 {
     public function menu(FactoryInterface $factory, array $options)
     {
-        //die(var_dump($options));
         $menu = $factory->createItem('root');
         $translator = $this->container->get('translator');
         $items = $options['items'];

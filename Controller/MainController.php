@@ -10,6 +10,8 @@
  */
 namespace eDemy\MainBundle\Controller;
 
+use Symfony\Component\EventDispatcher\GenericEvent;
+use eDemy\MainBundle\Entity\Param;
 use eDemy\MainBundle\Event\ContentEvent;
 
 /**
@@ -32,7 +34,26 @@ class MainController extends BaseController
             'edemy_main_frontpage_lastmodified'     => array('onFrontpageLastModified', 0),
             'edemy_main_frontpage'                  => array('onFrontpage', 0),
             'edemy_footer_module'                   => array('onFooterModule', 0),
+            'edemy_mainmenu'                        => array('onFrontpageMainMenu', 100),
         ));
+    }
+
+    public function onFrontpageMainMenu(GenericEvent $menuEvent) {
+        $items = array();
+        if ($this->get('security.authorization_checker')->isGranted('ROLE_ADMIN')) {
+            $item = new Param($this->get('doctrine.orm.entity_manager'));
+            $item->setName('Admin');
+            $item->setOrden(100);
+            $items[] = $item;
+        }
+        $item = new Param($this->get('doctrine.orm.entity_manager'));
+        $item->setName('Inicio');
+        $item->setValue('edemy_main_frontpage');
+        $items[] = $item;
+
+        $menuEvent['items'] = array_merge($menuEvent['items'], $items);
+
+        return true;
     }
 
     /**
@@ -52,10 +73,31 @@ class MainController extends BaseController
         $this->dump($event->getRoute());
 
         if($lastmodified = $this->getLastModified($event->getRoute(), $event->getFormat())) {
+//            if ($this->get('security.authorization_checker')->isGranted('ROLE_USER')) {
+//                $response->setPrivate();
+//            } else {
+//                $response->setPublic();
+//            }
+            $referer = $this->getRequest()->headers->get('referer');
+
+            $Pattern = "/logout$/";
+
+            if(preg_match($Pattern, $referer, $matches))
+            {
+                $lastmodified = new \DateTime();
+            }
+            $lastmodified = new \DateTime();
+
+
             $event->setLastModified($lastmodified);
             $this->dump($lastmodified);
 
             if ($response = $this->ifNotModified304($lastmodified)) {
+//                $response->headers->addCacheControlDirective( 'no-cache', true );
+//                $response->headers->addCacheControlDirective( 'max-age', 0 );
+//                $response->headers->addCacheControlDirective( 'must-revalidate', true );
+//                $response->headers->addCacheControlDirective( 'no-store', true );
+//                $response->setPrivate();
 
                 return $response;
             }
@@ -75,6 +117,7 @@ class MainController extends BaseController
             return $response;
         }
         if($response = $this->getFullResponse($event)) {
+            $this->get('session')->set('out', '0');
 
             return $response;
         }
@@ -155,7 +198,7 @@ class MainController extends BaseController
     {
         $namespaces = $this->getParamByType('prefix');
         
-        $this->addEventModule($event, "footer_module", array(
+        $this->addEventModule($event, "templates/main_footer", array(
             'namespaces' => $namespaces,
         ));
 

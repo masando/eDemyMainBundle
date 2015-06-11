@@ -66,11 +66,13 @@ class FooterController extends BaseController
     public function onFooter(ContentEvent $event, $eventName, EventDispatcherInterface $dispatcher)
     {
         if($this->getParam('footer.enable') == 1) {
-            $event->clearModules();
+//            $event->clearModules();
             $dispatcher->dispatch('edemy_footer_module', $event);
-            $copyright = $this->get('edemy.document')->getDocument('copyright');
+//            die(var_dump($event));
+            $copyright = null;
+//            $copyright = $this->get('edemy.document')->getDocument('copyright');
             $event->setFooter(
-                $this->render("snippets/footer_join", array(
+                $this->render("templates/footer", array(
                     'modules' => $event->getModules(),
                     'copyright' => $copyright,
                 ))
@@ -91,16 +93,18 @@ class FooterController extends BaseController
         $this->dispatch('edemy_footer_lastmodified', $event);
         $lastmodified = $event->getLastModified();
         $response = new Response();
+
         if($lastmodified != null) {
             $response->setLastModified($lastmodified);
             if($response->isNotModified($request)) {
+
                 return $response;
             }
         }
         $response->setPublic();
         $this->dispatch('edemy_footer', $event);
-        $response->setContent($event->getFooter())
-        ;
+//        die(var_dump($event->getFooter()));
+        $response->setContent($event->getFooter());
 
         return $response;
     }

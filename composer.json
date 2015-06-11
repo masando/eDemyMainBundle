@@ -19,6 +19,7 @@
     "knplabs/knp-paginator-bundle": "*",
     "knplabs/knp-menu-bundle": "*",
     "knplabs/knp-menu": "*",
+    "Trsteel/ckeditor-bundle": "*",
     "friendsofsymfony/user-bundle": "*"
   },
   "autoload" : {

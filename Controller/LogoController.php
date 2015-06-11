@@ -2,7 +2,7 @@
 
 namespace eDemy\MainBundle\Controller;
 
-use eDemy\MainBundle\Controller\BaseController;
+use Symfony\Component\EventDispatcher\GenericEvent;
 use eDemy\MainBundle\Event\ContentEvent;
 use eDemy\MainBundle\Entity\Param;
 
@@ -11,10 +11,25 @@ class LogoController extends BaseController
     public static function getSubscribedEvents()
     {
         return self::getSubscriptions('logo', [], array(
-            'edemy_header_module'       => array('onHeaderModule', 0),
-            //'edemy_logo_logo_show'      => array('onLogoShow', 0),
-            'edemy_logo_logo_edit'      => array('onLogoEdit', 0),
+            'edemy_header_module'       => array('onHeaderModule', 1),
+            //'edemy_main_logo_show'      => array('onLogoShow', 0),
+            'edemy_main_logo_edit'      => array('onLogoEdit', 0),
+            'edemy_mainmenu'                => array('onLogoMainMenu', 0),
         ));
+    }
+
+    public function onLogoMainMenu(GenericEvent $menuEvent) {
+        $items = array();
+        if ($this->get('security.authorization_checker')->isGranted('ROLE_ADMIN')) {
+            $item = new Param($this->get('doctrine.orm.entity_manager'));
+            $item->setName('Admin_Logo');
+            $item->setValue('edemy_main_logo_edit');
+            $items[] = $item;
+        }
+
+        $menuEvent['items'] = array_merge($menuEvent['items'], $items);
+
+        return true;
     }
 
     public function onHeaderModule(ContentEvent $event)
@@ -57,12 +72,12 @@ $time_end = microtime(true);
         $this->em = $this->get('doctrine.orm.entity_manager');
         $request = $this->getCurrentRequest();
         if($namespace) {
-            $route_edit = $namespace . '.' . 'edemy_logo_logo_edit';
-            //$route_edit = 'edemy_logo_logo_edit';
-            $route_show = $namespace . '.' . 'edemy_logo_logo_show';
+            $route_edit = $namespace . '.' . 'edemy_main_logo_edit';
+            //$route_edit = 'edemy_main_logo_edit';
+            $route_show = $namespace . '.' . 'edemy_main_logo_show';
         } else {
-            $route_edit = 'edemy_logo_logo_edit';
-            $route_show = 'edemy_logo_logo_show';
+            $route_edit = 'edemy_main_logo_edit';
+            $route_show = 'edemy_main_logo_show';
         }
         $form = $this->get('form.factory')->createBuilder()
             ->setAction($this->get('router')->generate($route_edit))
@@ -101,7 +116,7 @@ $time_end = microtime(true);
             $this->em->persist($logo_param);
             $this->em->flush();
             
-            $event->setContent($this->newRedirectResponse('edemy_logo_logo_show'));
+            $event->setContent($this->newRedirectResponse('edemy_main_logo_show'));
             $event->stopPropagation();
             
             return true;

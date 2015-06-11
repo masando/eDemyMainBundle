@@ -2,10 +2,11 @@
 namespace eDemy\MainBundle\Routing;
 
 use Symfony\Component\Config\Loader\Loader;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 use eDemy\MainBundle\Entity\Param;
 
@@ -46,6 +47,8 @@ class RoutingLoader extends Loader
         // Inicializamos las colecciones de rutas
         $allRoutes = new RouteCollection();
         $routes = new RouteCollection();
+//        die('A');
+//        $this->dump($this->kernel->getContainer()));
         foreach($this->kernel->getBundles() as $bundle) {
             $bundle = get_class($bundle);
             // sólo analizamos los bundles eDemy
@@ -145,7 +148,29 @@ class RoutingLoader extends Loader
                 '_locale' => 'es',
             ), array( '_locale' => 'es|en' ), array(), '', array(), array('GET', 'POST'));
             $routes->add('edemy_' . $bundleNameSimpleLower . '_frontpage', $route);
+        } else {
+            // @TODO crear las rutas frontpage de cada controlador
+            $controllerDir = __DIR__ . '/../Controller';
+//            die(var_dump($controllerDir));
+            $finder = new Finder();
+            $finder->files()->in($controllerDir)->name('*Controller.php');
+            foreach ($finder as $file) {
+                $controllerNameSimpleLower = $this->getControllerName($file->getFileName());
+
+                if($controllerNameSimpleLower != 'main') {
+                    $route = new Route('/{_locale}/' . $controllerNameSimpleLower, array(
+                        '_controller' => 'edemy.main:indexAction',
+                        '_locale' => 'es',
+                    ), array('_locale' => 'es|en'), array(), '', array(), array('GET', 'POST'));
+                    $routes->add('edemy_' . $controllerNameSimpleLower . '_frontpage', $route);
+                }
+            }
         }
+    }
+
+    public function getControllerName($name) {
+
+        return strtolower(str_replace("Controller.php", "", $name));
     }
 
     public function addFileRoutes($bundle, RouteCollection $routes) {

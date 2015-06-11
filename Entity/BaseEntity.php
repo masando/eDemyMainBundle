@@ -262,7 +262,7 @@ abstract class BaseEntity implements Translatable
     }
 
     /**
-     * @Gedmo\Timestampable(on="change", field={"name", "description"})
+     * @Gedmo\Timestampable(on="change", field={"name", "description", "type", "value", "published", "orden"})
      * @ORM\Column(name="content_changed", type="datetime", nullable=true)
      */
     protected $contentChanged;

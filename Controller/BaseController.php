@@ -317,9 +317,9 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         if ($template) {
 //            die(var_dump($template));
             $content = $this->render($template, $params);
-            if (strlen($content) > 5) {
+//            if (strlen($content) > 5) {
                 $event->addModule($content);
-            }
+//            }
         } else {
             $event->addModule($params);
         }
@@ -1310,7 +1310,18 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         if ($lastmodified = $event->getLastmodified()) {
             $response->setLastModified($lastmodified);
         }
-        $response->setPublic();
+
+        //$this->container = $this->get('service_container');
+        if ($this->get('security.authorization_checker')->isGranted('ROLE_USER')) {
+            $response->setPrivate();
+        } else {
+            $response->setPublic();
+        }
+//        $response->headers->addCacheControlDirective( 'no-cache', true );
+//        $response->headers->addCacheControlDirective( 'max-age', 0 );
+//        $response->headers->addCacheControlDirective( 'must-revalidate', true );
+//        $response->headers->addCacheControlDirective( 'no-store', true );
+
         $stopwatch->stop('fullResponse');
 
         return $response;

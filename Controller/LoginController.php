@@ -6,6 +6,8 @@ use Symfony\Component\HttpFoundation\Request;
 use eDemy\MainBundle\Event\ContentEvent;
 //use FOS\UserBundle\Controller\SecurityController as BaseController;
 use Symfony\Component\Security\Core\SecurityContext;
+use Symfony\Component\EventDispatcher\GenericEvent;
+use eDemy\MainBundle\Entity\Param;
 
 class LoginController extends BaseController
 {
@@ -15,7 +17,26 @@ class LoginController extends BaseController
             'login_lastmodified'    => array('onLoginLastmodified', 0),
             'login'                 => array('onLogin', 0),
             'register'              => array('onRegister', 0),
+            'edemy_mainmenu'        => array('onLoginMainMenu', -100),
         ));
+    }
+
+    public function onLoginMainMenu(GenericEvent $menuEvent) {
+        $items = array();
+        $item = new Param($this->get('doctrine.orm.entity_manager'));
+        if($this->get('security.authorization_checker')->isGranted('ROLE_USER')) {
+//            die('a');
+            $item->setName('Logout');
+            $item->setValue('logout');
+        } else {
+            $item->setName('Login');
+            $item->setValue('login');
+        }
+        $items[] = $item;
+
+        $menuEvent['items'] = array_merge($menuEvent['items'], $items);
+
+        return true;
     }
 
     public function onLoginLastmodified(ContentEvent $event)

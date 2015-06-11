@@ -28,14 +28,65 @@ register:
     path:   /register
     defaults:  { _controller: edemy.main:indexAction }
 
-edemy_logo_logo_show:
+edemy_main_logo_show:
     path:           /admin/{_locale}/logo/show
     defaults:       { _controller: edemy.main:indexAction }
     methods:        [ GET ]
     requirements:   { _locale: es|en }
 
-edemy_logo_logo_edit:
+edemy_main_logo_edit:
     path:           /admin/{_locale}/logo/edit
     defaults:       { _controller: edemy.main:indexAction }
     methods:        [ GET, POST ]
     requirements:   { _locale: es|en }
+
+edemy_document_frontpage:
+    pattern:        /{_locale}/document
+    defaults:       { _controller: edemy.main:indexAction }
+    methods:        [GET]
+    requirements:   { _locale: es|en }
+
+edemy_document_details:
+    path:           /{_locale}/document/{slug}
+    defaults:       { _controller: edemy.main:indexAction, _locale: es  }
+    methods:        [GET]
+    requirements:   { _locale: es|en, id: \d+ }
+
+edemy_document_page_details:
+    path:           /{_locale}/page/{bundle}/{file}
+    defaults:       { _controller: edemy.main:indexAction, _locale: es  }
+    methods:        [GET]
+    requirements:   { _locale: es|en, id: \d+ }
+
+edemy_analytics:
+    path:           /{_locale}/analytics
+    defaults:       { _controller: edemy.main:indexAction }
+    methods:        [ GET, POST ]
+    requirements:   { _locale: es|en }
+
+edemy_gallery_imagen_details:
+    path:           /{_locale}/galeria/detalles/{slug}
+    defaults:       { _controller: edemy.main:indexAction }
+    methods:        [ GET ]
+    requirements:   { _locale: es|en }
+
+edemy_gallery_imagen_generate:
+    path:           /image/{w}/{h}
+    defaults:       { _controller: edemy.gallery:generateAction }
+    methods:        [ GET ]
+    requirements:   { _locale: es|en }
+
+edemy_google_verify:
+    path:           /google{code}.html
+    defaults:       { _controller: edemy.main:indexAction, code: 123 }
+    methods:        [ GET ]
+
+edemy_google_map:
+    path:           /{_locale}/map
+    defaults:       { _controller: edemy.main:indexAction }
+    methods:        [ GET ]
+
+edemy_search_query:
+    path:           /search
+    defaults:       { _controller: edemy.main:indexAction }
+    methods:        [ GET ]

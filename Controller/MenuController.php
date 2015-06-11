@@ -116,6 +116,14 @@ class MenuController extends BaseController
         $menuEvent = new GenericEvent("menu", array(
             'items' => array(),
         ));
+        //die(var_dump($options));
+//        $event = new GenericEvent(
+//            "mainmenu",
+//            array('name' => '')
+//        );
+        $dispatcher->dispatch('edemy_mainmenu', $menuEvent);
+
+//        die(var_dump($event['mainmenu']));
 
         $dispatcher->dispatch('edemy_main_mainmenu', $menuEvent);
 //die(var_dump($menuEvent['items']));

@@ -5,13 +5,31 @@ namespace eDemy\MainBundle\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+use eDemy\MainBundle\Entity\Param;
+use Symfony\Component\EventDispatcher\GenericEvent;
 use eDemy\MainBundle\Entity\Notfound;
 
 class RedirectController extends BaseController
 {
     public static function getSubscribedEvents()
     {
-        return self::getSubscriptions('main', ['notfound']);
+        return self::getSubscriptions('main', ['notfound'], array(
+            'edemy_mainmenu'                => array('onNotFoundMainMenu', 0),
+        ));
+    }
+
+    public function onNotFoundMainMenu(GenericEvent $menuEvent) {
+        $items = array();
+        if ($this->get('security.authorization_checker')->isGranted('ROLE_ADMIN')) {
+            $item = new Param($this->get('doctrine.orm.entity_manager'));
+            $item->setName('Admin_NotFound');
+            $item->setValue('edemy_main_notfound_index');
+            $items[] = $item;
+        }
+
+        $menuEvent['items'] = array_merge($menuEvent['items'], $items);
+
+        return true;
     }
 
     public function onKernelException(GetResponseForExceptionEvent $event)

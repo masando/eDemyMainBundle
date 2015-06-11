@@ -131,3 +131,51 @@ services:
         arguments: [@service_container]
         tags:
             - { name: twig.extension }
+
+    edemy.contact:
+        class: eDemy\MainBundle\Controller\ContactController
+        calls:
+            - [setEventDispatcher, ["@event_dispatcher"]]
+        tags:
+            - { name: kernel.event_subscriber }
+
+    project_user.handler.logout_handler:
+        class:  eDemy\MainBundle\Handler\LogoutHandler
+        calls:
+              - [setRouter, ["@router"]]
+              - [setSession, ["@session"]]
+
+    edemy.document:
+        class: eDemy\MainBundle\Controller\DocumentController
+        calls:
+            - [setEventDispatcher, ["@event_dispatcher"]]
+        tags:
+            - { name: kernel.event_subscriber }
+
+    edemy.analytics:
+        class: eDemy\MainBundle\Controller\AnalyticsController
+        calls:
+            - [setEventDispatcher, ["@event_dispatcher"]]
+        tags:
+            - { name: kernel.event_subscriber }
+
+    edemy.gallery:
+        class: eDemy\MainBundle\Controller\GalleryController
+        calls:
+            - [setEventDispatcher, ["@event_dispatcher"]]
+        tags:
+            - { name: kernel.event_subscriber }
+
+    edemy.google:
+        class: eDemy\MainBundle\Controller\GoogleController
+        calls:
+            - [setEventDispatcher, ["@event_dispatcher"]]
+        tags:
+            - { name: kernel.event_subscriber }
+
+    edemy.search:
+        class: eDemy\MainBundle\Controller\SearchController
+        calls:
+            - [setEventDispatcher, ["@event_dispatcher"]]
+        tags:
+            - { name: kernel.event_subscriber }

@@ -28,4 +28,22 @@ class ParamRepository extends EntityRepository
 
         return $query->getSingleResult();
     }
+
+    public function findLastModified($namespace = null)
+    {
+        $qb = $this->createQueryBuilder('p');
+        if($namespace == null) {
+            $qb->andWhere('p.namespace is null');
+        } else {
+            $qb->andWhere('p.namespace = :namespace');
+            $qb->setParameter('namespace', $namespace);
+        }
+//        $qb->andWhere('p.category = :category_id');
+        $qb->orderBy('p.updated','DESC');
+//        $qb->setParameter('category_id', $id);
+        $qb->setMaxResults(1);
+        $query = $qb->getQuery();
+
+        return $query->getOneOrNullResult();
+    }
 }

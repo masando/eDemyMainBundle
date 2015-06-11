@@ -59,7 +59,6 @@ class PathExtension extends \Twig_Extension
 
     public function pathFunction($_route, $options = array())
     {
-        //if($options) die(var_dump($route));
         $router = $this->container->get('router');
         $ruta = $this->container->get('edemy.main')->getNamespace() . '.' . $_route;
         if($router->getRouteCollection()->get($ruta) != null) {
@@ -74,17 +73,6 @@ class PathExtension extends \Twig_Extension
     // @TODO activar y variar con parámetros en la base de datos
     public function jqueryFunction($lib, $version, $_route = null)
     {
-        //if($options) die(var_dump($route));
-//        $router = $this->container->get('router');
-//        $ruta = $this->container->get('edemy.main')->getNamespace() . '.' . $_route;
-//        if($router->getRouteCollection()->get($ruta) != null) {
-//            return $router->generate($ruta, $options);
-//        } elseif($router->getRouteCollection()->get($_route) != null) {
-//            return $router->generate($_route, $options);
-//        } else {
-//            return false;
-//        }
-
         switch($lib) {
             case 'jquery':
                 $asset = '<script src="////cdnjs.cloudflare.com/ajax/libs/jquery/' . $version . '/jquery.min.js"></script>';
@@ -100,28 +88,11 @@ class PathExtension extends \Twig_Extension
                 $asset = '<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/superfish/' . $version . '/superfish.min.css"/>';
                 $asset .= '<script src="//cdnjs.cloudflare.com/ajax/libs/superfish/' . $version . '/superfish.min.js"></script>';
                 break;
-
         }
 
         return $asset;
     }
 
-    public function hincludeFunction($version = '0.9.5', $_route = null)
-    {
-        //if($options) die(var_dump($route));
-//        $router = $this->container->get('router');
-//        $ruta = $this->container->get('edemy.main')->getNamespace() . '.' . $_route;
-//        if($router->getRouteCollection()->get($ruta) != null) {
-//            return $router->generate($ruta, $options);
-//        } elseif($router->getRouteCollection()->get($_route) != null) {
-//            return $router->generate($_route, $options);
-//        } else {
-//            return false;
-//        }
-
-
-        return $asset;
-    }
     public function getName()
     {
         return 'edemy_path_extension';
