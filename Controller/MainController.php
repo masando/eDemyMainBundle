@@ -48,7 +48,11 @@ class MainController extends BaseController
         }
         $item = new Param($this->get('doctrine.orm.entity_manager'));
         $item->setName('Inicio');
-        $item->setValue('edemy_main_frontpage');
+        if($namespace = $this->getNamespace()) {
+            $namespace .= ".";
+        }
+        $item->setValue($namespace . 'edemy_main_frontpage');
+
         $items[] = $item;
 
         $menuEvent['items'] = array_merge($menuEvent['items'], $items);
@@ -108,9 +112,15 @@ class MainController extends BaseController
 //        die(var_dump(gettype($content)));
         if(gettype($content) == 'object') {
             if (get_class($content) == 'Symfony\Component\HttpFoundation\RedirectResponse') {
+
+                return $content;
+            }
+            if (get_class($content) == 'Symfony\Component\HttpFoundation\Response') {
+
                 return $content;
             }
         }
+//        die(var_dump($event));
         // @TODO comprobar stopPropagation
         if($response = $this->isPropagationStopped($event)) {
 
@@ -170,12 +180,13 @@ class MainController extends BaseController
 
             $event->setRoute($frontpageRoute);
             $this->eventDispatcher->dispatch($frontpageRoute, $event);
+//            die(var_dump($event));
             if ($event->isPropagationStopped()) {
-
+//die();
                 return false;
             }
             $event->setContent(
-                $this->render("snippets/frontpage_join", array(
+                $this->render("snippets/join", array(
                     'modules' => $event->getModules(),
                 ))
             );
@@ -198,7 +209,7 @@ class MainController extends BaseController
     {
         $namespaces = $this->getParamByType('prefix');
         
-        $this->addEventModule($event, "templates/main_footer", array(
+        $this->addEventModule($event, "templates/footer_module", array(
             'namespaces' => $namespaces,
         ));
 

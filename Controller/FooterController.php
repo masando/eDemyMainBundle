@@ -11,7 +11,7 @@
 
 namespace eDemy\MainBundle\Controller;
 
-use eDemy\MainBundle\Controller\BaseController;
+//use eDemy\MainBundle\Controller\BaseController;
 use eDemy\MainBundle\Event\ContentEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;

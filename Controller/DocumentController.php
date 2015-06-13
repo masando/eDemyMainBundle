@@ -24,7 +24,10 @@ class DocumentController extends BaseController
         if ($this->get('security.authorization_checker')->isGranted('ROLE_ADMIN')) {
             $item = new Param($this->get('doctrine.orm.entity_manager'));
             $item->setName('Admin_Document');
-            $item->setValue('edemy_main_document_index');
+            if($namespace = $this->getNamespace()) {
+                $namespace .= ".";
+            }
+            $item->setValue($namespace . 'edemy_main_document_index');
             $items[] = $item;
         }
 
@@ -35,7 +38,7 @@ class DocumentController extends BaseController
 
     public function onDocumentFrontpageLastModified(ContentEvent $event)
     {
-        $document = $this->getRepository('edemy_document_document_frontpage')->findLastModified($this->getNamespace());
+        $document = $this->getRepository('edemy_main_document_frontpage')->findLastModified($this->getNamespace());
         if($document->getUpdated()) {
             $event->setLastModified($document->getUpdated());
         }
@@ -71,8 +74,8 @@ class DocumentController extends BaseController
     {
         $request = $this->getRequest();
         $slug = $request->attributes->get('slug');
-        //die();
-        $entity = $this->get('doctrine.orm.entity_manager')->getRepository($this->getBundleName().':' . $this->getEntityNameUpper())->findOneBy(array(
+//        die();
+        $entity = $this->get('doctrine.orm.entity_manager')->getRepository($this->getBundleName() . ':' . $this->getEntityNameUpper())->findOneBy(array(
             'slug' => $slug,
             //'namespace' => $this->getNamespace(),
         ));

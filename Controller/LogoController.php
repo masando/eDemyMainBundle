@@ -23,7 +23,10 @@ class LogoController extends BaseController
         if ($this->get('security.authorization_checker')->isGranted('ROLE_ADMIN')) {
             $item = new Param($this->get('doctrine.orm.entity_manager'));
             $item->setName('Admin_Logo');
-            $item->setValue('edemy_main_logo_edit');
+            if($namespace = $this->getNamespace()) {
+                $namespace .= ".";
+            }
+            $item->setValue($namespace . 'edemy_main_logo_edit');
             $items[] = $item;
         }
 
@@ -45,17 +48,17 @@ class LogoController extends BaseController
 
         $logo = $this->getParam('logo');
         //die(var_dump($this->getNamespace($_route)));
-        //die(var_dump($logo));
+//        die(var_dump($logo));
         if($logo != "none") {
             //$width = $this->getParam('logo.width');
             //$height = $this->getParam('logo.height');
-$time_start = microtime(true);
+//$time_start = microtime(true);
             $this->addEventModule($event, 'templates/logo_show',  array(
                 'logo' => $logo,
                 //'width' => $width,
                 //'height' => $height,
             ));
-$time_end = microtime(true);
+//$time_end = microtime(true);
 //die(var_dump(($time_end - $time_start)));
         }
         return true;
@@ -90,7 +93,14 @@ $time_end = microtime(true);
         if ($form->isValid()) {
             $file = $form['logo']->getData();
             $path = 'logo' . $namespace . '.' . $file->guessExtension();
-            $upload_dir = __DIR__.'/../../../../../../web';
+            if(strpos(__DIR__, 'app/cache/')) {
+                // subimos hasta el directorio raíz de la aplicación (3 niveles)
+                $upload_dir = __DIR__ . '/../../../web';
+            } else {
+                // si no subimos 6 niveles hasta el directorio raíz de la aplicación
+                $upload_dir = __DIR__ . '/../../../../../../web';
+            }
+//            $upload_dir = __DIR__.'/../../../../../../web';
             $file->move($upload_dir.'/images/', $path);
             $name = 'logo';
             $logo_param = $this->em->getRepository('eDemyMainBundle:Param')->findOneBy(

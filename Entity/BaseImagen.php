@@ -4,7 +4,7 @@ namespace eDemy\MainBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
-use Gedmo\Translatable\Translatable;
+//use Gedmo\Translatable\Translatable;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -104,7 +104,15 @@ abstract class BaseImagen extends BaseEntity
     
     protected function getUploadRootDir()
     {
-        return __DIR__.'/../../../../web'.$this->getUploadDir();
+        if(strpos(__DIR__, 'app/cache/')) {
+            // subimos hasta el directorio raíz de la aplicación (3 niveles)
+            $basedir = __DIR__ . '/../../../web';
+        } else {
+            // si no subimos 6 niveles hasta el directorio raíz de la aplicación
+            $basedir = __DIR__ . '/../../../../../../web';
+        }
+
+        return $basedir . $this->getUploadDir();
     }
 
     protected function getUploadDir()

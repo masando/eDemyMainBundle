@@ -32,7 +32,10 @@ class ContactController extends BaseController
 //                $item->setBundle($this->getBundleName());
 //                $item->setType('mainmenu');
         $item->setName('Contacto');
-        $item->setValue('edemy_contact_frontpage');
+        if($namespace = $this->getNamespace()) {
+            $namespace .= ".";
+        }
+        $item->setValue($namespace . 'edemy_contact_frontpage');
         $items[] = $item;
 
         $menuEvent['items'] = array_merge($menuEvent['items'], $items);

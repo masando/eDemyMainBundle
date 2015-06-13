@@ -88,6 +88,9 @@ class PathExtension extends \Twig_Extension
                 $asset = '<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/superfish/' . $version . '/superfish.min.css"/>';
                 $asset .= '<script src="//cdnjs.cloudflare.com/ajax/libs/superfish/' . $version . '/superfish.min.js"></script>';
                 break;
+            case 'backstretch':
+                $asset = '<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-backstretch/' . $version . '/jquery.backstretch.min.js" type="text/javascript"></script>';
+                break;
         }
 
         return $asset;

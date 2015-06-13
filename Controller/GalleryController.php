@@ -21,7 +21,10 @@ class GalleryController extends BaseController
         if ($this->get('security.authorization_checker')->isGranted('ROLE_ADMIN')) {
             $item = new Param($this->get('doctrine.orm.entity_manager'));
             $item->setName('Admin_Gallery');
-            $item->setValue('edemy_main_imagen_index');
+            if($namespace = $this->getNamespace()) {
+                $namespace .= ".";
+            }
+            $item->setValue($namespace . 'edemy_main_imagen_index');
             $items[] = $item;
         }
 

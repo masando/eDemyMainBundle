@@ -172,7 +172,8 @@ abstract class BaseController extends Controller implements EventSubscriberInter
     {
         if(($_format = $this->getFormat()) === null) $_format = 'html';
         if (strpos($template, 'dmin/')) {
-            $themeBundle = $this->getParam("themeBundle", "eDemyMainBundle", $this->getBundleName());
+            $themeBundle = $this->getParam("themeBundle", "eDemyMainBundle");
+//            if($themeBundle == "eDemyMainBundle") die(var_dump($this->getBundleName()));
             $template = $themeBundle . '::' . $template . '.' . $_format . '.twig';
             return $this->get('templating')->render($template, $options);
             // @TODO getParam no devuelve el parámetro cuando bundle = null
@@ -194,7 +195,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
     }
 
     public function getTemplate($template, $_format = 'html') {
-        $template = $this->getParam("themeBundle", "eDemyMainBundle", $this->getBundleName()) .
+        $template = $this->getParam("themeBundle", "eDemyMainBundle") .
             '::' . $template . '.' . $_format . '.twig';
 //            $this->getParam($template, null, "layout/theme").'.'.$_format.'.twig';
 //        if($template == 'content.html.twig') die(var_dump($template_b));
@@ -613,6 +614,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
     public function onJsModule(ContentEvent $event)
     {
         $dir = 'assets/';
+//        $this->dump($this->class);
         if($this->fileExists($this->getControllerName().".js.twig", $dir)) {
             /** @var Param[] $allparams */
             $allparams = $this->getParamByType('javascript');
@@ -622,6 +624,9 @@ abstract class BaseController extends Controller implements EventSubscriberInter
                 foreach ($allparams as $param) {
                     $params[$param->getName()] = $param->getValue();
                 }
+            }
+            if($this->getBundleName(false) != 'Main') {
+//                $dir .= strtolower($this->getBundleName(false)) . '/';
             }
             $this->addEventModule($event, $dir . $this->getControllerName(), array('params' => $params));
 
@@ -1152,8 +1157,8 @@ abstract class BaseController extends Controller implements EventSubscriberInter
      * @return \DateTime|null
      */
     public function getLastModified($_route, $_format) {
-        $stopwatch = $this->get('debug.stopwatch');
-        $stopwatch->start('contentNotModified');
+//        $stopwatch = $this->get('debug.stopwatch');
+//        $stopwatch->start('contentNotModified');
 
         $event = new ContentEvent();
 
@@ -1170,7 +1175,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
             $lastmodified = $lastmodified_files;
         }
 
-        $stopwatch->stop('contentNotModified');
+//        $stopwatch->stop('contentNotModified');
 
         return $lastmodified;
     }
@@ -1249,11 +1254,11 @@ abstract class BaseController extends Controller implements EventSubscriberInter
     }
 
     public function isPropagationStopped(ContentEvent $event) {
-        $stopwatch = $this->get('debug.stopwatch');
-        $stopwatch->start('isPropagationStopped');
+//        $stopwatch = $this->get('debug.stopwatch');
+//        $stopwatch->start('isPropagationStopped');
         //si hay que generar la respuesta, primero obtenemos el contenido principal
 //        die(var_dump($content));
-
+//die(var_dump($event));
 
         //si se ha detenido la propagación devolvemos la respuesta inmediatamente
         if ($event->isPropagationStopped()) {
@@ -1265,14 +1270,14 @@ abstract class BaseController extends Controller implements EventSubscriberInter
 
             return $response;
         }
-        $stopwatch->stop('isPropagationStopped');
+//        $stopwatch->stop('isPropagationStopped');
 
         return false;
     }
 
     public function getFullResponse(ContentEvent $event) {
-        $stopwatch = $this->get('debug.stopwatch');
-        $stopwatch->start('fullResponse');
+//        $stopwatch = $this->get('debug.stopwatch');
+//        $stopwatch->start('fullResponse');
 
         // decoramos la respuesta
         $this->dispatch('edemy_meta_title', $event);
@@ -1322,7 +1327,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
 //        $response->headers->addCacheControlDirective( 'must-revalidate', true );
 //        $response->headers->addCacheControlDirective( 'no-store', true );
 
-        $stopwatch->stop('fullResponse');
+//        $stopwatch->stop('fullResponse');
 
         return $response;
     }
@@ -1346,8 +1351,9 @@ abstract class BaseController extends Controller implements EventSubscriberInter
      */
     public function fileExists($name, $dir = null)
     {
+//        $this->dump($name . ':' . $dir);
         $reflection = new \ReflectionClass(get_class($this));
-        if(($themeBundle = $this->getParam("themeBundle")) !== 'themeBundle') {
+        if(($themeBundle = $this->getParam("themeBundle", 'eDemyMainBundle')) !== 'themeBundle') {
             $dir = $this->getBundlePath($themeBundle, true) . '/Resources/views/' . $dir;
         }
         // Si se está ejecutando desde la caché

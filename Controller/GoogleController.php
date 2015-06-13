@@ -29,7 +29,7 @@ class GoogleController extends BaseController
             $map['width'] = "100%";
             $map['height'] = "450px";
             $map['location'] = $this->getParam('googlemap_location');
-            $this->addEventModule($event, "templates/map.html.twig", array(
+            $this->addEventModule($event, "templates/map", array(
                 'map'    => $map,
             ));
         }
@@ -62,9 +62,12 @@ class GoogleController extends BaseController
     {
         $request = $this->getCurrentRequest();
         $code = $request->attributes->get('code');
-        $code = 'e9ad0980e0b50d02';
-        $event->setContent($this->newResponse("google-site-verification: google" . $code . ".html"))->stopPropagation();
-        
+        if (($code) != 'e9ad0980e0b50d02') {
+            $code = null;
+        }
+        $event->setContent($this->newResponse("google-site-verification: google" . $code . ".html"));
+        $event->stopPropagation();
+
         return true;
     }
 

@@ -68,7 +68,7 @@ class HeaderController extends BaseController
         $event->clearModules();
         $dispatcher->dispatch('edemy_header_module', $event);
         $event->setHeader(
-            $this->render("snippets/join", array(
+            $this->render("templates/header", array(
                 'modules' => $event->getModules(),
             ))
         );

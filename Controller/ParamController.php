@@ -44,7 +44,10 @@ class ParamController extends BaseController
         if ($this->get('security.authorization_checker')->isGranted('ROLE_ADMIN')) {
             $item = new Param($this->get('doctrine.orm.entity_manager'));
             $item->setName('Admin_Param');
-            $item->setValue('edemy_main_param_index');
+            if($namespace = $this->getNamespace()) {
+                $namespace .= ".";
+            }
+            $item->setValue($namespace . 'edemy_main_param_index');
             $items[] = $item;
         }
 
@@ -166,10 +169,11 @@ class ParamController extends BaseController
         } else {
             $event['value'] = $this->getParamP($event['param'], $event['bundle'], $event['default'], $event['namespace'], $event['object']);
             if($event['value'] == $event['param']) {
-                //if($event['value'] == 'sitemap_bundle' and $event['namespace']) {
-                    //die(var_dump($event));
-                //}
+//                if($event['value'] == 'themeBundle') {
+//                    die(var_dump($event));
+//                }
                 $event['value'] = $this->getParamP($event['param'], $event['bundle'], $event['default'], 'all', $event['object']);
+//                die(var_dump($event));
             }
         }
         return true;

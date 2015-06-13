@@ -72,7 +72,7 @@ class JsController extends BaseController
         $response->headers->set('Content-Type', 'text/javascript');
         $response->setPublic();
         $response->setLastModified($lastmodified);
-
+//        $response->setCharset('UTF-8');
         return $response;
 
         //aquí Last-Modified Header
