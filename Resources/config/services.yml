@@ -179,3 +179,15 @@ services:
             - [setEventDispatcher, ["@event_dispatcher"]]
         tags:
             - { name: kernel.event_subscriber }
+
+    twig.extension.intl:
+        class: Twig_Extensions_Extension_Intl
+        tags:
+            - { name: twig.extension }
+
+    edemy.sitemaps:
+        class: eDemy\MainBundle\Controller\SitemapsController
+        calls:
+            - [setEventDispatcher, ["@event_dispatcher"]]
+        tags:
+            - { name: kernel.event_subscriber }

@@ -37,6 +37,6 @@ class ContactType extends AbstractType
      */
     public function getName()
     {
-        return 'edemy_contactbundle_contact';
+        return 'edemy_mainbundle_contact';
     }
 }

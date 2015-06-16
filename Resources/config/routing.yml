@@ -64,13 +64,13 @@ edemy_analytics:
     methods:        [ GET, POST ]
     requirements:   { _locale: es|en }
 
-edemy_gallery_imagen_details:
+edemy_main_imagen_details:
     path:           /{_locale}/galeria/detalles/{slug}
     defaults:       { _controller: edemy.main:indexAction }
     methods:        [ GET ]
     requirements:   { _locale: es|en }
 
-edemy_gallery_imagen_generate:
+edemy_main_imagen_generate:
     path:           /image/{w}/{h}
     defaults:       { _controller: edemy.gallery:generateAction }
     methods:        [ GET ]
@@ -90,3 +90,10 @@ edemy_search_query:
     path:           /search
     defaults:       { _controller: edemy.main:indexAction }
     methods:        [ GET ]
+
+edemy_sitemap:
+    path:           /sitemap.xml
+    defaults:       { _controller: edemy.sitemaps:indexAction, _format: xml }
+    methods:        [ GET, POST ]
+    requirements:   { _locale: es|en }
+

@@ -4,7 +4,7 @@ namespace eDemy\MainBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
-//use Gedmo\Translatable\Translatable;
+use Gedmo\Translatable\Translatable;
 
 /**
  * @ORM\Table()

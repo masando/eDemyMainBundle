@@ -4,7 +4,7 @@ namespace eDemy\MainBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
-//use Gedmo\Translatable\Translatable;
+use Gedmo\Translatable\Translatable;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -70,8 +70,8 @@ abstract class BaseImagen extends BaseEntity
                             
                             // Position text at the bottom-right of the image
                             //$draw->setGravity(\Imagick::GRAVITY_SOUTHEAST);
-                            //$draw->setGravity(\Imagick::GRAVITY_CENTER);
-                            $draw->setGravity(\Imagick::GRAVITY_SOUTH);
+                            $draw->setGravity(\Imagick::GRAVITY_CENTER);
+                            //$draw->setGravity(\Imagick::GRAVITY_SOUTH);
 
                             // Draw text on the image
                             $image->annotateImage($draw, 10, 12, 0, $text);

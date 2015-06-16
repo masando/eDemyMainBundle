@@ -58,12 +58,12 @@ class SearchController extends BaseController
         );
 
 
-        if(count($searchEvent['results'])) {
+//        if(count($searchEvent['results'])) {
             $this->addEventModule($event, 'templates/search_result', array(
                 //'results' => $searchEvent['results'],
                 'pagination' => $pagination
             ));
-        }
+//        }
 
         return true;        
     }

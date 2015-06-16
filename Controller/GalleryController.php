@@ -11,7 +11,7 @@ class GalleryController extends BaseController
     public static function getSubscribedEvents()
     {
         return self::getSubscriptions('main', ['imagen'], array(
-            'edemy_gallery_imagen_details'  => array('onImagenDetails', 0),
+            'edemy_main_imagen_details'  => array('onImagenDetails', 0),
             'edemy_mainmenu'                => array('onGalleryMainMenu', 0),
         ));
     }

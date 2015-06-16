@@ -1087,18 +1087,33 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         $query = $searchEvent['search'];
         //die(var_dump($query));
         $bundleName = $this->getBundleName(false);
-        if($bundleName == 'Product') {
-            $params = $this->getParamByType('config', $this->getNamespace(), $this->getBundleName());
+
+        if(($prefix = $this->getParam('search.namespace')) == 'search.namespace') {
+            $prefix = $this->getNamespace();
+        }
+        if($prefix == null) {
+            $this->dump($bundleName);
+        }
+
+//        $prefixes = $this->getParamByType('prefix');
+//
+//        foreach($prefixes as $prefix) {
+        //if($bundleName == 'Product') {
+            $params = $this->getParamByType('config', $prefix, $this->getBundleName());
             if(count($params)) {
                 $bundleEntities = $this->getBundleEntities($this->getBundleName());
                 foreach($bundleEntities as $entityName) {
                     foreach($params as $param) {
                         if(($param->getName() == 'search_entity') and ($param->getValue() == $entityName)) {
                             //search entities with query
-                            $entities = $this->get('doctrine.orm.entity_manager')->getRepository($this->getBundleName() . ':' . $entityName)->findBySearchQuery($query, $this->getNamespace());
+//                            $this->dump($param);
+                            $entities = $this->get('doctrine.orm.entity_manager')->getRepository($this->getBundleName() . ':' . $entityName)->findBySearchQuery($query, $prefix);
                             foreach($entities as $entity) {
-                                $result = $this->render(strtolower($entityName) . '_search_result', array(
+//                                $entity->setNamespace($prefix);
+//                                die(var_dump($entity));
+                                $result = $this->render('templates/' . strtolower($entityName) . '_search_result', array(
                                     'entity' => $entity,
+                                    'prefix' => $prefix . '.',
                                 ));
                                 $searchEvent['results'] = array_merge($searchEvent['results'], array($result));
                             }
@@ -1106,7 +1121,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
                     }
                 }
             }
-        }
+//        }
         //$entity = $em->getRepository($this->getBundleName().':' . $this->getEntityNameUpper())->findOneBy(array(
         //    'id' => $id,
             //'namespace' => $this->getNamespace(),
