@@ -72,7 +72,7 @@ class FooterController extends BaseController
             $copyright = null;
 //            $copyright = $this->get('edemy.document')->getDocument('copyright');
             $event->setFooter(
-                $this->render("templates/footer", array(
+                $this->render("templates/main/footer/footer", array(
                     'modules' => $event->getModules(),
                     'copyright' => $copyright,
                 ))

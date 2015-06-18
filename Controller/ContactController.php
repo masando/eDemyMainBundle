@@ -103,7 +103,7 @@ class ContactController extends BaseController
             return true;
         }
 
-        $this->addEventModule($event, 'templates/contact', array(
+        $this->addEventModule($event, 'templates/main/contact/contact', array(
             'form' => $form->createView(),
         ));
         

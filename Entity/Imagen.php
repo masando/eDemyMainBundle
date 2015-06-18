@@ -8,7 +8,7 @@ use Gedmo\Translatable\Translatable;
 use eDemy\MainBundle\Entity\BaseImagen;
 
 /**
- * @ORM\Table("GalleryImagen")
+ * @ORM\Table("DocumentImagen")
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks
  */
@@ -23,5 +23,21 @@ class Imagen extends BaseImagen
     {
         return $this->getWebPath();
     }
-    
+
+    /**
+     * @ORM\ManyToOne(targetEntity="eDemy\MainBundle\Entity\Document", inversedBy="imagenes")
+     */
+    protected $document;
+
+    public function setDocument($document)
+    {
+        $this->document = $document;
+
+        return $this;
+    }
+
+    public function getDocument()
+    {
+        return $this->document;
+    }
 }

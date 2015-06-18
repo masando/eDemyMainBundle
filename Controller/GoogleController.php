@@ -29,7 +29,7 @@ class GoogleController extends BaseController
             $map['width'] = "100%";
             $map['height'] = "450px";
             $map['location'] = $this->getParam('googlemap_location');
-            $this->addEventModule($event, "templates/map", array(
+            $this->addEventModule($event, "templates/main/google/map", array(
                 'map'    => $map,
             ));
         }
@@ -43,7 +43,7 @@ class GoogleController extends BaseController
             $map['height'] = "450px";
             $map['location'] = $this->getParam('googlemap_location');
             
-            return $this->render("templates/map.html.twig", array(
+            return $this->render("templates/main/google/map.html.twig", array(
                 'map'    => $map,
             ));
         }
@@ -89,7 +89,7 @@ class GoogleController extends BaseController
         if($this->getParam('enabled') == '1') {
             $w = 336;
             $h = 280;
-            $this->addEventModule($event, "templates/adsense", array(
+            $this->addEventModule($event, "templates/main/google/adsense", array(
                 'ad-client' => 'pub-3523725188831893',
                 'width' => $w,
                 'height' => $h,

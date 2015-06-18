@@ -185,8 +185,8 @@ services:
         tags:
             - { name: twig.extension }
 
-    edemy.sitemaps:
-        class: eDemy\MainBundle\Controller\SitemapsController
+    edemy.sitemap:
+        class: eDemy\MainBundle\Controller\SitemapController
         calls:
             - [setEventDispatcher, ["@event_dispatcher"]]
         tags:

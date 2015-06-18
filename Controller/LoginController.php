@@ -66,7 +66,7 @@ class LoginController extends BaseController
             $error = $session->get(SecurityContext::AUTHENTICATION_ERROR);
             $session->remove(SecurityContext::AUTHENTICATION_ERROR);
         }
-        $this->addEventModule($event, 'templates/login', array(
+        $this->addEventModule($event, 'templates/main/login/login', array(
             'last_username' => $session->get(SecurityContext::LAST_USERNAME),
             'error'         => $error,
         ));

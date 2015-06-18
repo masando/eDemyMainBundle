@@ -50,7 +50,7 @@ class DocumentController extends BaseController
     {
         $entities = $this->getRepository()->findAllOrderedByName();
 
-        $this->addEventModule($event, 'templates/document', array(
+        $this->addEventModule($event, 'templates/main/document/document', array(
             'domain' => 'document',
             'entities' => $entities,
         ));
@@ -83,7 +83,7 @@ class DocumentController extends BaseController
             throw $this->createNotFoundException('Unable to find Document entity.');
         }
 
-        $this->addEventModule($event, 'templates/document_details', array(
+        $this->addEventModule($event, 'templates/main/document/document_details', array(
             'entity' => $entity,
         ));
 

@@ -1111,7 +1111,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
                             foreach($entities as $entity) {
 //                                $entity->setNamespace($prefix);
 //                                die(var_dump($entity));
-                                $result = $this->render('templates/' . strtolower($entityName) . '_search_result', array(
+                                $result = $this->render('templates/' . strtolower($this->getBundleName(false)) . '/' . strtolower($entityName) . '_search_result', array(
                                     'entity' => $entity,
                                     'prefix' => $prefix . '.',
                                 ));

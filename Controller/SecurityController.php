@@ -30,7 +30,7 @@ class SecurityController extends FOSSecurityController
     {
         //$template = sprintf('FOSUserBundle:Security:login.html.%s', $this->container->getParameter('fos_user.template.engine'));
         $edemyMain = $this->container->get('edemy.main');
-        $content = $edemyMain->render('templates/login_form', $data);
+        $content = $edemyMain->render('templates/main/security/login_form', $data);
         $response = $edemyMain->newResponse($content);
 
         return $response;

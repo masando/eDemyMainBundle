@@ -194,7 +194,7 @@ class MainController extends BaseController
             return true;
         } else {
             $event->addModule(
-                $this->render("templates/index")
+                $this->render("templates/main/index")
             );
 
             return true;
@@ -209,7 +209,7 @@ class MainController extends BaseController
     {
         $namespaces = $this->getParamByType('prefix');
         
-        $this->addEventModule($event, "templates/footer_module", array(
+        $this->addEventModule($event, "templates/main/footer_module", array(
             'namespaces' => $namespaces,
         ));
 

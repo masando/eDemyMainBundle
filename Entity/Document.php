@@ -57,4 +57,32 @@ class Document extends BaseEntity
     {
         return $this->content;
     }
+
+    /**
+     * @ORM\OneToMany(targetEntity="Imagen", mappedBy="document", cascade={"persist","remove"})
+     */
+    protected $imagenes;
+
+
+    public function getImagenes()
+    {
+        return $this->imagenes;
+    }
+
+    public function addImagen(Imagen $imagen)
+    {
+        $imagen->setDocument($this);
+        $this->imagenes->add($imagen);
+    }
+
+    public function removeImagen(Imagen $imagen)
+    {
+        $this->imagenes->removeElement($imagen);
+        $this->getEntityManager()->remove($imagen);
+    }
+
+    public function showImagenesInPanel()
+    {
+        return true;
+    }
 }

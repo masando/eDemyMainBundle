@@ -93,7 +93,7 @@ edemy_search_query:
 
 edemy_sitemap:
     path:           /sitemap.xml
-    defaults:       { _controller: edemy.sitemaps:indexAction, _format: xml }
+    defaults:       { _controller: edemy.sitemap:indexAction, _format: xml }
     methods:        [ GET, POST ]
     requirements:   { _locale: es|en }
 

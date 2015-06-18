@@ -37,7 +37,7 @@ class GalleryController extends BaseController
     {
         $this->get('edemy.meta')->setTitlePrefix("Galería de Imágenes");
 
-        $this->addEventModule($event, "templates/gallery", array(
+        $this->addEventModule($event, "templates/main/gallery/gallery", array(
             'entities' => $this->getRepository($event->getRoute())->findBy(array(
                 'namespace' => $this->getNamespace(),
             ))
@@ -51,7 +51,7 @@ class GalleryController extends BaseController
         ));
         $this->get('edemy.meta')->setTitlePrefix($entity->getName());
 
-        $this->addEventModule($event, "templates/imagen_details", array(
+        $this->addEventModule($event, "templates/main/gallery/imagen_details", array(
             'entity' => $entity,
         ));
     }

@@ -53,7 +53,7 @@ class LogoController extends BaseController
             //$width = $this->getParam('logo.width');
             //$height = $this->getParam('logo.height');
 //$time_start = microtime(true);
-            $this->addEventModule($event, 'templates/logo_show',  array(
+            $this->addEventModule($event, 'templates/main/logo/logo_show',  array(
                 'logo' => $logo,
                 //'width' => $width,
                 //'height' => $height,
@@ -133,7 +133,7 @@ class LogoController extends BaseController
         }
 
         $event->addModule(
-            $this->render("templates/logo_edit", array(
+            $this->render("templates/main/logo/logo_edit", array(
                 'edit_form'   => $form->createView(),
             ))
         );

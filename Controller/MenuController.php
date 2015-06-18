@@ -127,7 +127,7 @@ class MenuController extends BaseController
 
         $dispatcher->dispatch('edemy_main_mainmenu', $menuEvent);
 //die(var_dump($menuEvent['items']));
-        $event->addModule($this->render('templates/menu', array(
+        $event->addModule($this->render('templates/main/menu/menu', array(
             'namespace' => $this->getNamespace(),
             'menu' => 'main',
             'items' => $menuEvent['items'],
@@ -153,7 +153,7 @@ class MenuController extends BaseController
 
         $dispatcher->dispatch('edemy_main_footermenu', $menuEvent);
 
-        $this->addEventModule($event, 'templates/menu', array(
+        $this->addEventModule($event, 'templates/main/menu/menu', array(
             'menu' => 'footer',
             'items' => $menuEvent['items'],
         ));

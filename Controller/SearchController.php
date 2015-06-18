@@ -29,7 +29,7 @@ class SearchController extends BaseController
                 ->add('search', 'text', array('label' => false))
                 ->add('submit', 'submit', array('label' => "Buscar"))
                 ->getForm();
-            $this->addEventModule($event, 'templates/search_form', array(
+            $this->addEventModule($event, 'templates/main/search/search_form', array(
                 'form' => $form->createView(),
             ));
         }
@@ -59,7 +59,7 @@ class SearchController extends BaseController
 
 
 //        if(count($searchEvent['results'])) {
-            $this->addEventModule($event, 'templates/search_result', array(
+            $this->addEventModule($event, 'templates/main/search/search_result', array(
                 //'results' => $searchEvent['results'],
                 'pagination' => $pagination
             ));
