@@ -6,11 +6,13 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Translatable\Translatable;
 use JMS\Serializer\Annotation as SER;
+use Anh\Taggable\TaggableInterface;
+use Anh\Taggable\AbstractTaggable;
 
 /**
  * @SER\ExclusionPolicy("all")
  */
-abstract class BaseEntity implements Translatable
+abstract class BaseEntity extends AbstractTaggable implements Translatable, TaggableInterface
 {
     protected $fields;
     protected $associations;

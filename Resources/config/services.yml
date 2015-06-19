@@ -191,3 +191,17 @@ services:
             - [setEventDispatcher, ["@event_dispatcher"]]
         tags:
             - { name: kernel.event_subscriber }
+
+    anh_taggable.manager:
+        class: Anh\Taggable\TaggableManager
+        arguments:
+            - @doctrine.orm.entity_manager
+            - Anh\Taggable\Entity\Tag
+            - Anh\Taggable\Entity\Tagging
+
+    anh_taggable.subscriber:
+        class: Anh\TaggableBundle\TaggableSubscriber
+        arguments:
+            - @service_container
+        tags:
+            - { name: doctrine.event_subscriber }

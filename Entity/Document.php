@@ -85,4 +85,9 @@ class Document extends BaseEntity
     {
         return true;
     }
+
+    public function getTaggableType()
+    {
+        return 'document';
+    }
 }

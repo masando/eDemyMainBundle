@@ -71,7 +71,7 @@ class PathExtension extends \Twig_Extension
     }
 
     // @TODO activar y variar con parámetros en la base de datos
-    public function jqueryFunction($lib, $version, $_route = null)
+    public function jqueryFunction($lib, $version = null, $_route = null)
     {
         switch($lib) {
             case 'jquery':
@@ -91,6 +91,10 @@ class PathExtension extends \Twig_Extension
             case 'backstretch':
                 $asset = '<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-backstretch/' . $version . '/jquery.backstretch.min.js" type="text/javascript"></script>';
                 break;
+            case 'instafeed':
+                $asset = '<script src="https://raw.github.com/stevenschobert/instafeed.js/master/instafeed.min.js" type="text/javascript"></script>';
+                break;
+
         }
 
         return $asset;
