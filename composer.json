@@ -21,7 +21,7 @@
     "knplabs/knp-menu": "*",
     "Trsteel/ckeditor-bundle": "*",
     "friendsofsymfony/user-bundle": "*",
-    "anh/doctrine-extensions-taggable": "~1.0"
+    "anh/doctrine-extensions-taggable": "*"
   },
   "autoload" : {
     "psr-0" : { "eDemy\\MainBundle" : "" }
