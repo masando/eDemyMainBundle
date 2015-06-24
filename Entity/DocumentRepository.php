@@ -12,13 +12,18 @@ use Doctrine\ORM\EntityRepository;
  */
 class DocumentRepository extends EntityRepository
 {
-    public function findAllOrderedByName()
+    public function findAllOrderedByTitle($namespace, $query = false)
     {
-        return $this->getEntityManager()
-            ->createQuery(
-                'SELECT d FROM eDemyMainBundle:Document d ORDER BY d.title ASC'
-            )
-            ->getResult();
+        $qb = $this->createQueryBuilder('d');
+        $qb->andWhere('d.namespace = :namespace');
+        $qb->orderBy('d.created','DESC');
+        $qb->setParameter('namespace', $namespace);
+        $query = $qb->getQuery();
+        if($query) {
+            return $query;
+        } else {
+            return $query->getResult();
+        }
     }
 
     public function findLastModified($namespace = null)

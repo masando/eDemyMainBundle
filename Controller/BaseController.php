@@ -688,6 +688,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         $entity->setEntityManager($this->get('doctrine.orm.entity_manager'));
         $entity->setMappings();
         $deleteForm = $this->createDeleteForm($id);
+
         $this->addEventModule($event, 'admin/show', array(
             'entity'      => $entity,
             'delete_form' => $deleteForm->createView(),
@@ -1389,4 +1390,8 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         return false;
     }
 
+    public function getSessionId() {
+
+        return $this->get('session')->getId();
+    }
 }

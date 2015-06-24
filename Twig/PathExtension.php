@@ -75,8 +75,12 @@ class PathExtension extends \Twig_Extension
     {
         switch($lib) {
             case 'jquery':
-                $asset = '<script src="////cdnjs.cloudflare.com/ajax/libs/jquery/' . $version . '/jquery.min.js"></script>';
+                $asset = '<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/' . $version . '/jquery.min.js"></script>';
                 break;
+            case 'jqueryui':
+                $asset = '<script src="//cdnjs.cloudflare.com/ajax/libs/jqueryui/' . $version . '/jquery-ui.min.js"></script>';
+                break;
+
             case 'hinclude':
                 $asset = '<script src="//cdnjs.cloudflare.com/ajax/libs/hinclude/' . $version . '/hinclude.min.js" type="text/javascript"></script>';
                 break;
@@ -87,6 +91,10 @@ class PathExtension extends \Twig_Extension
             case 'superfish':
                 $asset = '<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/superfish/' . $version . '/superfish.min.css"/>';
                 $asset .= '<script src="//cdnjs.cloudflare.com/ajax/libs/superfish/' . $version . '/superfish.min.js"></script>';
+                break;
+            case 'flexslider':
+                $asset = '<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/flexslider/' . $version . '/flexslider.css"/>';
+                $asset .= '<script src="//cdnjs.cloudflare.com/ajax/libs/flexslider/'  . $version .  '/jquery.flexslider.min.js"></script>';
                 break;
             case 'backstretch':
                 $asset = '<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-backstretch/' . $version . '/jquery.backstretch.min.js" type="text/javascript"></script>';

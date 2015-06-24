@@ -13,6 +13,7 @@ use Anh\Taggable\AbstractTaggable;
  * @SER\ExclusionPolicy("all")
  */
 abstract class BaseEntity extends AbstractTaggable implements Translatable, TaggableInterface
+//abstract class BaseEntity implements Translatable
 {
     protected $fields;
     protected $associations;
@@ -398,4 +399,15 @@ abstract class BaseEntity extends AbstractTaggable implements Translatable, Tagg
         return $this->user;
     }
 
+    public function getTaggableType()
+    {
+        $name = strtolower($this->getBundleName(false) . '_' . $this->getEntityName());
+
+        return $name;
+    }
+
+    public function showTagsInPanel() {
+
+        return true;
+    }
 }

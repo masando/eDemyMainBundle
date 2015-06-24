@@ -58,8 +58,13 @@ class Document extends BaseEntity
         return $this->content;
     }
 
+    public function getIntro()
+    {
+        return $this->content;
+    }
+
     /**
-     * @ORM\OneToMany(targetEntity="Imagen", mappedBy="document", cascade={"persist","remove"})
+     * @ORM\OneToMany(targetEntity="eDemy\MainBundle\Entity\DocumentImagen", mappedBy="document", cascade={"persist","remove"})
      */
     protected $imagenes;
 
@@ -69,13 +74,13 @@ class Document extends BaseEntity
         return $this->imagenes;
     }
 
-    public function addImagen(Imagen $imagen)
+    public function addImagen(DocumentImagen $imagen)
     {
         $imagen->setDocument($this);
         $this->imagenes->add($imagen);
     }
 
-    public function removeImagen(Imagen $imagen)
+    public function removeImagen(DocumentImagen $imagen)
     {
         $this->imagenes->removeElement($imagen);
         $this->getEntityManager()->remove($imagen);
@@ -84,10 +89,5 @@ class Document extends BaseEntity
     public function showImagenesInPanel()
     {
         return true;
-    }
-
-    public function getTaggableType()
-    {
-        return 'document';
     }
 }

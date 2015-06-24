@@ -46,7 +46,7 @@ edemy_document_frontpage:
     methods:        [GET]
     requirements:   { _locale: es|en }
 
-edemy_document_details:
+edemy_main_document_details:
     path:           /{_locale}/document/{slug}
     defaults:       { _controller: edemy.main:indexAction, _locale: es  }
     methods:        [GET]

@@ -205,3 +205,15 @@ services:
             - @service_container
         tags:
             - { name: doctrine.event_subscriber }
+
+    truncatehtml.twig.extension:
+        class: eDemy\MainBundle\Twig\TruncateHtmlExtension
+        tags:
+            - { name: twig.extension }
+
+    edemy.twig.document_extension:
+        class:  eDemy\MainBundle\Twig\DocumentExtension
+        calls:
+            - [setContainer, ["@service_container"]]
+        tags:
+            - { name: twig.extension }

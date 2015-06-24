@@ -109,7 +109,7 @@ class MainController extends BaseController
         if($content = $this->getContent($event->getRoute())) {
             $event->setContent($content);
         }
-//        die(var_dump(gettype($content)));
+//        die(var_dump($content));
         if(gettype($content) == 'object') {
             if (get_class($content) == 'Symfony\Component\HttpFoundation\RedirectResponse') {
 

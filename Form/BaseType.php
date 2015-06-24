@@ -26,6 +26,11 @@ class BaseType extends AbstractType
             //die(var_dump($entity->getFields()));
         //}
         //die(var_dump($entity));
+        $builder->add('tags', 'tags', array(
+            'tagit' => array(/* ... */), // see https://github.com/hilobok/tag-it for available options, may be empty
+            'autocomplete' => 'static', // default
+            'required' => false,
+        ));
         foreach($entity->getFields() as $field) {
             if($field['fieldName'] != 'id' 
                 //and $field['fieldName'] != 'namespace'

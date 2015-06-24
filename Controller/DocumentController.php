@@ -11,11 +11,11 @@ class DocumentController extends BaseController
     public static function getSubscribedEvents()
     {
         return self::getSubscriptions('main', ['document'], array(
-            'edemy_document_frontpage_lastmodified' => array('onDocumentFrontpageLastModified', 0),
-            'edemy_document_details_lastmodified'   => array('onDocumentDetailsLastModified', 0),
-            'edemy_document_details'                => array('onDocumentDetails', 0),
-            'edemy_document_page_details'           => array('onDocumentPageDetails', 0),
-            'edemy_mainmenu'                        => array('onDocumentMainMenu', 0),
+            'edemy_main_document_frontpage_lastmodified' => array('onDocumentFrontpageLastModified', 0),
+            'edemy_main_document_details_lastmodified'   => array('onDocumentDetailsLastModified', 0),
+            'edemy_main_document_details'                => array('onDocumentDetails', 0),
+            'edemy_main_document_page_details'           => array('onDocumentPageDetails', 0),
+            'edemy_mainmenu'                             => array('onDocumentMainMenu', 0),
         ));
     }
 
@@ -48,11 +48,18 @@ class DocumentController extends BaseController
 
     public function onDocumentFrontpage(ContentEvent $event)
     {
-        $entities = $this->getRepository()->findAllOrderedByName();
+        $this->get('edemy.meta')->setTitlePrefix("Blog");
+        $query = $this->getRepository($event->getRoute())->findAllOrderedByTitle($this->getNamespace(), true);
+
+        $paginator  = $this->get('knp_paginator');
+        $pagination = $paginator->paginate(
+            $query,
+            $this->get('request')->query->get('page', 1)/*page number*/,
+            24/*limit per page*/
+        );
 
         $this->addEventModule($event, 'templates/main/document/document', array(
-            'domain' => 'document',
-            'entities' => $entities,
+            'pagination' => $pagination,
         ));
 
         return true;
@@ -72,6 +79,8 @@ class DocumentController extends BaseController
 
     public function onDocumentDetails(ContentEvent $event)
     {
+        $in = false;
+        // @TODO si ha accedido mostrar contenido completo
         $request = $this->getRequest();
         $slug = $request->attributes->get('slug');
 //        die();
@@ -83,8 +92,20 @@ class DocumentController extends BaseController
             throw $this->createNotFoundException('Unable to find Document entity.');
         }
 
+        if($namespace = $this->getNamespace()) {
+            $route = $namespace . '.edemy_main_document_details';
+        } else {
+            $route = 'edemy_main_document_details';
+        }
+        $redirectUrl = $this->get('router')->generate($route, array(
+            'slug' => $entity->getSlug(),
+        ), true);
+
+        $login = $this->get('edemy.fb')->fbLoginOrUser($redirectUrl);
+
         $this->addEventModule($event, 'templates/main/document/document_details', array(
             'entity' => $entity,
+            'login' => $login,
         ));
 
         return true;
