@@ -1211,9 +1211,9 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         if(($themeBundle = $this->getParam("themeBundle")) !== 'themeBundle') {
             $dir = $this->getBundlePath($themeBundle, true) . '/Resources/views/' . $dir;
         }
-        //die(var_dump($dir));
+        //die(var_dump($reflection->getFileName()));
         // Si se está ejecutando desde la caché
-        if(strpos($reflection->getFileName(), 'app/cache/')) {
+        if(strpos($reflection->getFileName(), '/cache/')) {
             // subimos hasta el directorio raíz de la aplicación (3 niveles)
             $basedir = dirname($reflection->getFileName()) . '/../../..';
         } else {
@@ -1374,7 +1374,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
             $dir = $this->getBundlePath($themeBundle, true) . '/Resources/views/' . $dir;
         }
         // Si se está ejecutando desde la caché
-        if(strpos($reflection->getFileName(), 'app/cache/')) {
+        if(strpos($reflection->getFileName(), '/cache/')) {
             // subimos hasta el directorio raíz de la aplicación (3 niveles)
             $basedir = dirname($reflection->getFileName()) . '/../../..';
         } else {
