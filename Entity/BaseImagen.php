@@ -117,6 +117,7 @@ abstract class BaseImagen extends BaseEntity
 
     protected function getUploadDir($host = null)
     {
+        $host = $_SERVER['HTTP_HOST'];
         if($host) {
 
             return '/images_' . $host;
