@@ -172,7 +172,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
     {
         if(($_format = $this->getFormat()) === null) $_format = 'html';
         if (strpos($template, 'dmin/')) {
-            $themeBundle = $this->getParam("themeBundle", "eDemyMainBundle");
+            $themeBundle = $this->getParam("themeBundle", "eDemyMainBundle", "AppBundle");
 //            if($themeBundle == "eDemyMainBundle") die(var_dump($this->getBundleName()));
             $template = $themeBundle . '::' . $template . '.' . $_format . '.twig';
             return $this->get('templating')->render($template, $options);
@@ -195,7 +195,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
     }
 
     public function getTemplate($template, $_format = 'html') {
-        $template = $this->getParam("themeBundle", "eDemyMainBundle") .
+        $template = $this->getParam("themeBundle", "eDemyMainBundle", "AppBundle") .
             '::' . $template . '.' . $_format . '.twig';
 //            $this->getParam($template, null, "layout/theme").'.'.$_format.'.twig';
 //        if($template == 'content.html.twig') die(var_dump($template_b));
@@ -695,6 +695,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
             'entity_name' => $this->getEntityName(),
             'entity_path' => $this->getEntityPath(),
             'edit_route' => 'edemy_' . $this->getEntityPath() . '_edit',
+            'new_route' => 'edemy_' . $this->getEntityPath() . '_new',
             'index_route' => 'edemy_' . $this->getEntityPath() . '_index',
         ));
 
@@ -1369,7 +1370,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
     {
 //        $this->dump($name . ':' . $dir);
         $reflection = new \ReflectionClass(get_class($this));
-        if(($themeBundle = $this->getParam("themeBundle", 'eDemyMainBundle')) !== 'themeBundle') {
+        if(($themeBundle = $this->getParam("themeBundle", 'eDemyMainBundle', "AppBundle")) !== 'themeBundle') {
             $dir = $this->getBundlePath($themeBundle, true) . '/Resources/views/' . $dir;
         }
         // Si se está ejecutando desde la caché

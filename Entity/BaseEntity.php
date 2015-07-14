@@ -18,16 +18,20 @@ abstract class BaseEntity extends AbstractTaggable implements Translatable, Tagg
     protected $fields;
     protected $associations;
     protected $em;
+    protected $container;
     /* @SER\Expose */
     protected $type;
 
-    public function __construct($em = null)
+    public function __construct($em = null, $container = null)
     {
 //        $this->type = get_class($this);
         //die($this->type);
         if($em) {
             $this->setEntityManager($em);
             $this->setMappings();
+        }
+        if($container) {
+            $this->container = $container;
         }
     }
 

@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 abstract class BaseImagen extends BaseEntity
 {
-    public function __construct($em = null)
+    public function __construct($em = null, $container = null)
     {
         parent::__construct($em);
     }
@@ -46,12 +46,12 @@ abstract class BaseImagen extends BaseEntity
             : $this->getUploadRootDir().'/'.$this->path;
     }
 
-    public function getWebPath($w = null, $h = null, $text = null)
+    public function getWebPath($w = null, $h = null, $text = null, $host = null)
     {
         if(file_exists($this->getAbsolutePath())) {
             $partes_ruta = pathinfo($this->path);
-            $path_root = $this->getUploadRootDir() . '/' . $partes_ruta['filename'] . '_w' . $w . '.' . $partes_ruta['extension'];
-            $path = $this->getUploadDir() . '/' . $partes_ruta['filename'] . '_w' . $w . '.' . $partes_ruta['extension'];
+            $path_root = $this->getUploadRootDir($host) . '/' . $partes_ruta['filename'] . '_w' . $w . '.' . $partes_ruta['extension'];
+            $path = $this->getUploadDir($host) . '/' . $partes_ruta['filename'] . '_w' . $w . '.' . $partes_ruta['extension'];
             if($w != null or $h != null) {
                 if(!file_exists($path_root)) {
                     try {
@@ -94,7 +94,7 @@ abstract class BaseImagen extends BaseEntity
                     $partes_ruta = pathinfo($this->path);
                     return $path;
                 } else {
-                    return $this->getUploadDir().'/'.$this->path;
+                    return $this->getUploadDir($host).'/'.$this->path;
                 }
             }
         } else {
@@ -102,7 +102,7 @@ abstract class BaseImagen extends BaseEntity
         }
     }
     
-    protected function getUploadRootDir()
+    protected function getUploadRootDir($host = null)
     {
         if(strpos(__DIR__, 'app/cache/')) {
             // subimos hasta el directorio raíz de la aplicación (3 niveles)
@@ -112,12 +112,18 @@ abstract class BaseImagen extends BaseEntity
             $basedir = __DIR__ . '/../../../../../../web';
         }
 
-        return $basedir . $this->getUploadDir();
+        return $basedir . $this->getUploadDir($host);
     }
 
-    protected function getUploadDir()
+    protected function getUploadDir($host = null)
     {
-        return '/images';
+        if($host) {
+
+            return '/images_' . $host;
+        } else {
+
+            return '/images';
+        }
     }
 
     public function showPathInPanel()

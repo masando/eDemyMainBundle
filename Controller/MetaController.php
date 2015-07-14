@@ -10,8 +10,9 @@
  */
 namespace eDemy\MainBundle\Controller;
 
-use eDemy\MainBundle\Controller\BaseController;
+//use eDemy\MainBundle\Controller\BaseController;
 use eDemy\MainBundle\Event\ContentEvent;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -28,6 +29,7 @@ class MetaController extends BaseController
     private $suffix;
     private $description;
     private $keywords;
+    private $metas;
 
     /**
      * @return array Subscribed Events List
@@ -40,6 +42,13 @@ class MetaController extends BaseController
             'edemy_meta_description' => array('onMetaDescription', 0),
             'edemy_meta_keywords'    => array('onMetaKeywords', 0),
         ));
+    }
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->metas = new ArrayCollection();
+
     }
 
     /**
@@ -187,5 +196,16 @@ class MetaController extends BaseController
         }
 
         return true;
+    }
+
+    public function addMeta($meta)
+    {
+        $this->metas->add($meta);
+    }
+
+    public function getMetas()
+    {
+
+        return $this->metas;
     }
 }

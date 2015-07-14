@@ -3,6 +3,7 @@
 namespace eDemy\MainBundle\Controller;
 
 use Symfony\Component\EventDispatcher\GenericEvent;
+use eDemy\MainBundle\Twig\TruncateHtmlString;
 use eDemy\MainBundle\Event\ContentEvent;
 use eDemy\MainBundle\Entity\Param;
 
@@ -101,7 +102,52 @@ class DocumentController extends BaseController
             'slug' => $entity->getSlug(),
         ), true);
 
-        $login = $this->get('edemy.fb')->fbLoginOrUser($redirectUrl);
+        $login = $this->get('edemy.facebook')->fbLoginOrUser($redirectUrl);
+
+        $this->get('edemy.meta')->setTitlePrefix($entity->getTitle());
+        $description = new TruncateHtmlString($entity->getContent(), 300);
+        if($this->isDevelopment()) {
+//            die(var_dump());
+        }
+        $this->get('edemy.meta')->addMeta(array(
+            'og:url' => $request->getUri(),
+            'og:site_name' => 'http://www.maste.es',
+            'og:title' => $entity->getTitle(),
+            'og:description' => strip_tags($description->cut()),
+            'og:type' => 'article',
+            'og:locale' => 'es_ES',
+            'fb:app_id' => $this->getParam('app.id', 'eDemyFbBundle'),
+            // @TODO author param
+            'article:author' => "https://www.facebook.com/tecafeycomplementos",
+            // @TODO publisher param
+            'article:publisher' => "https://www.facebook.com/tecafeycomplementos",
+        ));
+        if(count($entity->getImagenes())) {
+            $this->get('edemy.meta')->addMeta(
+                array(
+                    'og:image' => 'http://'.$this->getRequest()->getHost().$entity->getImagenes()->first()->getWebpath(
+                            300
+                        ),
+                )
+            );
+        }
+
+/*
+    <meta property="og:url" content="{{ 'http://' ~ app.request.host ~ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) }}" />
+    <meta property="og:site_name" content="{{ app.request.host }}"/>
+    <meta property="og:title" content="{{ entity.title }}" />
+    <meta property="og:description" content="{{ entity.content|truncatehtml(500)|raw }}" />
+    <meta property="og:type" content="article" />
+    <meta property="og:locale" content="es_ES" />
+    {% if appId is defined %}
+        <meta property="fb:app_id" content="{{ appId }}" />
+    {% endif %}
+    <meta property="article:author" content="https://www.facebook.com/tecafeycomplementos" />
+    <meta property="article:publisher" content="https://www.facebook.com/tecafeycomplementos" />
+    {% if entity.imagenes|length > 0 %}
+        <meta property="og:image" content="{{ entity.imagenes.first.webpath(600, null, app.request.host) }}" />
+    {% endif %}
+*/
 
         $this->addEventModule($event, 'templates/main/document/document_details', array(
             'entity' => $entity,

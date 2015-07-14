@@ -70,7 +70,7 @@ class ParamController extends BaseController
         $this->container = $this->get('service_container');
         if ($this->get('security.authorization_checker')->isGranted('ROLE_ADMIN')) {
             $param = $this->getRepository('edemy_main_param_index')->findLastModified($this->getNamespace());
-            if($param->getUpdated()) {
+            if($param and $param->getUpdated()) {
                 $event->setLastModified($param->getUpdated());
             }
         }

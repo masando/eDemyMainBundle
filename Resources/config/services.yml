@@ -98,6 +98,20 @@ services:
         tags:
             - { name: twig.extension }
 
+    edemy.twig.google_extension:
+        class:  eDemy\MainBundle\Twig\GoogleExtension
+        calls:
+            - [setContainer, ["@service_container"]]
+        tags:
+            - { name: twig.extension }
+
+    edemy.twig.meta_extension:
+        class:  eDemy\MainBundle\Twig\MetaExtension
+        calls:
+            - [setContainer, ["@service_container"]]
+        tags:
+            - { name: twig.extension }
+
     edemy.twig.service_extension:
         class:  eDemy\MainBundle\Twig\ServiceExtension
         calls:
