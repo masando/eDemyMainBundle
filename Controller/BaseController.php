@@ -1220,18 +1220,19 @@ abstract class BaseController extends Controller implements EventSubscriberInter
             // si no subimos 6 niveles hasta el directorio raíz de la aplicación
             $basedir = dirname($reflection->getFileName()) . '/../../../../../..';
         }
-        $finder = new Finder();
-        $finder
-            ->files()
-            //->in($basedir . $dir)
-            ->in($dir)
-            ->name($name);
+        if($dir) {
+            $finder = new Finder();
+            $finder
+                ->files()
+                ->in($dir)
+                ->name($name);
             //->sortByModifiedTime();
-        foreach ($finder as $file) {
-            //$lastmodified_files = new \DateTime();
-            $lastmodified_files = \DateTime::createFromFormat( 'U', $file->getMTime() );
-            if($lastmodified_files > $lastmodified) {
-                $lastmodified = $lastmodified_files;
+            foreach($finder as $file) {
+                //$lastmodified_files = new \DateTime();
+                $lastmodified_files = \DateTime::createFromFormat('U', $file->getMTime());
+                if ($lastmodified_files > $lastmodified) {
+                    $lastmodified = $lastmodified_files;
+                }
             }
         }
 
