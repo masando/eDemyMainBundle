@@ -58,6 +58,7 @@ class CssController extends BaseController
                 return $response;
             }
         }
+
         $css = $this->getCss($event->getRoute());
         $response = $this->newResponse();
         $response->setContent($css);
@@ -79,7 +80,7 @@ class CssController extends BaseController
         // @TODO lastmodified files from themeBundle templates
         $reflection = new \ReflectionClass(get_class($this));
         // @TODO
-        if(strpos($reflection->getFileName(), 'app/cache/')) {
+        if(strpos($reflection->getFileName(), '/cache/')) {
             $dir = dirname($reflection->getFileName()) . '/../../..';
         } else {
             $dir = dirname($reflection->getFileName()) . '/../../../../../..';

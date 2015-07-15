@@ -172,15 +172,15 @@ abstract class BaseController extends Controller implements EventSubscriberInter
     {
         if(($_format = $this->getFormat()) === null) $_format = 'html';
         if (strpos($template, 'dmin/')) {
-            $themeBundle = $this->getParam("themeBundle", "eDemyMainBundle", "AppBundle");
-//            if($themeBundle == "eDemyMainBundle") die(var_dump($this->getBundleName()));
+            $themeBundle = $this->getParam("themeBundle", "eDemyMainBundle", "eDemyThemeBundle");
+//            if($themeBundle == "eDemyMainBundle")  die(var_dump($this->getBundleName()));
             $template = $themeBundle . '::' . $template . '.' . $_format . '.twig';
             return $this->get('templating')->render($template, $options);
             // @TODO getParam no devuelve el parámetro cuando bundle = null
 //            return $this->get('templating')->render($template, $options);
 //            die(var_dump($this->getParam("themeBundle", null, $this->getBundleName())));
         }
-//        $this->dump($this->getTemplate($template, $_format));
+//        die($this->dump($this->getTemplate($template, $_format)));
 //        $this->dump($options);
         return $this->get('templating')->render($this->getTemplate($template, $_format), $options);
         /*        if (strpos($template, 'dmin/')) {
@@ -195,7 +195,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
     }
 
     public function getTemplate($template, $_format = 'html') {
-        $template = $this->getParam("themeBundle", "eDemyMainBundle", "AppBundle") .
+        $template = $this->getParam("themeBundle", "eDemyMainBundle", "eDemyThemeBundle") .
             '::' . $template . '.' . $_format . '.twig';
 //            $this->getParam($template, null, "layout/theme").'.'.$_format.'.twig';
 //        if($template == 'content.html.twig') die(var_dump($template_b));
@@ -484,7 +484,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
     public function onCssModule(ContentEvent $event)
     {
         $dir = 'assets/';
-//        $this->dump($this->fileExists($this->getControllerName().".css.twig", $dir));
+        //die(var_dump($this->getControllerName().".css.twig"));
         if($this->fileExists($this->getControllerName().".css.twig", $dir)) {
 
             /** @var Param[] $allparams */
@@ -1223,7 +1223,8 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         $finder = new Finder();
         $finder
             ->files()
-            ->in($basedir . $dir)
+            //->in($basedir . $dir)
+            ->in($dir)
             ->name($name);
             //->sortByModifiedTime();
         foreach ($finder as $file) {
@@ -1370,7 +1371,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
     {
 //        $this->dump($name . ':' . $dir);
         $reflection = new \ReflectionClass(get_class($this));
-        if(($themeBundle = $this->getParam("themeBundle", 'eDemyMainBundle', "AppBundle")) !== 'themeBundle') {
+        if(($themeBundle = $this->getParam("themeBundle", 'eDemyMainBundle', "eDemyThemeBundle")) !== 'themeBundle') {
             $dir = $this->getBundlePath($themeBundle, true) . '/Resources/views/' . $dir;
         }
         // Si se está ejecutando desde la caché
@@ -1382,8 +1383,9 @@ abstract class BaseController extends Controller implements EventSubscriberInter
             $basedir = dirname($reflection->getFileName()) . '/../../../../../..';
         }
         $fs = new Filesystem();
-//        $this->dump($basedir . $dir . $name);
-        if($fs->exists($basedir . $dir . $name)) {
+        //die(var_dump($basedir . $dir . $name));
+        //if($fs->exists($basedir . $dir . $name)) {
+        if($fs->exists($dir . $name)) {
 
             return true;
         }
