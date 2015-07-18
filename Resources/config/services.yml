@@ -91,6 +91,10 @@ services:
         tags:
             - { name: twig.extension }
 
+    edemy.twig.isloaded_extension:
+        class: eDemy\MainBundle\Twig\IsLoadedExtension
+        tags: [{ name: twig.extension }]
+
     edemy.twig.path_extension:
         class:  eDemy\MainBundle\Twig\PathExtension
         calls:
