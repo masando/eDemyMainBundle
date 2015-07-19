@@ -43,6 +43,7 @@ class RedirectController extends BaseController
     public function onKernelException(GetResponseForExceptionEvent $event)
     {
         $redirect = null;
+        $url = null;
         $exception = $event->getException();
         if ($exception instanceof HttpExceptionInterface) {
             if($exception->getStatusCode() == '404') {
@@ -70,12 +71,13 @@ class RedirectController extends BaseController
                             $url = str_replace('{url}', $url, $rule);
                         }
                     }
+                    if($url) {
+                        $response = new RedirectResponse($url, 302);
+                        $event->setResponse($response);
+                        $event->stopPropagation();
 
-                    $response = new RedirectResponse($url, 302);
-                    $event->setResponse($response);
-                    $event->stopPropagation();
-
-                    return true;
+                        return true;
+                    }
                 }
                 // IF NOT REDIRECT GENERATE 404
                 $contentEvent = new ContentEvent('edemy_notfound');
