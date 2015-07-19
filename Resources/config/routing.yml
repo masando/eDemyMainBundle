@@ -1,3 +1,8 @@
+edemy_notfound:
+    path:           /{_locale}/notfound
+    defaults:       { _controller: edemy.main:indexAction, _locale: es, _format: html }
+    requirements:   { _locale: es|en, _format: html|xml }
+
 edemy_main_frontpage:
     path:           /{_locale}
     defaults:       { _controller: edemy.main:indexAction, _locale: es, _format: html }
@@ -96,4 +101,3 @@ edemy_sitemap:
     defaults:       { _controller: edemy.sitemap:indexAction, _format: xml }
     methods:        [ GET, POST ]
     requirements:   { _locale: es|en }
-

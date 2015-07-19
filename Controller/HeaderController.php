@@ -78,6 +78,9 @@ class HeaderController extends BaseController
 
     public function header($_route = null)
     {
+//        if($_route == null) {
+//            $_route = 'edemy_notfound';
+//        }
         $event = new ContentEvent($_route);
         $this->dispatch('edemy_header_lastmodified', $event);
         $lastmodified = $event->getLastModified();
