@@ -11,7 +11,7 @@ class SearchController extends BaseController
     public static function getSubscribedEvents()
     {
         return self::getSubscriptions('search', [], array(
-            'edemy_precontent_module' => array('onPreContentModule', 0),
+            'edemy_precontent_module' => array('onPreContentModule', 100),
             'edemy_search_query' => array('onSearchQuery', 0),
         ));
     }
