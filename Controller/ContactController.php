@@ -29,8 +29,8 @@ class ContactController extends BaseController
 
         $items = array();
         $item = new Param($this->get('doctrine.orm.entity_manager'));
-//                $item->setBundle($this->getBundleName());
-//                $item->setType('mainmenu');
+        //$item->setBundle($this->getBundleName());
+        //$item->setType('mainmenu');
         $item->setName('Contacto');
         if($namespace = $this->getNamespace()) {
             $namespace .= ".";
@@ -39,7 +39,7 @@ class ContactController extends BaseController
         $items[] = $item;
 
         $menuEvent['items'] = array_merge($menuEvent['items'], $items);
-//die(var_dump($menuEvent['items']));
+        //die(var_dump($menuEvent['items']));
         return true;
     }
 
@@ -56,7 +56,7 @@ class ContactController extends BaseController
         $request = $this->getCurrentRequest();
         $host = $frontcontroller = $request->getHost();
         $env = $this->get('kernel')->getEnvironment();
-        $mailmsg = 'Mensaje desde la web';
+        $mailmsg = 'Mensaje ' . $host;
         $mailto = $this->getParam('sendtomail');
         //$mailfrom = $this->getParam('sendfrommail');
         $namespace = $this->getNamespace();
