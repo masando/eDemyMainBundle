@@ -22,30 +22,30 @@ class eDemyMainExtension extends Extension
         //$configuration = new Configuration();
         //$config = $this->processConfiguration($configuration, $configs);
 
-        //if($config['enabled']) {
-            $this->addClassesToCompile(array(
-                'eDemy\\MainBundle\\Controller\\AnalyticsController',
-                'eDemy\\MainBundle\\Controller\\BaseController',
-                'eDemy\\MainBundle\\Controller\\ContactController',
-                'eDemy\\MainBundle\\Controller\\ContentController',
-                'eDemy\\MainBundle\\Controller\\CssController',
-                'eDemy\\MainBundle\\Controller\\FooterController',
-                'eDemy\\MainBundle\\Controller\\GalleryController',
-                'eDemy\\MainBundle\\Controller\\HeaderController',
-                'eDemy\\MainBundle\\Controller\\JsController',
-                'eDemy\\MainBundle\\Controller\\LogoController',
-                'eDemy\\MainBundle\\Controller\\MainController',
-                'eDemy\\MainBundle\\Controller\\MenuController',
-                'eDemy\\MainBundle\\Controller\\MetaController',
-                'eDemy\\MainBundle\\Controller\\ParamController',
-                'eDemy\\MainBundle\\Controller\\RedirectController',
-                'eDemy\\MainBundle\\Controller\\SearchController',
-                'eDemy\\MainBundle\\Controller\\ServiceContainerController',
-                'eDemy\\MainBundle\\Event\\ContentEvent',
-                'eDemy\\MainBundle\\Menu\\Builder',
-            ));
-            $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
-            $loader->load('services.yml');
-        //}
+        $this->addClassesToCompile(array(
+            'eDemy\\MainBundle\\Controller\\AnalyticsController',
+            'eDemy\\MainBundle\\Controller\\BaseController',
+            'eDemy\\MainBundle\\Controller\\ContactController',
+            'eDemy\\MainBundle\\Controller\\ContentController',
+            'eDemy\\MainBundle\\Controller\\CssController',
+            'eDemy\\MainBundle\\Controller\\DocumentController',
+            'eDemy\\MainBundle\\Controller\\FooterController',
+            'eDemy\\MainBundle\\Controller\\GalleryController',
+            'eDemy\\MainBundle\\Controller\\HeaderController',
+            'eDemy\\MainBundle\\Controller\\JsController',
+            'eDemy\\MainBundle\\Controller\\LogoController',
+            'eDemy\\MainBundle\\Controller\\MainController',
+            'eDemy\\MainBundle\\Controller\\MenuController',
+            'eDemy\\MainBundle\\Controller\\MetaController',
+            'eDemy\\MainBundle\\Controller\\ParamController',
+            'eDemy\\MainBundle\\Controller\\RedirectController',
+            'eDemy\\MainBundle\\Controller\\SearchController',
+            'eDemy\\MainBundle\\Controller\\ServiceContainerController',
+            'eDemy\\MainBundle\\Controller\\TodoController',
+            'eDemy\\MainBundle\\Event\\ContentEvent',
+            'eDemy\\MainBundle\\Menu\\Builder',
+        ));
+        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader->load('services.yml');
     }
 }

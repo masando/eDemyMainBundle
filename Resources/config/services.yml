@@ -170,6 +170,13 @@ services:
         tags:
             - { name: kernel.event_subscriber }
 
+    edemy.todo:
+        class: eDemy\MainBundle\Controller\TodoController
+        calls:
+            - [setEventDispatcher, ["@event_dispatcher"]]
+        tags:
+            - { name: kernel.event_subscriber }
+
     edemy.analytics:
         class: eDemy\MainBundle\Controller\AnalyticsController
         calls:
