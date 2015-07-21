@@ -10,7 +10,7 @@ use Gedmo\Translatable\Translatable;
 
 /**
  * @ORM\Table()
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="eDemy\MainBundle\Entity\TodoRepository")
  */
 class Todo extends BaseEntity
 {

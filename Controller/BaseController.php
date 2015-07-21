@@ -354,9 +354,6 @@ abstract class BaseController extends Controller implements EventSubscriberInter
     //
     public function findAll($entity = null)
     {
-        if($entity == 'Background') {
-            //die(var_dump($this->getBundleName() . ':' . $entity));
-        }
         if($entity == null) $entity = $this->getEntityNameUpper();
         
         return $this->get('doctrine.orm.entity_manager')->getRepository($this->getBundleName() . ':' . $entity)->findBy(array(
@@ -641,12 +638,12 @@ abstract class BaseController extends Controller implements EventSubscriberInter
     {
         $this->container = $this->get('service_container');
         $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'No tienes permisos para acceder a este recurso!');
-        //die();
 
         $repository = $this->get('doctrine.orm.entity_manager')->getRepository($this->getBundleName().':'.$this->getEntityNameUpper());
-        //die(var_dump($this->getNamespace()));
-        $entities = array_merge($this->findAll($this->getEntityNameUpper()) , $repository->findByNamespace('all'));
-//        die(var_dump($entities));
+        //$entities = array_merge($this->findAll($this->getEntityNameUpper()) , $repository->findByNamespace('all'));
+        //die(var_dump($repository->findAll($this->getNamespace())));
+        //$entities = array_merge($repository->findAll($this->getNamespace()));
+        $entities = $repository->findAll($this->getNamespace());
         $paginator  = $this->get('knp_paginator');
         $pagination = $paginator->paginate(
             $entities,
@@ -654,6 +651,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
             100
         );
         $entities = $pagination->getItems();
+        //die(var_dump($entities));
         foreach($entities as $entity) {
             $entity->setEntityManager($this->get('doctrine.orm.entity_manager'));
             $entity->setMappings();
