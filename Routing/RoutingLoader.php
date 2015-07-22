@@ -115,6 +115,18 @@ class RoutingLoader extends Loader
             ), array( '_locale' => 'es|en', 'id' => '\d+' ), array(), '', array(), array('GET'));
             $routesCollection->add('edemy_' . $bundleNameSimpleLower . '_' . $entityNameLower . '_edit', $route);
 
+            // ENTITY EDIT PUBLISH (i.e. GET /admin/es/agenda/actividad/1/publish)
+            $route = new Route('/admin/{_locale}/' . $bundleNameSimpleLower . '/' . $entityNameLower . '/{id}/publish', array(
+                '_controller' => 'edemy.main:publishAction',
+            ), array( '_locale' => 'es|en', 'id' => '\d+' ), array(), '', array(), array('GET'));
+            $routesCollection->add('edemy_' . $bundleNameSimpleLower . '_' . $entityNameLower . '_editpublish', $route);
+
+            // ENTITY EDIT PUBLISH (i.e. GET /admin/es/agenda/actividad/1/publish)
+            $route = new Route('/admin/{_locale}/' . $bundleNameSimpleLower . '/' . $entityNameLower . '/{id}/unpublish', array(
+                '_controller' => 'edemy.main:unpublishAction',
+            ), array( '_locale' => 'es|en', 'id' => '\d+' ), array(), '', array(), array('GET'));
+            $routesCollection->add('edemy_' . $bundleNameSimpleLower . '_' . $entityNameLower . '_editunpublish', $route);
+
             // ENTITY CREATE (i.e. POST /admin/es/agenda/actividad/1)
             $route = new Route('/admin/{_locale}/' . $bundleNameSimpleLower . '/' . $entityNameLower, array(
                 '_controller' => 'edemy.main:indexAction',

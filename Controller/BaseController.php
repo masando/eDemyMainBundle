@@ -827,6 +827,54 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         return $form;
     }
 
+    //// publishAction
+    public function publishAction()
+    {
+        $this->container = $this->get('service_container');
+        $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'No tienes permisos para acceder a este recurso!');
+        $this->em = $this->get('doctrine.orm.entity_manager');
+
+        $request = $this->get('request_stack')->getCurrentRequest();
+        $id = $request->attributes->get('id');
+
+        $entity = $this->get('doctrine.orm.entity_manager')->getRepository($this->getBundleName().':'.$this->getEntityNameUpper())->findOneBy(array(
+            'id' => $id,
+            //'namespace' => $this->getNamespace(),
+        ));
+        if (!$entity) {
+            throw $this->CreateNotFoundException('Unable to find entity.');
+        }
+        $entity->setPublished(true);
+        $this->em->persist($entity);
+        $this->em->flush();
+
+        return $this->newRedirectResponse('edemy_' . $this->getEntityPath($request->attributes->get('_route')) . '_index');
+    }
+
+    //// unpublishAction
+    public function unpublishAction()
+    {
+        $this->container = $this->get('service_container');
+        $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'No tienes permisos para acceder a este recurso!');
+        $this->em = $this->get('doctrine.orm.entity_manager');
+
+        $request = $this->get('request_stack')->getCurrentRequest();
+        $id = $request->attributes->get('id');
+
+        $entity = $this->get('doctrine.orm.entity_manager')->getRepository($this->getBundleName().':'.$this->getEntityNameUpper())->findOneBy(array(
+            'id' => $id,
+            //'namespace' => $this->getNamespace(),
+        ));
+        if (!$entity) {
+            throw $this->CreateNotFoundException('Unable to find entity.');
+        }
+        $entity->setPublished(false);
+        $this->em->persist($entity);
+        $this->em->flush();
+
+        return $this->newRedirectResponse('edemy_' . $this->getEntityPath($request->attributes->get('_route')) . '_index');
+    }
+
     public function onUpdate(ContentEvent $event)
     {
         $this->container = $this->get('service_container');
