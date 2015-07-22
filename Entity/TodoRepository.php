@@ -26,6 +26,7 @@ class TodoRepository extends EntityRepository
         }
         //$qb->orderBy('d.created','DESC');
         //$qb->orderBy('ordenIfNull','ASC');
+        $qb->orderBy('d.published','DESC');
         $qb->addOrderBy('ORD','ASC');
         $query = $qb->getQuery();
 
