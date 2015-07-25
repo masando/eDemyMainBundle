@@ -11,7 +11,7 @@ class TodoController extends BaseController
 {
     public static function getSubscribedEvents()
     {
-        return self::getSubscriptions('main', ['todo'], array(
+        return self::getSubscriptions('main', ['todo','tag'], array(
             'edemy_mainmenu'    => array('onTodoMainMenu', 0),
         ));
     }

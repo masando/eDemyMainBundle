@@ -127,19 +127,25 @@ class RoutingLoader extends Loader
             ), array( '_locale' => 'es|en', 'id' => '\d+' ), array(), '', array(), array('GET'));
             $routesCollection->add('edemy_' . $bundleNameSimpleLower . '_' . $entityNameLower . '_editunpublish', $route);
 
+            // ENTITY BATCH (i.e. POST /admin/es/agenda/actividad/batch)
+            $route = new Route('/admin/{_locale}/' . $bundleNameSimpleLower . '/' . $entityNameLower . '/batch', array(
+                '_controller' => 'edemy.main:indexAction',
+            ), array( '_locale' => 'es|en' ), array(), '', array(), array('POST'));
+            $routesCollection->add('edemy_' . $bundleNameSimpleLower . '_' . $entityNameLower . '_batch', $route);
+
             // ENTITY CREATE (i.e. POST /admin/es/agenda/actividad/1)
             $route = new Route('/admin/{_locale}/' . $bundleNameSimpleLower . '/' . $entityNameLower, array(
                 '_controller' => 'edemy.main:indexAction',
             ), array( '_locale' => 'es|en' ), array(), '', array(), array('POST'));
             $routesCollection->add('edemy_' . $bundleNameSimpleLower . '_' . $entityNameLower . '_create', $route);
 
-            // ENTITY CREATE (i.e. PUT /admin/es/agenda/actividad/1)
+            // ENTITY UPDATE (i.e. PUT /admin/es/agenda/actividad/1)
             $route = new Route('/admin/{_locale}/' . $bundleNameSimpleLower . '/' . $entityNameLower . '/{id}', array(
                 '_controller' => 'edemy.main:indexAction',
             ), array( '_locale' => 'es|en', 'id' => '\d+' ), array(), '', array(), array('PUT'));
             $routesCollection->add('edemy_' . $bundleNameSimpleLower . '_' . $entityNameLower . '_update', $route);
 
-            // ENTITY CREATE (i.e. DELETE /admin/es/agenda/actividad/1)
+            // ENTITY DELETE (i.e. DELETE /admin/es/agenda/actividad/1)
             $route = new Route('/admin/{_locale}/' . $bundleNameSimpleLower . '/' . $entityNameLower . '/{id}', array(
                 '_controller' => 'edemy.main:indexAction',
             ), array( '_locale' => 'es|en', 'id' => '\d+' ), array(), '', array(), array('DELETE'));

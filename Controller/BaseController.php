@@ -11,7 +11,12 @@
 
 namespace eDemy\MainBundle\Controller;
 
+use Anh\Taggable\TaggableManager;
+use Anh\Taggable\TaggableSubscriber;
 use Doctrine\Bundle\DoctrineBundle\Mapping\DisconnectedMetadataFactory;
+use Doctrine\Common\Collections\ArrayCollection;
+use eDemy\MainBundle\Entity\Param;
+use eDemy\MainBundle\Entity\BaseEntity;
 use eDemy\MainBundle\Event\ContentEvent;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\eventDispatcher\eventDispatcherInterface;
@@ -23,9 +28,6 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
-
-use eDemy\MainBundle\Entity\Param;
-use eDemy\MainBundle\Entity\BaseEntity;
 
 abstract class BaseController extends Controller implements EventSubscriberInterface
 {
@@ -67,6 +69,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
             'edemy_'.$bundle.'_'.$entity_name.'_edit' => array('onEdit', 0),
             'edemy_'.$bundle.'_'.$entity_name.'_new' => array('onNew', 0),
             'edemy_'.$bundle.'_'.$entity_name.'_show' => array('onShow', 0),
+            'edemy_'.$bundle.'_'.$entity_name.'_batch' => array('onBatch', 0),
             'edemy_'.$bundle.'_'.$entity_name.'_create' => array('onCreate', 0),
             'edemy_'.$bundle.'_'.$entity_name.'_update' => array('onUpdate', 0),
             'edemy_'.$bundle.'_'.$entity_name.'_delete' => array('onDelete', 0),
@@ -639,11 +642,15 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         $this->container = $this->get('service_container');
         $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'No tienes permisos para acceder a este recurso!');
 
+
         $repository = $this->get('doctrine.orm.entity_manager')->getRepository($this->getBundleName().':'.$this->getEntityNameUpper());
         //$entities = array_merge($this->findAll($this->getEntityNameUpper()) , $repository->findByNamespace('all'));
         //die(var_dump($repository->findAll($this->getNamespace())));
         //$entities = array_merge($repository->findAll($this->getNamespace()));
         $entities = $repository->findAll($this->getNamespace());
+
+        $form = $this->createSelectForm(count($entities));
+
         $paginator  = $this->get('knp_paginator');
         $pagination = $paginator->paginate(
             $entities,
@@ -664,7 +671,105 @@ abstract class BaseController extends Controller implements EventSubscriberInter
             'entity_path' => $this->getEntityPath(),
             'edit_route' => 'edemy_' . $this->getEntityPath() . '_edit',
             'new_route' => 'edemy_' . $this->getEntityPath() . '_new',
+            'form' => $form->createView(),
         ));
+    }
+
+    private function createSelectForm($max = null)
+    {
+        if($this->getNamespace()) {
+            $action = $this->get('router')->generate($this->getNamespace() . '.' . 'edemy_' . $this->getEntityPath() . '_batch');
+        } else {
+            $action = $this->get('router')->generate('edemy_' . $this->getEntityPath() . '_batch');
+        }
+        $data = array();
+
+//        if($max) {
+//            $data = $form->get('selectors')->getData();
+//            for ($i = 0; $i < $max; $i++) {
+//                $data[$i] = false;
+//            }
+//            $form->get('selectors')->setData($data);
+//        }
+
+        $form = $this->createFormBuilder($data)
+            ->setAction($action)
+            ->setMethod('POST')
+            ->add('selectors', 'collection', array(
+                'type'   => 'checkbox',
+                'options'  => array(
+                    'required'  => false,
+                    'attr'      => array('class' => 'select-box')
+                ),
+            ))
+            ->add('batch', 'submit')
+            ->getForm();
+
+        if($max) {
+            $data = $form->get('selectors')->getData();
+            for ($i = 1; $i <= $max; $i++) {
+                $data[$i] = false;
+            }
+            $form->get('selectors')->setData($data);
+        }
+
+        return $form;
+    }
+
+    //// onBatch
+    public function onBatch(ContentEvent $event)
+    {
+        $this->container = $this->get('service_container');
+        $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'No tienes permisos para acceder a este recurso!');
+
+        $em = $this->get('doctrine.orm.entity_manager');
+        $request = $this->get('request_stack')->getCurrentRequest();
+        $repository = $em->getRepository($this->getBundleName().':'.$this->getEntityNameUpper());
+
+        $form = $this->createSelectForm(count($repository->findAll($this->getNamespace())));
+        $form->handleRequest($request);
+        if ($form->isValid()) {
+            // create taggable manager
+            $taggableManager = new TaggableManager(
+                $em, 'Anh\Taggable\Entity\Tag', 'Anh\Taggable\Entity\Tagging'
+            );
+
+            // add event subscriber
+//            $em->getEventManager()->addEventSubscriber(
+//                new TaggableSubscriber($taggableManager)
+//            );
+
+            $data = $form->get('selectors')->getData();
+            $entities = new ArrayCollection();
+            foreach ($data as $id => $value) {
+                if($value) {
+                    $entity = $em->getRepository($this->getBundleName().':'.$this->getEntityNameUpper())->findOneBy(
+                        array(
+                            'id' => $id,
+                        )
+                    );
+                    if (!$entity) {
+                        throw $this->createNotFoundException('Unable to find Param entity.');
+                    }
+                    $entity->setEntityManager($this->get('doctrine.orm.entity_manager'));
+                    $entity->setMappings();
+                    $entities->add($entity);
+                }
+            }
+
+            $tag = $taggableManager->loadOrCreateTag('archived');
+            $em->persist($tag);
+            $em->flush();
+            foreach ($entities as $entity) {
+                $entity->addTag($tag);
+                $em->persist($entity);
+                $em->flush();
+            }
+        }
+        $event->setContent($this->newRedirectResponse('edemy_' . $this->getEntityPath($request->attributes->get('_route')) . '_index'));
+        $event->stopPropagation();
+
+        return true;
     }
 
     //// onShow
