@@ -649,7 +649,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         //$entities = array_merge($repository->findAll($this->getNamespace()));
         $entities = $repository->findAll($this->getNamespace());
 
-        $form = $this->createSelectForm(count($entities));
+        $form = $this->createSelectForm($entities);
 
         $paginator  = $this->get('knp_paginator');
         $pagination = $paginator->paginate(
@@ -675,7 +675,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         ));
     }
 
-    private function createSelectForm($max = null)
+    private function createSelectForm($entities)
     {
         if($this->getNamespace()) {
             $action = $this->get('router')->generate($this->getNamespace() . '.' . 'edemy_' . $this->getEntityPath() . '_batch');
@@ -705,10 +705,10 @@ abstract class BaseController extends Controller implements EventSubscriberInter
             ->add('batch', 'submit')
             ->getForm();
 
-        if($max) {
+        if($entities) {
             $data = $form->get('selectors')->getData();
-            for ($i = 1; $i <= $max; $i++) {
-                $data[$i] = false;
+            foreach($entities as $entity) {
+                $data[$entity->getId()] = false;
             }
             $form->get('selectors')->setData($data);
         }
