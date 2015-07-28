@@ -84,7 +84,11 @@ abstract class BaseController extends Controller implements EventSubscriberInter
     {
         $this->eventDispatcher = $eventDispatcher;
         $this->environment = $this->get('kernel')->getEnvironment();
+
+        $this->afterSetEventDispatcher();
     }
+
+    public function afterSetEventDispatcher() {}
 
     public function __construct()
     {
@@ -160,13 +164,16 @@ abstract class BaseController extends Controller implements EventSubscriberInter
     {
         if ($_route == null) {
             $request = $this->get('request_stack')->getCurrentRequest();
-            $_route = $request->attributes->get('_route');
+            if($request) {
+                $_route = $request->attributes->get('_route');
+            }
         }
-        $parts = explode('.', $_route);
-        if (count($parts) == 2) {
-            return $parts[0];
+        if($_route) {
+            $parts = explode('.', $_route);
+            if (count($parts) == 2) {
+                return $parts[0];
+            }
         }
-
         return null;
     }
 
@@ -247,7 +254,6 @@ abstract class BaseController extends Controller implements EventSubscriberInter
             $bundle = $this->getBundleName();
 //            if($param == 'themeBundle') die(var_dump($namespace));
         }
-
         $event = new GenericEvent(
             "param",
             array(
@@ -649,7 +655,6 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         //$entities = array_merge($repository->findAll($this->getNamespace()));
         $entities = $repository->findAll($this->getNamespace());
 
-        $form = $this->createSelectForm($entities);
 
         $paginator  = $this->get('knp_paginator');
         $pagination = $paginator->paginate(
@@ -658,6 +663,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
             100
         );
         $entities = $pagination->getItems();
+        $form = $this->createSelectForm($entities);
         //die(var_dump($entities));
         foreach($entities as $entity) {
             $entity->setEntityManager($this->get('doctrine.orm.entity_manager'));

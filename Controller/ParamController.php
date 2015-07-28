@@ -151,6 +151,10 @@ class ParamController extends BaseController
 //            dump($param . ' ' . $default . ' ' . $value);
         } else {
             if(count($entities) == 1) {
+                if($entities[0]->getLocale() == null) {
+                    $entities[0]->setTranslatableLocale('es');
+                    $this->get('doctrine.orm.entity_manager')->refresh($entities[0]);
+                }
                 $value = $entities[0]->getValue();
                 if($object) return $entities[0];
             } else {
