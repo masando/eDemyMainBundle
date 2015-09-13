@@ -101,7 +101,8 @@ class LogoController extends BaseController
                 $upload_dir = __DIR__ . '/../../../../../../web';
             }
 //            $upload_dir = __DIR__.'/../../../../../../web';
-            $file->move($upload_dir.'/images_'.$this->getRequest()->getHost().'/', $path);
+            //$file->move($upload_dir.'/images_'.$this->getRequest()->getHost().'/', $path);
+            $file->move($upload_dir.'/images/', $path);
             $name = 'logo';
             $logo_param = $this->em->getRepository('eDemyMainBundle:Param')->findOneBy(
                 array(

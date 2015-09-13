@@ -39,16 +39,26 @@ abstract class BaseImagen extends BaseEntity
         return $this->path;
     }
 
-    public function getAbsolutePath()
+    public function getAbsolutePath($host = null)
     {
         return null === $this->path
             ? null
-            : $this->getUploadRootDir().'/'.$this->path;
+            : $this->getUploadRootDir($host).'/'.$this->path;
     }
 
     public function getWebPath($w = null, $h = null, $text = null, $host = null)
     {
-        if(file_exists($this->getAbsolutePath())) {
+        $host = $_SERVER['HTTP_HOST'];
+        $parts = explode(".", $host);
+        if(count($parts) == 3) {
+            $subdomain = $parts[0];
+            $domain = $parts[1] . '.' . $parts[2];
+        } else {
+            $domain = $parts[0] . '.' . $parts[1];
+            $subdomain = 'www';
+        }
+
+        if(file_exists($this->getAbsolutePath($domain))) {
             $partes_ruta = pathinfo($this->path);
             $path_root = $this->getUploadRootDir($host) . '/' . $partes_ruta['filename'] . '_w' . $w . '.' . $partes_ruta['extension'];
             $path = $this->getUploadDir($host) . '/' . $partes_ruta['filename'] . '_w' . $w . '.' . $partes_ruta['extension'];
@@ -104,12 +114,16 @@ abstract class BaseImagen extends BaseEntity
     
     protected function getUploadRootDir($host = null)
     {
-        if(strpos(__DIR__, 'app/cache/')) {
-            // subimos hasta el directorio raíz de la aplicación (3 niveles)
-            $basedir = __DIR__ . '/../../../web';
+        if($host) {
+            $basedir = '/var/www/'.$host;
         } else {
-            // si no subimos 6 niveles hasta el directorio raíz de la aplicación
-            $basedir = __DIR__ . '/../../../../../../web';
+            if(strpos(__DIR__, 'app/cache/')) {
+                // subimos hasta el directorio raíz de la aplicación (3 niveles)
+                $basedir = __DIR__ . '/../../../web';
+            } else {
+                // si no subimos 6 niveles hasta el directorio raíz de la aplicación
+                $basedir = __DIR__ . '/../../../../../../web';
+            }
         }
 
         return $basedir . $this->getUploadDir($host);
@@ -120,7 +134,7 @@ abstract class BaseImagen extends BaseEntity
         $host = $_SERVER['HTTP_HOST'];
         if($host) {
 
-            return '/images_' . $host;
+            return '/images';
         } else {
 
             return '/images';
