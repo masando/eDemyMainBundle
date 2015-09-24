@@ -93,6 +93,15 @@ class LogoController extends BaseController
         if ($form->isValid()) {
             $file = $form['logo']->getData();
             $path = 'logo' . $namespace . '.' . $file->guessExtension();
+            $host = $_SERVER['HTTP_HOST'];
+            $parts = explode(".", $host);
+            if(count($parts) == 3) {
+                $subdomain = $parts[0];
+                $domain = $parts[1] . '.' . $parts[2];
+            } else {
+                $domain = $parts[0] . '.' . $parts[1];
+                $subdomain = 'www';
+            }
             if(strpos(__DIR__, '/cache/')) {
                 // subimos hasta el directorio raíz de la aplicación (3 niveles)
                 $upload_dir = __DIR__ . '/../../../web';
@@ -100,9 +109,9 @@ class LogoController extends BaseController
                 // si no subimos 6 niveles hasta el directorio raíz de la aplicación
                 $upload_dir = __DIR__ . '/../../../../../../web';
             }
-//            $upload_dir = __DIR__.'/../../../../../../web';
+            $upload_dir = '/var/www/'.$domain;
             //$file->move($upload_dir.'/images_'.$this->getRequest()->getHost().'/', $path);
-            $file->move($upload_dir.'/images/', $path);
+            $file->move($upload_dir.'/images', $path);
             $name = 'logo';
             $logo_param = $this->em->getRepository('eDemyMainBundle:Param')->findOneBy(
                 array(

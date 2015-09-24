@@ -114,9 +114,19 @@ abstract class BaseImagen extends BaseEntity
     
     protected function getUploadRootDir($host = null)
     {
-        if($host) {
-            $basedir = '/var/www/'.$host;
+        $host = $_SERVER['HTTP_HOST'];
+        $parts = explode(".", $host);
+        if(count($parts) == 3) {
+            $subdomain = $parts[0];
+            $domain = $parts[1] . '.' . $parts[2];
         } else {
+            $domain = $parts[0] . '.' . $parts[1];
+            $subdomain = 'www';
+        }
+        if($host) {
+            $basedir = '/var/www/'.$domain;
+        }
+        /*else {
             if(strpos(__DIR__, 'app/cache/')) {
                 // subimos hasta el directorio raíz de la aplicación (3 niveles)
                 $basedir = __DIR__ . '/../../../web';
@@ -125,20 +135,14 @@ abstract class BaseImagen extends BaseEntity
                 $basedir = __DIR__ . '/../../../../../../web';
             }
         }
-
+        */
         return $basedir . $this->getUploadDir($host);
     }
 
     protected function getUploadDir($host = null)
     {
-        $host = $_SERVER['HTTP_HOST'];
-        if($host) {
 
-            return '/images';
-        } else {
-
-            return '/images';
-        }
+        return '/images';
     }
 
     public function showPathInPanel()
