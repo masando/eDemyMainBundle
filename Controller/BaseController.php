@@ -174,6 +174,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
                 return $parts[0];
             }
         }
+
         return null;
     }
 
@@ -494,14 +495,30 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         if($this->fileExists($this->getControllerName().".css.twig", $dir)) {
 
             /** @var Param[] $allparams */
-            $allparams = $this->getParamByType('css');
+
             $params = array();
-            //$allparams = $this->get('doctrine.orm.entity_manager')->getRepository($this->getBundleName().':Param')->findAll();
+
+            //Todos los servicios obtienen todos los parámetros del namespace
+            $allparams = $this->getParamByType('css','all');
             if ($allparams) {
                 foreach ($allparams as $param) {
-                    $params[$param->getName()] = $param->getValue();
+                    //var_dump($param->getNamespace());
+                    //if(($param->getNamespace() == 'all') || ($param->getNamespace() == $this->getNamespace())) {
+                        $params[$param->getName()] = $param->getValue();
+                    //}
                 }
             }
+
+            $allparams = $this->getParamByType('css',$this->getNamespace());
+            if ($allparams) {
+                foreach ($allparams as $param) {
+                    //var_dump($param->getNamespace());
+                    if($param->getNamespace() == $this->getNamespace()) {
+                        $params[$param->getName()] = $param->getValue();
+                    }
+                }
+            }
+            //die(var_dump($params));
             $this->addEventModule($event, $dir . $this->getControllerName(), array('params' => $params));
 
             return true;
