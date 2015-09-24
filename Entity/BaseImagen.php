@@ -57,7 +57,6 @@ abstract class BaseImagen extends BaseEntity
             $domain = $parts[0] . '.' . $parts[1];
             $subdomain = 'www';
         }
-        //$host = $domain;
 
         if(file_exists($this->getAbsolutePath($domain))) {
             $partes_ruta = pathinfo($this->path);
@@ -115,38 +114,31 @@ abstract class BaseImagen extends BaseEntity
     
     protected function getUploadRootDir($host = null)
     {
-        $host = $_SERVER['HTTP_HOST'];
-        $parts = explode(".", $host);
-        if(count($parts) == 3) {
-            $subdomain = $parts[0];
-            $domain = $parts[1] . '.' . $parts[2];
-        } else {
-            $domain = $parts[0] . '.' . $parts[1];
-            $subdomain = 'www';
-        }
-        $basedir = '/var/www/'.$domain;
-        /*
         if($host) {
-
+            $basedir = '/var/www/'.$host;
         } else {
             if(strpos(__DIR__, 'app/cache/')) {
                 // subimos hasta el directorio raíz de la aplicación (3 niveles)
-                die("a");
                 $basedir = __DIR__ . '/../../../web';
             } else {
-                die("b");
                 // si no subimos 6 niveles hasta el directorio raíz de la aplicación
                 $basedir = __DIR__ . '/../../../../../../web';
             }
         }
-        */
+
         return $basedir . $this->getUploadDir($host);
     }
 
     protected function getUploadDir($host = null)
     {
+        $host = $_SERVER['HTTP_HOST'];
+        if($host) {
 
-        return '/images';
+            return '/images';
+        } else {
+
+            return '/images';
+        }
     }
 
     public function showPathInPanel()
