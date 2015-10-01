@@ -29,7 +29,11 @@ class Builder extends ContainerAware
                 //si hay ruta válida
                 if($router->getRouteCollection()->get($item->getValue()) != null) {
                     if($item->getNamespace()) {
-                        $route = $item->getNamespace() . '.' . $item->getValue();
+                        if($item->getNamespace() == 'all') {
+                            $route = $item->getValue();
+                        } else {
+                            $route = $item->getNamespace() . '.' . $item->getValue();
+                        }
                     } else {
                         $route = $item->getValue();
                     }
