@@ -60,13 +60,24 @@ abstract class BaseImagen extends BaseEntity
 
         if(file_exists($this->getAbsolutePath($domain))) {
             $partes_ruta = pathinfo($this->path);
-            $path_root = $this->getUploadRootDir($host) . '/' . $partes_ruta['filename'] . '_w' . $w . '.' . $partes_ruta['extension'];
-            $path = $this->getUploadDir($host) . '/' . $partes_ruta['filename'] . '_w' . $w . '.' . $partes_ruta['extension'];
+            if(($w != null) and ($h == null)) {
+                $path_root = $this->getUploadRootDir($host).'/'.$partes_ruta['filename'].'_w'.$w.'.'.$partes_ruta['extension'];
+                $path = $this->getUploadDir($host) . '/' . $partes_ruta['filename'] . '_w' . $w . '.' . $partes_ruta['extension'];
+            }
+            if(($h != null) and ($w == null)) {
+                $path_root = $this->getUploadRootDir($host).'/'.$partes_ruta['filename'].'_h'.$h.'.'.$partes_ruta['extension'];
+                $path = $this->getUploadDir($host) . '/' . $partes_ruta['filename'] . '_h' . $h . '.' . $partes_ruta['extension'];
+            }
             if($w != null or $h != null) {
                 if(!file_exists($path_root)) {
                     try {
                         $image = new \Imagick($this->getAbsolutePath());
-                        $image->thumbnailImage($w, 0);
+                        if(($w != null) and ($h == null)) {
+                            $image->thumbnailImage($w, 0);
+                        }
+                        if(($h != null) and ($w == null)) {
+                            $image->thumbnailImage(0, $h);
+                        }
 
                         if($text) {
                             // Create a new drawing palette
@@ -74,7 +85,11 @@ abstract class BaseImagen extends BaseEntity
 
                             // Set font properties
                             $draw->setFont('Helvetica');
-                            $draw->setFontSize(20);
+                            if(($w + $h) < 100) {
+                                $draw->setFontSize(10);
+                            } else {
+                                $draw->setFontSize(20);
+                            }
                             //$draw->setFillOpacity(0);
                             $draw->setFillColor('black');
                             
@@ -100,8 +115,9 @@ abstract class BaseImagen extends BaseEntity
             if($this->path === null) {
                 return null;
             } else {
-                if($w) {
+                if($w or $h) {
                     $partes_ruta = pathinfo($this->path);
+
                     return $path;
                 } else {
                     return $this->getUploadDir($host).'/'.$this->path;
