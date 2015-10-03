@@ -46,6 +46,7 @@ class ContentController extends BaseController
         $event->clearModules();
         $this->eventDispatcher->dispatch('edemy_precontent_module', $event);
         $this->eventDispatcher->dispatch($event->getRoute(), $event);
+        //die(var_dump($event));
         if($event->isPropagationStopped()) {
 
             return false;

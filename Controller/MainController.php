@@ -106,10 +106,16 @@ class MainController extends BaseController
                 return $response;
             }
         }
+
+
+        //die(var_dump($event));
         if($content = $this->getContent($event->getRoute())) {
             $event->setContent($content);
         }
-//        die(var_dump($content));
+
+
+        //die(var_dump($content));
+
         if(gettype($content) == 'object') {
             if (get_class($content) == 'Symfony\Component\HttpFoundation\RedirectResponse') {
 
@@ -120,7 +126,7 @@ class MainController extends BaseController
                 return $content;
             }
         }
-//        die(var_dump($event));
+        //die($event->getContent());
         // @TODO comprobar stopPropagation
         if($response = $this->isPropagationStopped($event)) {
 
@@ -173,6 +179,27 @@ class MainController extends BaseController
      */
     public function onFrontpage(ContentEvent $event)
     {
+        //die('b');
+        //die(var_dump($event));
+        //TODO launch event frontpage with namespace
+        $frontpageEvent = new ContentEvent($event->getRoute());
+        $frontpageEvent->clearModules();
+        if($this->getNamespace()){
+            $this->eventDispatcher->dispatch('edemy_frontpage_module_namespace', $frontpageEvent);
+        } else {
+            $this->eventDispatcher->dispatch('edemy_frontpage_module', $frontpageEvent);
+        }
+
+        
+        $event->addModule(
+            $this->render("snippets/join", array(
+                'modules' => $frontpageEvent->getModules(),
+            ))
+        );
+
+        return true;
+
+
         if(($frontpageRoute = $this->getParam('frontpage')) !== 'frontpage') {
             if ($this->getParam('edemy_main_frontpage_mode') != 'edemy_main_frontpage_mode') {
                 $event->setMode($this->getParam('edemy_main_frontpage_mode'));
@@ -180,9 +207,8 @@ class MainController extends BaseController
 
             $event->setRoute($frontpageRoute);
             $this->eventDispatcher->dispatch($frontpageRoute, $event);
-//            die(var_dump($event));
+            //die(var_dump($event));
             if ($event->isPropagationStopped()) {
-//die();
                 return false;
             }
             $event->setContent(
@@ -193,10 +219,12 @@ class MainController extends BaseController
 
             return true;
         } else {
+
+            /*
             $event->addModule(
                 $this->render("templates/main/index")
             );
-
+            */
             return true;
         }
     }

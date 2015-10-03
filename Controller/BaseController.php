@@ -1492,6 +1492,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         // @TODO use param to set the bundle that has the theme
         $template = $this->getTemplate('layout/theme', $event->getFormat());
 //        dump('template: ' . $template);
+
         $response = $this->get('templating')->renderResponse(
             $template,
             array(
