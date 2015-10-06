@@ -1030,7 +1030,8 @@ abstract class BaseController extends Controller implements EventSubscriberInter
             $this->em->persist($entity);
             $this->em->flush();
 
-            $event->setContent($this->newRedirectResponse('edemy_' . $this->getEntityPath() . '_index'));
+            //$event->setContent($this->newRedirectResponse('edemy_' . $this->getEntityPath() . '_index'));
+            $event->setContent($this->newRedirectResponse('edemy_' . $this->getEntityPath() . '_show', array('id' => $entity->getId())));
             $event->stopPropagation();
 
             return true;
