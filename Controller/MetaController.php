@@ -83,7 +83,7 @@ class MetaController extends BaseController
         }
 
         if($this->getTitle() and $this->prefix) {
-            return $prefix . ' | ';
+            return $prefix . ' - ';
         } elseif ($this->prefix) {
             return $prefix;
         }
@@ -105,7 +105,7 @@ class MetaController extends BaseController
         }
 
         if($this->getTitleSuffix()) {
-            $title .= ' | ';
+            $title .= ' - ';
         }
 
         return $title;
