@@ -20,8 +20,8 @@ class BaseType extends AbstractType
         $entity = $builder->getData();
         if($entity == null) {
             $entity = $this->entity;
-            //die(var_dump($this->entity));
         }
+        //die(var_dump($entity));
         //if(get_class($entity) != "eDemy\\KeilaBundle\\Entity\\Alianza") {
             //die(var_dump($entity->getFields()));
         //}
