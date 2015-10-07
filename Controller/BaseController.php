@@ -529,94 +529,99 @@ abstract class BaseController extends Controller implements EventSubscriberInter
     }
 
     public function onSitemapModule(ContentEvent $event) {
-        /** @var Param[] $prefixes */
-        $prefixes = $this->getParamByType('prefix');
-        //$bundlename = $this->getBundleName(true);
-        $entityNames = $this->getBundleEntities();
-        $urls = array();
+        $prefix = $this->getNamespace();
 
-        //bundle frontpage route without namespace
-        if($this->getParam('sitemap_bundle') == '1') {
-            $urls[] = $this->get('router')->generate('edemy_' . strtolower($this->getBundleName(false)) . '_frontpage', array(), true);
-        }
+            /** @var Param[] $prefixes */
+            //$prefixes = $this->getParamByType('prefix');
+            $bundlename = $this->getBundleName(false);
+            $entityNames = $this->getBundleEntities();
+            $urls = array();
+        if($this->getControllerName() == strtolower($this->getBundleName(false))) {
 
-        //bundle frontpage route with namespace
-        foreach($prefixes as $prefix) {
-            if($this->getParam('sitemap_bundle', null, null, $prefix->getValue()) == '1') {
-                $urls[] = $this->get('router')->generate($prefix . '.' . 'edemy_' . strtolower($this->getBundleName(false)) . '_frontpage', array(), true);
+            //bundle frontpage route without namespace
+//            if ($this->getParam('xsitemap_bundle') == '1') {
+//                $urls[] = $this->get('router')->generate(
+//                    'edemy_'.strtolower($this->getBundleName(false)).'_frontpage',
+//                    array(),
+//                    true
+//                );
+//            }
+
+
+            //bundle frontpage route with namespace
+            //foreach ($prefixes as $prefix) {
+            if ($this->getParam('sitemap_bundle', null, null, $prefix) == '1') {
+                if ($prefix) {
+                    $ruta = $prefix.'.'.'edemy_'.strtolower($this->getBundleName(false)).'_frontpage';
+                } else {
+                    $ruta = 'edemy_'.strtolower($this->getBundleName(false)).'_frontpage';
+                }
+
+                $urls[] = $this->get('router')->generate($ruta, array(), true);
             }
-        }
+//        }
 
-        //bundle manual route without namespace
-        if($this->getParam('sitemap_route') == '1') {
-            $route = $this->getParam('sitemap_route', null, null, null, true);
-            if($route->getDescription() != null) {
-                $options = json_decode($route->getDescription(), false);
-                $urls[] = $this->get('router')->generate($options->route, array(), true);
-            }
-        }
-
-        //bundle manual route with namespace
-        foreach($prefixes as $prefix) {
-            if($this->getParam('sitemap_route', null, null, $prefix->getValue()) == '1') {
-                $route = $this->getParam('sitemap_route', null, null, $prefix->getValue(), true);
-                if($route->getDescription() != null) {
+            //bundle manual route without namespace
+            if ($this->getParam('x_sitemap_route') == '1') {
+                $route = $this->getParam('sitemap_route', null, null, null, true);
+                if ($route->getDescription() != null) {
                     $options = json_decode($route->getDescription(), false);
-                    $urls[] = $this->get('router')->generate($prefix . '.' . $options->route, array(), true);
+                    //$urls[] = $this->get('router')->generate($options->route, array(), true);
                 }
             }
-        }
 
-        //entity routes without namespace
-        foreach($entityNames as $entityName) {
-            if($entityName != 'Param') {
-                if($this->getParam('sitemap_entity') == '1') {
-                    $param = $this->getParam('sitemap_entity', null, null, null, true);
-                    if($param->getDescription() != null) {
-                        $options = json_decode($param->getDescription(), false);
-                        $entity = $options->entity;
-                        if($entity == $entityName) {
-                            //entity frontpage route without namespace
-                            $urls[] = $this->get('router')->generate('edemy_' . strtolower($this->getBundleName(false)) . '_' . strtolower($entityName) . '_frontpage', array(), true);
-                            $em = $this->get('doctrine.orm.entity_manager');
-                            /** @var BaseEntity[] $entities */
-                            $entities = $em->getRepository($this->getBundleName() . ':' . $entity)->findBy(array(
-                                'published' => true,
-                                'namespace' => '',
-                            ));
-                            foreach($entities as $entity) {
-                                if($entity->getSlug()) {
-                                    //entity details route without namespace
-                                    $urls[] = $this->get('router')->generate('edemy_' . strtolower($this->getBundleName(false)) . '_' . strtolower($entityName) . '_details', array( 'slug' => $entity->getSlug()), true);
-                                }
-                            }
-                        }
+
+            //bundle manual route with namespace
+//        foreach ($prefixes as $prefix) {
+            if ($this->getParam('sitemap_route', $this->getBundleName(true), null, $prefix) == '1') {
+                $route = $this->getParam('sitemap_route', $this->getBundleName(true), null, $prefix, true);
+                if ($route->getDescription() != null) {
+                    $options = json_decode($route->getDescription(), false);
+                    if ($prefix) {
+                        $ruta = $prefix.'.'.$options->route;
+                    } else {
+                        $ruta = $options->route;
                     }
-
+                    $urls[] = $this->get('router')->generate($ruta, array(), true);
                 }
             }
-        }
+//        }
 
-        //entity routes with namespace
-        foreach($prefixes as $prefix) {
-            foreach($entityNames as $entityName) {
-                if($entityName != 'Param') {
-                    if($this->getParam('sitemap_entity', null, null, $prefix->getValue()) == '1') {
-                        $param = $this->getParam('sitemap_entity', null, null, $prefix->getValue(), true);
-                        if($param->getDescription() != null) {
+            //entity routes without namespace
+            foreach ($entityNames as $entityName) {
+                if ($entityName != 'Param') {
+                    if ($this->getParam('sitemap_entity') == '1') {
+                        $param = $this->getParam('sitemap_entity', null, null, null, true);
+                        if ($param->getDescription() != null) {
                             $options = json_decode($param->getDescription(), false);
                             $entity = $options->entity;
-                            if($entity == $entityName) {
-                                //entity frontpage route with namespace
-                                $urls[] = $this->get('router')->generate($prefix . '.' . 'edemy_' . strtolower($this->getBundleName(false)) . '_' . strtolower($entityName) . '_frontpage', array(), true);
-                                $entities = $this->get('doctrine.orm.entity_manager')->getRepository($this->getBundleName() . ':' . $entity)->findBy(array(
-                                    'published' => true,
-                                    'namespace' => $prefix->getValue(),
-                                ));
-                                foreach($entities as $entity) {
-                                    if($entity->getSlug()) {
-                                        //entity details route with namespace
-                                        $urls[] = $this->get('router')->generate($prefix . '.' . 'edemy_' . strtolower($this->getBundleName(false)) . '_' . strtolower($entityName) . '_details', array( 'slug' => $entity->getSlug()), true);
+                            if ($entity == $entityName) {
+                                //entity frontpage route without namespace
+                                $urls[] = $this->get('router')->generate(
+                                    'edemy_'.strtolower($this->getBundleName(false)).'_'.strtolower(
+                                        $entityName
+                                    ).'_frontpage',
+                                    array(),
+                                    true
+                                );
+                                $em = $this->get('doctrine.orm.entity_manager');
+                                /** @var BaseEntity[] $entities */
+                                $entities = $em->getRepository($this->getBundleName().':'.$entity)->findBy(
+                                    array(
+                                        'published' => true,
+                                        'namespace' => '',
+                                    )
+                                );
+                                foreach ($entities as $entity) {
+                                    if ($entity->getSlug()) {
+                                        //entity details route without namespace
+                                        $urls[] = $this->get('router')->generate(
+                                            'edemy_'.strtolower($this->getBundleName(false)).'_'.strtolower(
+                                                $entityName
+                                            ).'_details',
+                                            array('slug' => $entity->getSlug()),
+                                            true
+                                        );
                                     }
                                 }
                             }
@@ -625,12 +630,54 @@ abstract class BaseController extends Controller implements EventSubscriberInter
                     }
                 }
             }
-        }
-        if($this->getBundleName(false) == 'Event') {
-            //die(var_dump($urls));
+
+            //entity routes with namespace
+//        foreach ($prefixes as $prefix) {
+            foreach ($entityNames as $entityName) {
+                if ($entityName != 'Param') {
+                    if ($this->getParam('sitemap_entity', null, null, $prefix) == '1') {
+                        $param = $this->getParam('sitemap_entity', null, null, $prefix, true);
+                        if ($param->getDescription() != null) {
+                            $options = json_decode($param->getDescription(), false);
+                            $entity = $options->entity;
+                            if ($entity == $entityName) {
+                                //entity frontpage route with namespace
+                                $urls[] = $this->get('router')->generate(
+                                    $prefix.'.'.'edemy_'.strtolower($this->getBundleName(false)).'_'.strtolower(
+                                        $entityName
+                                    ).'_frontpage',
+                                    array(),
+                                    true
+                                );
+                                $entities = $this->get('doctrine.orm.entity_manager')->getRepository(
+                                    $this->getBundleName().':'.$entity
+                                )->findBy(
+                                    array(
+                                        'published' => true,
+                                        'namespace' => $prefix,
+                                    )
+                                );
+                                foreach ($entities as $entity) {
+                                    if ($entity->getSlug()) {
+                                        //entity details route with namespace
+                                        $urls[] = $this->get('router')->generate(
+                                            $prefix.'.'.'edemy_'.strtolower($this->getBundleName(false)).'_'.strtolower(
+                                                $entityName
+                                            ).'_details',
+                                            array('slug' => $entity->getSlug()),
+                                            true
+                                        );
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+                }
+            }
+//        }
         }
         $this->addEventModule($event, null, $urls);
-
         return true;
     }
 
@@ -1011,23 +1058,23 @@ abstract class BaseController extends Controller implements EventSubscriberInter
         $this->em = $this->get('doctrine.orm.entity_manager');
         $request = $this->get('request_stack')->getCurrentRequest();
         $id = $request->attributes->get('id');        
-        $entity = $this->get('doctrine.orm.entity_manager')->getRepository($this->getBundleName().':'.$this->getEntityNameUpper())->find(array(
+        $entity = $this->em->getRepository($this->getBundleName().':'.$this->getEntityNameUpper())->find(array(
             'id' => $id,
             //'namespace' => $this->getNamespace(),
         ));
         if (!$entity) {
             throw $this->CreateNotFoundException('Unable to find Entity.');
         }
-        $entity->setEntityManager($this->get('doctrine.orm.entity_manager'));
-        $entity->setMappings();
         //$deleteForm = $this->createDeleteForm($id);
+        $entity->setEntityManager($this->em);
+        $entity->setMappings();
         $editForm = $this->createEditForm($entity);
         $editForm->handleRequest($request);
         if ($editForm->isValid()) {
             if(($entity->getNamespace() == null) and ($this->getNamespace() !== null)) {
                 $entity->setNamespace($this->getNamespace());
             }
-            $this->em->persist($entity);
+            //$this->em->persist($entity);
             $this->em->flush();
 
             //$event->setContent($this->newRedirectResponse('edemy_' . $this->getEntityPath() . '_index'));

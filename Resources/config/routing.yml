@@ -96,8 +96,14 @@ edemy_search_query:
     defaults:       { _controller: edemy.main:indexAction }
     methods:        [ GET ]
 
+edemy_mainsitemap:
+    path:           /main_sitemap.xml
+    defaults:       { _controller: edemy.sitemap:mainSitemapAction, _format: xml }
+    methods:        [ GET, POST ]
+    requirements:   { _locale: es|en }
+
 edemy_sitemap:
     path:           /sitemap.xml
-    defaults:       { _controller: edemy.sitemap:indexAction, _format: xml }
+    defaults:       { _controller: edemy.sitemap:sitemapAction, _format: xml }
     methods:        [ GET, POST ]
     requirements:   { _locale: es|en }

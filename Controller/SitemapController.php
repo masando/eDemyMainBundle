@@ -13,15 +13,34 @@ class SitemapController extends BaseController
         return self::getSubscriptions('main');
     }
 
-    public function indexAction()
+    public function mainSitemapAction()
+    {
+        $prefixes = $this->getParamByType('prefix');
+
+        $content = $this->render(
+            "templates/main/sitemap/main",
+            array(
+                'prefixes' => $prefixes,
+            )
+        );
+
+        $response = new Response($content);
+        $response->headers->set('Content-type', 'text/xml');
+
+        return $response;
+    }
+
+    public function sitemapAction()
     {
         $event = new ContentEvent();
         $event->clearModules();
+
         $this->eventDispatcher->dispatch('edemy_sitemap_module', $event);
-        //die(var_dump($event->getModules()));
+
         $content = $this->render("templates/main/sitemap/sitemap", array(
             'modules' => $event->getModules(),
         ));
+
         $response = new Response($content);
         $response->headers->set('Content-type', 'text/xml');
 
