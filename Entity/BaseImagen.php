@@ -58,6 +58,14 @@ abstract class BaseImagen extends BaseEntity
             $subdomain = 'www';
         }
 
+        $text_parts = explode(".", $text);
+        if(count($text_parts) == 3) {
+            if($text_parts[0] == "beta") {
+                $text_parts[0] = "www";
+                $text = $text_parts[0] . '.' . $text_parts[1] . '.' . $text_parts[2];
+            }
+
+        }
         if(file_exists($this->getAbsolutePath($domain))) {
             $partes_ruta = pathinfo($this->path);
             if(($w != null) and ($h == null)) {
