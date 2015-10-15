@@ -181,6 +181,16 @@ class MainController extends BaseController
     {
         //die('b');
         //die(var_dump($event));
+        $description = $this->getParam('frontpage_description', null, null, null, true);
+        if($description != "frontpage_description") {
+            $description = $description->getDescription();
+            $this->get('edemy.meta')->setDescription($description);
+        }
+        $keywords = $this->getParam('frontpage_keywords', null, null, null, true);
+        if($keywords != "frontpage_keywords") {
+            $keywords = $keywords->getDescription();
+            $this->get('edemy.meta')->setKeywords($keywords);
+        }
         //TODO launch event frontpage with namespace
         $frontpageEvent = new ContentEvent($event->getRoute());
         $frontpageEvent->clearModules();
