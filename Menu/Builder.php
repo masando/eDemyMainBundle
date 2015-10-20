@@ -42,8 +42,12 @@ class Builder extends ContainerAware
                     if(count($parts) == 2) {
                         $parent = $parts[0];
                         $child = $parts[1];
+                        if($parts[0] == "Blogs") {
+                            //die(var_dump($menu[$parent]));
+                        }
                         if($menu[$parent]) {
                             $menu[$parent]->addChild($child, array(
+
                                 'route' => $route,
                                 'routeParameters' => $options,
                             ));
