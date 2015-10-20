@@ -53,6 +53,8 @@ class ContactController extends BaseController
     public function onContactFrontpage(ContentEvent $event)
     {
         $this->get('edemy.meta')->setTitlePrefix("Formulario de Contacto");
+        $this->get('edemy.meta')->setDescription($this->get('edemy.meta')->getFullTitle());
+        //$this->get('edemy.meta')->setKeywords($keywords);
         $request = $this->getCurrentRequest();
         $host = $frontcontroller = $request->getHost();
         $env = $this->get('kernel')->getEnvironment();
