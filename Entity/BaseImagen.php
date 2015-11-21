@@ -12,6 +12,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 abstract class BaseImagen extends BaseEntity
 {
+    protected $host;
+
     public function __construct($em = null, $container = null)
     {
         parent::__construct($em);
@@ -135,10 +137,18 @@ abstract class BaseImagen extends BaseEntity
             return null;
         }
     }
-    
+
+    public function setHost($host) {
+        $this->host = $host;
+    }
+
     protected function getUploadRootDir($host = null)
     {
-        $host = $_SERVER['HTTP_HOST'];
+        if($this->host) {
+            $host = $this->host;
+        } else {
+            $host = $_SERVER['HTTP_HOST'];
+        }
         $parts = explode(".", $host);
         if(count($parts) == 3) {
             $subdomain = $parts[0];

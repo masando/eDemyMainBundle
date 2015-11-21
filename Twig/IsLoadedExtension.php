@@ -12,7 +12,7 @@ class IsLoadedExtension extends \Twig_Extension
     public function initRuntime(\Twig_Environment $environment)
     {
         $this->environment = $environment;
-//        die(var_dump($this->hasExtension('edemy_facebook_extension')));
+        //die(var_dump($this->hasExtension('edemy_facebook_extension')));
     }
 
     /**
@@ -22,9 +22,9 @@ class IsLoadedExtension extends \Twig_Extension
     */
     public function getTests()
     {
-
         return array(
             new \Twig_SimpleTest('loaded', [$this, 'hasExtension']),
+
         );
     }
 
@@ -32,9 +32,8 @@ class IsLoadedExtension extends \Twig_Extension
     * @param string $name
     * @return boolean
     */
-    function hasExtension($name)
+    public function hasExtension($name)
     {
-//die(var_dump($name));
         return $this->environment->hasExtension($name);
     }
 
