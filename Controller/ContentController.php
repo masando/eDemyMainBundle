@@ -44,14 +44,22 @@ class ContentController extends BaseController
     {
         $content = null;
         $event->clearModules();
+        $this->start('precontent_module');
         $this->eventDispatcher->dispatch('edemy_precontent_module', $event);
+        var_dump('preContentModule: ' . $this->stop('precontent_module')->getDuration());
+
+        $this->start('routeContent');
         $this->eventDispatcher->dispatch($event->getRoute(), $event);
+        var_dump('routeContent ' . $event->getRoute() . ': ' . $this->stop('routeContent')->getDuration());
+
         //die(var_dump($event));
         if($event->isPropagationStopped()) {
 
             return false;
         }
+        $this->start('postcontent_module');
         $this->eventDispatcher->dispatch('edemy_postcontent_module', $event);
+        var_dump('postContentModule: ' . $this->stop('postcontent_module')->getDuration());
         $event->setContent(
             $this->render("snippets/join", array(
                 'modules' => $event->getModules()

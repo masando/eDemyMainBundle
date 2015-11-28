@@ -72,11 +72,16 @@ class MainController extends BaseController
      */
     public function indexAction($_format = 'html')
     {
+
         $event = new ContentEvent($this->getRouteWithoutNamespace());
         $event->setFormat($_format);
         $this->dump($event->getRoute());
 
-        if($lastmodified = $this->getLastModified($event->getRoute(), $event->getFormat())) {
+        $this->start('lastmodified');
+        $lastmodified = $this->getLastModified($event->getRoute(), $event->getFormat());
+        if($this->getParameter('timing')) var_dump('lastmodified: ' . $this->stop('lastmodified')->getDuration());
+
+        if($lastmodified) {
 //            if ($this->get('security.authorization_checker')->isGranted('ROLE_USER')) {
 //                $response->setPrivate();
 //            } else {
@@ -108,11 +113,11 @@ class MainController extends BaseController
         }
 
 
-        //die(var_dump($event));
+        $this->start('getContent');
         if($content = $this->getContent($event->getRoute())) {
             $event->setContent($content);
         }
-
+        if($this->getParameter('timing')) var_dump('getContent: ' . $this->stop('getContent')->getDuration());
 
         //die(var_dump($content));
 
@@ -132,8 +137,14 @@ class MainController extends BaseController
 
             return $response;
         }
+        $this->start('getFullResponse');
         if($response = $this->getFullResponse($event)) {
             $this->get('session')->set('out', '0');
+            if($this->getParameter('timing')) {
+                var_dump('getFullResponse: ' . $this->stop('getFullResponse')->getDuration());
+                die();
+            }
+
 
             return $response;
         }

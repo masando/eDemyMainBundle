@@ -1364,7 +1364,7 @@ abstract class BaseController extends Controller implements EventSubscriberInter
     {
         if($this->isDevelopment()) {
             //if($section) $this->stopwatch->openSection();
-//            $this->get('debug.stopwatch')->start($name, $section);
+            $this->get('debug.stopwatch')->start($name, $section);
             //if($section) $this->stopwatch->stopSection($section);
         }
     }
@@ -1372,7 +1372,8 @@ abstract class BaseController extends Controller implements EventSubscriberInter
     public function stop($name, $section = null)
     {
         if($this->isDevelopment()) {
-//            $this->get('debug.stopwatch')->stop($name);
+
+            return $this->get('debug.stopwatch')->stop($name);
         }
     }
 
